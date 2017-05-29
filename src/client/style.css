@@ -1,0 +1,27 @@
+body {
+	font: 100% "Trebuchet MS", sans-serif;
+	margin: 1em;
+}
+
+div#app {
+}
+
+img._accountIcon {
+	border-radius: 50%;
+}
+
+span._hash {
+	font-family: monospace;
+	font-size: large;
+}
+
+div#drop_zone_reg, div#drop_zone_val {
+  border: 2px dashed #bbb;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 25px;
+  text-align: center;
+  font: 150% bold;
+  color: #bbb;
+}
