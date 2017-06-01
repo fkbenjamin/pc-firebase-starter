@@ -32,7 +32,6 @@ var config = {
 
 //initialize firebaseDB
 const db = firebase.database();
-var imageURL = 'null';
 
 //load contractABI
 const TestimonyABI = [
@@ -128,15 +127,18 @@ export class App extends React.Component {
     super();
     //has to be updated to new contract
     this.contract = parity.bonds.makeContract('0x0AD24CEab0555599429ec755c8492Ae9B2c2Fe94', TestimonyABI);
+    //remove, just here for reference how it is working
     this.tests = this.contract.savedTestimony();
     this.state = {
       tx: null,
-      //initial firebase speed 10 as example
+      //initial firebase speed 10 as example how to read from firebaseDB
       speed: 10 ,
-      url: 'Logging'
+      //link to image in firebase storage
+      url: ''
     };
   }
   //lifeCycle of the Component, called once it is rendered to the DOM
+  //reading from the firebaseDB
   componentDidMount() {
     //referencing react child in database
     const rootRef = firebase.database().ref().child('react');
@@ -149,7 +151,7 @@ export class App extends React.Component {
       });
     });
   }
-
+  //write Pass Data to DB. Remember to use parity.bonds.me.then() for walletID
   writePassData(walletId, type, code, passnr, name, givennames, nationality, dob, sex, pob, imageUrl, residence, height, eyes) {
   firebase.database().ref('pass/' + walletId).set({
     type: type,
