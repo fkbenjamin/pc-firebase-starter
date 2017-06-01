@@ -18,104 +18,19 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import * as firebase from 'firebase';
 import {sha3_256} from 'js-sha3';
 import FileUploader from 'react-firebase-file-uploader';
-import {FireClass} from './fireclass.jsx'
+import {FireClass} from './fireclass.jsx';
+import {ABI} from './ABI.jsx';
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
-//load contractABI
-const TestimonyABI = [
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "lookup",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isValid",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "create",
-    "outputs": [],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "testimonyID",
-        "type": "uint256"
-      }, {
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "update",
-    "outputs": [],
-    "payable": false,
-    "type": "function"
-  }, {
-    "inputs": [],
-    "payable": false,
-    "type": "constructor"
-  }, {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "from",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "testimonyID",
-        "type": "uint256"
-      }, {
-        "indexed": false,
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "savedTestimony",
-    "type": "event"
-  }
-];
+//loads Class of ABI's
+const abi = new ABI();
 
 export class App extends React.Component {
   constructor() {
     super();
     //has to be updated to new contract
-    this.contract = parity.bonds.makeContract('0x0AD24CEab0555599429ec755c8492Ae9B2c2Fe94', TestimonyABI);
+    this.contract = parity.bonds.makeContract('0x0AD24CEab0555599429ec755c8492Ae9B2c2Fe94', abi.getTestimonyABI());
     //remove, just here for reference how it is working
     this.tests = this.contract.savedTestimony();
     this.state = {
