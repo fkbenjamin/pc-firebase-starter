@@ -18,21 +18,10 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import * as firebase from 'firebase';
 import {sha3_256} from 'js-sha3';
 import FileUploader from 'react-firebase-file-uploader';
+import {FireClass} from './fireclass.jsx'
 
-//config for firebaseDB
-var config = {
-    apiKey: "AIzaSyCTzP3QOo9sElx5bFXIu4L2B4r6-N-Oo4w",
-    authDomain: "passchain-a11e5.firebaseapp.com",
-    databaseURL: "https://passchain-a11e5.firebaseio.com",
-    projectId: "passchain-a11e5",
-    storageBucket: "passchain-a11e5.appspot.com",
-    messagingSenderId: "481652628414"
-  };
-  firebase.initializeApp(config);
-
-//initialize firebaseDB
-const db = firebase.database();
-
+//creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
+const fc = new FireClass();
 //load contractABI
 const TestimonyABI = [
   {
@@ -139,6 +128,7 @@ export class App extends React.Component {
   }
   //lifeCycle of the Component, called once it is rendered to the DOM
   //reading from the firebaseDB
+  //move to FireClass?
   componentDidMount() {
     //referencing react child in database
     const rootRef = firebase.database().ref().child('react');
@@ -151,50 +141,6 @@ export class App extends React.Component {
       });
     });
   }
-  //write Pass Data to DB. Remember to use parity.bonds.me.then() for walletID
-  writePassData(walletId, type, code, passnr, name, givennames, nationality, dob, sex, pob, imageUrl, residence, height, eyes) {
-  firebase.database().ref('pass/' + walletId).set({
-    type: type,
-    code: code,
-    name: name,
-    givennames: givennames,
-    nationality: nationality,
-    dob: dob,
-    sex: sex,
-    pob: pob,
-    image : imageUrl,
-    residence: residence,
-    height: height,
-    eyes: eyes
-  });
-}
-//gets async call for user address for FileUploader
-getAddress(){
-  var address = ''
-  parity.bonds.me.then(add => {address = add});
-  console.log(address);
-  return address;
-//Upload started
-}
-handleUploadStart(){
-  console.log('Started Upload');}
-//Progress of Upload
- handleProgress(progress){
-   console.log('Progress:' + progress);
- }
- //Progress Error
- handleUploadError(error){
-   console.error('Error while uploading:' + error);
- }
- //Upload succeeded
- handleUploadSuccess(filename) {
-   console.log('Success uploading')
-   firebase.storage().ref().child(filename).getDownloadURL().then(function(url) {
-     this.setState({
-       url: url
-     });
-   }.bind(this));
- }
 
 
   render() {
@@ -204,12 +150,12 @@ handleUploadStart(){
       <FileUploader
             accept="image/*"
             name="avatar"
-            filename= {this.getAddress()}
+            filename= {fc.getAddress()}
             storageRef={firebase.storage().ref()}
-            onUploadStart={this.handleUploadStart}
-            onUploadError={this.handleUploadError}
-            onUploadSuccess={this.handleUploadSuccess.bind(this)}
-            onProgress={this.handleProgress}
+            onUploadStart={fc.handleUploadStart}
+            onUploadError={fc.handleUploadError}
+            onUploadSuccess={fc.handleUploadSuccess.bind(this)}
+            onProgress={fc.handleProgress}
           />
        <img src={this.state.url} />
       </div>
