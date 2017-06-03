@@ -35,24 +35,25 @@ export class App extends React.Component {
     this.tests = this.contract.savedTestimony();
     this.state = {
       tx: null,
-      //initial firebase speed 10 as example how to read from firebaseDB
-      speed: 10 ,
       //link to image in firebase storage
-      url: ''
-    };
+      url: '',
+      //parameter of Pass
+      Test: '',
+      liebe: ''
+      };
   }
   //lifeCycle of the Component, called once it is rendered to the DOM
   //reading from the firebaseDB
   //move to FireClass?
   componentDidMount() {
-    //referencing react child in database
-    const rootRef = firebase.database().ref().child('react');
-    //speed is subchild of react in firebaseDB
-    const speedRef = rootRef.child('speed');
+    const passRef = firebase.database().ref('/pass/' + '0x008aB18490E729bBea993817E0c2B3c19c877115');
     //once value changes, the DOM gets updated
-    speedRef.on('value', snap => {
+
+    passRef.on('value', snap => {
+      var pass = snap.val();
       this.setState({
-        speed: snap.val()
+        Test: pass.Test,
+        liebe: pass.liebe
       });
     });
   }
@@ -62,6 +63,8 @@ export class App extends React.Component {
     return (
       <div>
       <h1>{this.state.speed}</h1>
+      <h1>{this.state.Test}</h1>
+
       <FileUploader
             accept="image/*"
             name="avatar"
