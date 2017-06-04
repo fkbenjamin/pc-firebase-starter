@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0
+pragma solidity ^0.4.0;
 
 contract VendingMachine {
     uint balance;
@@ -17,7 +17,7 @@ contract VendingMachine {
       balance += money;
     }
 
-    function private subBalance(uint money){
+    function subBalance(uint money) private {
       if(money > balance) {
         throw;
       } else
@@ -37,7 +37,7 @@ contract VendingMachine {
     }
 
     function public orderFood(uint number) returns (string food) {
-      
+
       numberToAmount[number] -= 1;
       return "Here is your " + numberToFood[number];
     }
