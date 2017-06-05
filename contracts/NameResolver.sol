@@ -18,7 +18,7 @@ contract NameResolver {
     }
 
     function changeBackend(string contractName, address newBackend) public
-    onlyOwner
+    onlyOwner()
     returns (bool) {
         if(newBackend != backends[contractName]) {
             backends[contractName] = newBackend;
