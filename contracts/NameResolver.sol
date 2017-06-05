@@ -4,9 +4,7 @@ pragma solidity ^0.4.11;
 /// Resolves contract names to their current version's address
 contract NameResolver {
     address owner;
-    // Mapping is public and can be retrieved by any frontend
-    mapping (string => address) public backends;
-    // TODO: Consider adding history of previous backends
+    mapping (bytes32 => address) backends;
 
     function NameResolver() {
         owner = msg.sender;
@@ -17,14 +15,16 @@ contract NameResolver {
         _;
     }
 
-    function changeBackend(string contractName, address newBackend) public
-    onlyOwner()
-    returns (bool) {
-        if(newBackend != backends[contractName]) {
-            backends[contractName] = newBackend;
+    function getBackend(string contractName) returns (address) {
+        return backends[keccak256(contractName)];
+    }
+
+    function changeBackend(string contractName, address newBackend) public onlyOwner() returns (bool) {
+        bytes32 key = keccak256(contractName);
+        if(newBackend != backends[key]) {
+            backends[key] = newBackend;
             return true;
         }
-
         return false;
     }
 }
