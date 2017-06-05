@@ -35,36 +35,38 @@ export class App extends React.Component {
     this.tests = this.contract.savedTestimony();
     this.state = {
       tx: null,
-      //link to image in firebase storage
-      url: '',
-      //parameter of Pass
-      Test: '',
-      liebe: ''
+      address: null,
+      pass: null
       };
   }
-  //lifeCycle of the Component, called once it is rendered to the DOM
-  //reading from the firebaseDB
-  //move to FireClass?
-  componentDidMount() {
-    const passRef = firebase.database().ref('/pass/' + '0x008aB18490E729bBea993817E0c2B3c19c877115');
-    //once value changes, the DOM gets updated
-
-    passRef.on('value', snap => {
-      var pass = snap.val();
+  loadData() {
+    var self = this;
+    parity.bonds.me.then(snap => {
       this.setState({
-        Test: pass.Test,
-        liebe: pass.liebe
+        address: snap
+      });
+      firebase.database().ref('pass/' + snap).once('value').then(function(snapshot) {
+        self.setState({
+          pass: snapshot.val()
+        });
       });
     });
   }
 
+  componentWillMount() {
+    this.loadData();
+  }
 
   render() {
-    return (
+      if (!this.state.address) {
+            return (<div />);
+        }
+      if (!this.state.pass) {
+            return (<div />);
+        }
+      return (
       <div>
-      <h1>{this.state.speed}</h1>
-      <h1>{this.state.Test}</h1>
-
+      <h1>{this.state.pass.name}</h1>
       <FileUploader
             accept="image/*"
             name="avatar"

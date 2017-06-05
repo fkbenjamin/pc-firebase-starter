@@ -2,6 +2,8 @@ import React from 'react';
 import * as firebase from 'firebase';
 import FileUploader from 'react-firebase-file-uploader';
 
+
+
 export class FireClass extends React.Component {
   constructor() {
     super();
