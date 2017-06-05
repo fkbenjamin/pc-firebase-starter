@@ -39,6 +39,7 @@ export class App extends React.Component {
       pass: null
       };
   }
+
   loadData() {
     var self = this;
     parity.bonds.me.then(snap => {
@@ -67,6 +68,14 @@ export class App extends React.Component {
       return (
       <div>
       <h1>{this.state.pass.name}</h1>
+      <Card>
+        <CardHeader title={this.state.pass.name} subtitle={this.state.pass.givennames} avatar={this.state.pass.imageUrl}/>
+        <CardText>Typ/Type/Type {this.state.pass.type}        Kode/Code/Code {this.state.pass.code}       Pass-Nr./Passport No./Passeport No {this.state.pass.passnr}</CardText>
+        <CardText>Staatsangehörigkeit/Nationality/Nationalité {this.state.pass.nationality}      Geburtstag/Date of birth/Date de naissance  {this.state.pass.dob}</CardText>
+        <CardText>Geschlecht/Sex/Sexe {this.state.pass.sex}      Geburtsort/Place of birth/Lieu de naissance {this.state.pass.pob}</CardText>
+        <CardText>Wohnort/Residence/Domicile {this.state.pass.residence}     Größe/Height/Taille {this.state.pass.height}     Augenfarbe/Colour of eyes/Coleur des yeux {this.state.pass.eyes} </CardText>
+      </Card>
+
       <FileUploader
             accept="image/*"
             name="avatar"
