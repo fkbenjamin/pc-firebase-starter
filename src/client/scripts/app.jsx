@@ -9,11 +9,11 @@ import {TransactionProgressBadge, AccountIcon} from 'parity-reactive-ui';
 import {List, ListItem} from 'material-ui/List';
 import ActionInfo from 'material-ui/svg-icons/action/info';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
+
 import Subheader from 'material-ui/Subheader';
 import Chip from 'material-ui/Chip';
 import {blue300, indigo900} from 'material-ui/styles/colors';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import * as firebase from 'firebase';
 import {sha3_256} from 'js-sha3';
@@ -21,10 +21,49 @@ import FileUploader from 'react-firebase-file-uploader';
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 
+//Gui
+import FlatButton from 'material-ui/FlatButton';
+import Toggle from 'material-ui/Toggle'
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
+
+
+//Divider Gui
+const DividerExampleForm = () => (
+  <Paper zDepth={2}>
+    <TextField hintText="First name" style={style} underlineShow={false} />
+    <Divider />
+    <TextField hintText="Middle name" style={style} underlineShow={false} />
+    <Divider />
+    <TextField hintText="Last name" style={style} underlineShow={false} />
+    <Divider />
+    <TextField hintText="Email address" style={style} underlineShow={false} />
+    <Divider />
+  </Paper>
+);
+
+export default DividerExampleForm;
+
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
 //loads Class of ABI's
 const abi = new ABI();
+
+const StylesOverridingInlineExample = () => (
+
+//Overriding style
+  <containerStyle
+    name="StylesOverridingExample"
+    style={{
+      width: '50%',
+      margin: '0 auto',
+      border: '2px solid #FF9800',
+      backgroundColor: '#ffd699',
+    }}
+  />
+);
+
 
 export class App extends React.Component {
   constructor() {
@@ -36,9 +75,13 @@ export class App extends React.Component {
     this.state = {
       tx: null,
       address: null,
-      pass: null
+      pass: null,
+      expanded:false
       };
+      var that = this;
+
   }
+
 
   loadData() {
     var self = this;
@@ -58,23 +101,79 @@ export class App extends React.Component {
     this.loadData();
   }
 
+  handleReduce(){
+    that.setState({expanded: false});
+  }
+
+  handleExpand(){
+    that.setState({expanded: true});
+  }
+
+
   render() {
+
+
       if (!this.state.address) {
             return (<div />);
         }
       if (!this.state.pass) {
             return (<div />);
         }
+
+
       return (
       <div>
       <h1>{this.state.pass.name}</h1>
+
+
       <Card>
-        <CardHeader title={this.state.pass.name} subtitle={this.state.pass.givennames} avatar={this.state.pass.imageUrl}/>
-        <CardText>Typ/Type/Type {this.state.pass.type}        Kode/Code/Code {this.state.pass.code}       Pass-Nr./Passport No./Passeport No {this.state.pass.passnr}</CardText>
-        <CardText>Staatsangehörigkeit/Nationality/Nationalité {this.state.pass.nationality}      Geburtstag/Date of birth/Date de naissance  {this.state.pass.dob}</CardText>
-        <CardText>Geschlecht/Sex/Sexe {this.state.pass.sex}      Geburtsort/Place of birth/Lieu de naissance {this.state.pass.pob}</CardText>
-        <CardText>Wohnort/Residence/Domicile {this.state.pass.residence}     Größe/Height/Taille {this.state.pass.height}     Augenfarbe/Colour of eyes/Coleur des yeux {this.state.pass.eyes} </CardText>
-      </Card>
+             <CardHeader
+             title={this.state.pass.name}
+             subtitle={this.state.pass.givennames}
+             avatar={this.state.pass.imageUrl}
+             showExpandableButton={true}
+             actAsExpander={true}
+             />
+             <CardText>
+               <Toggle
+
+               toggled= {this.handleToggle}
+               onToggle={this.handleToggle}
+
+                 labelPosition="right"
+                 label="Show Personal Data."
+
+               />
+             </CardText>
+
+             <CardMedia
+               expandable={true}
+               overlay={<CardTitle title="Reni" subtitle="Peter Zwegat" />}
+             >
+               <img src={this.state.pass.imageUrl} alt="" />
+             </CardMedia>
+
+             <CardTitle title="Personal Data" expandable={true} />
+             <CardText expandable={true}>
+             <CardText>Typ/Type/Type:  {this.state.pass.type}         Kode/Code/Code: {this.state.pass.code}         Pass-Nr./Passport No./Passeport No:  {this.state.pass.passnr}</CardText>
+             <CardText>1.Name/Surname/Nom: {this.state.pass.name}</CardText>
+             <CardText>2.Vornamen/Given names/ Prénoms: {this.state.pass.givennames}</CardText>
+             <CardText>3.Staatsangehörigkeit/Nationality/Nationalité: {this.state.pass.nationality}</CardText>
+             <CardText>4.Geburtstag/Date of birth/Date de naissance:   {this.state.pass.dob}</CardText>
+             <CardText>5.Geschlecht/Sex/Sexe:  {this.state.pass.sex}</CardText>
+             <CardText>6.Geburtsort/Place of birth/Lieu de naissance:  {this.state.pass.pob}</CardText>
+             <CardText>9.Behörde/Authority/Autorité: {this.state.pass.authority}</CardText>
+             <CardText>11.Wohnort/Residence/Domicile:  {this.state.pass.residence}</CardText>
+             <CardText>12.Größe/Height/Taille:  {this.state.pass.height}</CardText>
+             <CardText>13.Augenfarbe/Colour of eyes/Coleur des yeux:  {this.state.pass.eyes} </CardText>
+
+             <CardActions>
+               <FlatButton label="Expand" onTouchTap ={this.handleExpand} disabled = {true}/>
+               <FlatButton label="Reduce" onTouchTap ={this.handleReduce} primary = {true}/>
+             </CardActions>
+             </CardText>
+
+           </Card>
 
       <FileUploader
             accept="image/*"
