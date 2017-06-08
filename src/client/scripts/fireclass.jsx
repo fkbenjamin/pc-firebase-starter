@@ -21,21 +21,16 @@ export class FireClass extends React.Component {
     const db = firebase.database();
   }
   //write Pass Data to DB. Remember to use parity.bonds.me.then() for walletID
-  writePassData(walletId, type, code, passnr, name, givennames, nationality, dob, sex, pob, imageUrl, residence, height, eyes) {
-    firebase.database().ref('pass/' + walletId).set({
-      type: type,
-      code: code,
-      name: name,
-      givennames: givennames,
-      nationality: nationality,
-      dob: dob,
-      sex: sex,
-      pob: pob,
-      image: imageUrl,
-      residence: residence,
-      height: height,
-      eyes: eyes
-    });
+  writePassData(_walletId, _pass, _passhash, _url) {
+    console.log(_walletId);
+    console.log(_pass);
+    console.log(_passhash);
+    console.log(_url);
+
+    var pass = _pass
+    pass.imageUrl = _url;
+    pass.hash = _passhash;
+    firebase.database().ref('pass/' + _walletId).set(pass);
   }
   //gets async call for user address for FileUploader
   getAddress() {
@@ -64,5 +59,6 @@ export class FireClass extends React.Component {
     firebase.storage().ref().child(filename).getDownloadURL().then(function(url) {
       this.setState({url: url});
     }.bind(this));
+    this.hashPass();
   }
 }
