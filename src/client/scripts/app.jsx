@@ -72,6 +72,9 @@ export class App extends React.Component {
       if (!this.state.bcpass) {
             return (<img src="pass.png" />);
         }
+      if (this.state.pass.hash != this.state.bcpass[1]) {
+            return (<h1>Warning! Someone changed your passport! Please call 110</h1>);
+        }
       return (
       <div>
       <h1>{this.state.pass.name}</h1>
