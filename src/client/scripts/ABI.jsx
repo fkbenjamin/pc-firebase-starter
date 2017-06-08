@@ -1,96 +1,10 @@
-const TestimonyABI = [
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "lookup",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "name": "isValid",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "create",
-    "outputs": [],
-    "payable": false,
-    "type": "function"
-  }, {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "testimonyID",
-        "type": "uint256"
-      }, {
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "update",
-    "outputs": [],
-    "payable": false,
-    "type": "function"
-  }, {
-    "inputs": [],
-    "payable": false,
-    "type": "constructor"
-  }, {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "name": "from",
-        "type": "address"
-      }, {
-        "indexed": false,
-        "name": "testimonyID",
-        "type": "uint256"
-      }, {
-        "indexed": false,
-        "name": "hash",
-        "type": "bytes32"
-      }
-    ],
-    "name": "savedTestimony",
-    "type": "event"
-  }
-];
+const PassABI = [{"constant":false,"inputs":[{"name":"_citizen","type":"address"}],"name":"setCitizen","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_country","type":"address"}],"name":"setCountry","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"},{"name":"_hashedPassport","type":"bytes32"},{"name":"_valid","type":"bool"}],"name":"updatePassport","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"visaOfferingsByCountry","outputs":[{"name":"country","type":"address"},{"name":"identifier","type":"string"},{"name":"conditions","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_immigration","type":"address"}],"name":"setImmigration","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"},{"name":"visaId","type":"uint256"},{"name":"_country","type":"address"},{"name":"_identifier","type":"string"},{"name":"_isPayed","type":"bool"},{"name":"_hasEntered","type":"bool"},{"name":"_hasLeft","type":"bool"}],"name":"updateVisa","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_embassy","type":"address"}],"name":"setEmbassy","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"},{"name":"","type":"uint256"}],"name":"visaByOwner","outputs":[{"name":"owner","type":"address"},{"name":"country","type":"address"},{"name":"identifier","type":"string"},{"name":"isPayed","type":"bool"},{"name":"hasEntered","type":"bool"},{"name":"hasLeft","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_country","type":"address"}],"name":"deleteAllVisaOfferings","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_owner","type":"address"},{"name":"_country","type":"address"},{"name":"_identifier","type":"string"}],"name":"createVisa","outputs":[{"name":"visaId","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"passByOwner","outputs":[{"name":"owner","type":"address"},{"name":"hashedPassport","type":"bytes32"},{"name":"valid","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_country","type":"address"},{"name":"_identifier","type":"string"},{"name":"_condition","type":"string"}],"name":"createVisaOffering","outputs":[],"payable":false,"type":"function"}];
 
 export class ABI {
   constructor() {
 
   }
-  getTestimonyABI(){
-    return TestimonyABI;
+  getPassABI(){
+    return PassABI;
   }
 }

@@ -9,6 +9,11 @@ div#app {
 img._accountIcon {
 	border-radius: 50%;
 }
+img {
+    display: block;
+    margin: auto;
+		max-height: 500px;
+}
 
 span._hash {
 	font-family: monospace;

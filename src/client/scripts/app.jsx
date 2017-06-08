@@ -29,15 +29,16 @@ const abi = new ABI();
 export class App extends React.Component {
   constructor() {
     super();
+    this.bcpass = [];
     //has to be updated to new contract
-    this.contract = parity.bonds.makeContract('0x0AD24CEab0555599429ec755c8492Ae9B2c2Fe94', abi.getTestimonyABI());
-    //remove, just here for reference how it is working
-    this.tests = this.contract.savedTestimony();
+    this.contract = parity.bonds.makeContract('0xdbDcE1D614d7A6076eFde8540aA38f8e738c1e7a', abi.getPassABI());
     this.state = {
       tx: null,
       address: null,
-      pass: null
+      pass: null,
+      bcpass: null
       };
+    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {this.setState({bcpass: a})});
   }
 
   loadData() {
@@ -60,10 +61,13 @@ export class App extends React.Component {
 
   render() {
       if (!this.state.address) {
-            return (<div />);
+            return (<img src="pass.png" />);
         }
       if (!this.state.pass) {
-            return (<div />);
+            return (<img src="pass.png" />);
+        }
+      if (!this.state.bcpass) {
+            return (<img src="pass.png" />);
         }
       return (
       <div>
@@ -74,7 +78,9 @@ export class App extends React.Component {
         <CardText>Staatsangehörigkeit/Nationality/Nationalité {this.state.pass.nationality}      Geburtstag/Date of birth/Date de naissance  {this.state.pass.dob}</CardText>
         <CardText>Geschlecht/Sex/Sexe {this.state.pass.sex}      Geburtsort/Place of birth/Lieu de naissance {this.state.pass.pob}</CardText>
         <CardText>Wohnort/Residence/Domicile {this.state.pass.residence}     Größe/Height/Taille {this.state.pass.height}     Augenfarbe/Colour of eyes/Coleur des yeux {this.state.pass.eyes} </CardText>
+        <CardText>The Passport is <b>{this.state.bcpass[2] ? '' : 'not'}</b> verified. </CardText>
       </Card>
+
 
       <FileUploader
             accept="image/*"
