@@ -12,7 +12,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import Chip from 'material-ui/Chip';
-import {blue300, indigo900} from 'material-ui/styles/colors';
+import Avatar from 'material-ui/Avatar';
+import SvgIconDone from 'material-ui/svg-icons/action/done';
+import SvgIconWarning from 'material-ui/svg-icons/alert/warning';
+import {blue300, indigo900, greenA200, red500} from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import * as firebase from 'firebase';
@@ -78,7 +81,16 @@ export class App extends React.Component {
         <CardText>Staatsangehörigkeit/Nationality/Nationalité {this.state.pass.nationality}      Geburtstag/Date of birth/Date de naissance  {this.state.pass.dob}</CardText>
         <CardText>Geschlecht/Sex/Sexe {this.state.pass.sex}      Geburtsort/Place of birth/Lieu de naissance {this.state.pass.pob}</CardText>
         <CardText>Wohnort/Residence/Domicile {this.state.pass.residence}     Größe/Height/Taille {this.state.pass.height}     Augenfarbe/Colour of eyes/Coleur des yeux {this.state.pass.eyes} </CardText>
-        <CardText>The Passport is <b>{this.state.bcpass[2] ? '' : 'not'}</b> verified. </CardText>
+        {this.state.bcpass[2] ? <Chip
+          backgroundColor={greenA200}
+          style={styles.chip}
+        ><Avatar size={32} color="#444" backgroundColor={greenA200} icon={<SvgIconDone />}>
+          </Avatar>Passport is verified</Chip> : <Chip
+            backgroundColor={red500}
+            style={styles.chip}
+          ><Avatar size={32} color="#444" backgroundColor={red500} icon={<SvgIconWarning />}>
+            </Avatar>Passport is not verified</Chip>}
+
       </Card>
 
 
