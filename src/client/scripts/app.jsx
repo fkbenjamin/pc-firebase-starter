@@ -27,11 +27,12 @@ import Toggle from 'material-ui/Toggle'
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
+import {blue500, red500, greenA200} from 'material-ui/styles/colors';
+import FontIcon from 'material-ui/FontIcon';
 
 
 //Divider Gui
-const DividerExampleForm = () => (
-  <Paper zDepth={2}>
+/*  <Paper zDepth={2}>
     <TextField hintText="First name" style={style} underlineShow={false} />
     <Divider />
     <TextField hintText="Middle name" style={style} underlineShow={false} />
@@ -42,13 +43,39 @@ const DividerExampleForm = () => (
     <Divider />
   </Paper>
 );
-
 export default DividerExampleForm;
+*/
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
 //loads Class of ABI's
 const abi = new ABI();
+const iconStyles = {
+  marginRight: 24,
+};
+
+const FontIconExampleSimple = () => (
+  <div>
+    <FontIcon
+      className="muidocs-icon-action-home"
+      style={iconStyles}
+    />
+
+    <FontIcon
+      className="muidocs-icon-action-home"
+      style={iconStyles}
+      color={blue500}
+    />
+
+    <FontIcon
+      className="muidocs-icon-action-home"
+      style={iconStyles}
+      color={red500}
+      hoverColor={greenA200}
+    />
+  </div>
+);
+export default FontIconExampleSimple;
 
 const StylesOverridingInlineExample = () => (
 
@@ -101,6 +128,7 @@ export class App extends React.Component {
     this.loadData();
   }
 
+/*
   handleReduce(){
     that.setState({expanded: false});
   }
@@ -108,7 +136,7 @@ export class App extends React.Component {
   handleExpand(){
     that.setState({expanded: true});
   }
-
+*/
 
   render() {
 
@@ -134,17 +162,6 @@ export class App extends React.Component {
              showExpandableButton={true}
              actAsExpander={true}
              />
-             <CardText>
-               <Toggle
-
-               toggled= {this.handleToggle}
-               onToggle={this.handleToggle}
-
-                 labelPosition="right"
-                 label="Show Personal Data."
-
-               />
-             </CardText>
 
              <CardMedia
                expandable={true}
@@ -170,6 +187,7 @@ export class App extends React.Component {
              <CardActions>
                <FlatButton label="Expand" onTouchTap ={this.handleExpand} disabled = {true}/>
                <FlatButton label="Reduce" onTouchTap ={this.handleReduce} primary = {true}/>
+               <FontIcon className="muidocs-icon-action-home" style={iconStyles} />
              </CardActions>
              </CardText>
 
