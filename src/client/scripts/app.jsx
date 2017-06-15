@@ -33,6 +33,12 @@ import {ABI} from './ABI.jsx';
 const fc = new FireClass();
 //loads Class of ABI's
 const abi = new ABI();
+const paperStyle = {
+  width: '70%',
+  margin: 'auto',
+  'margin-top': 150,
+  padding: 35,
+};
 
 export class App extends React.Component {
   constructor() {
@@ -149,48 +155,10 @@ export class App extends React.Component {
     if (!this.state.pass) {
       return (
         <div>
-        <img src="pass.png"/>
-        <h1>Passport Formular:
-        </h1>
-        <Paper zDepth={2}>
-          <TextField hintText="Code"  underlineShow={false}   onChange={e => this.changeValue('code', e)}/>
-          <Divider/>
-          <TextField hintText="Date of Birth" underlineShow={false}  onChange={e => this.changeValue('dob', e)} />
-          <Divider/>
-          <TextField hintText="Colour of eyes" underlineShow={false}  onChange={e => this.changeValue('eyes', e)} />
-          <Divider/>
-          <TextField hintText="Given Names" underlineShow={false} onChange={e => this.changeValue('givennames', e)}/>
-          <Divider/>
-          <TextField hintText="Height" underlineShow={false} onChange={e => this.changeValue('height', e)}/>
-          <Divider/>
-          <TextField hintText="Name" underlineShow={false} onChange={e => this.changeValue('name', e)}/>
-          <Divider/>
-          <TextField hintText="Nationality" underlineShow={false} onChange={e => this.changeValue('nationality', e)}/>
-          <Divider/>
-          <TextField hintText="Passport Number" underlineShow={false} onChange={e => this.changeValue('passnr', e)}/>
-          <Divider/>
-          <TextField hintText="Place of Birth" underlineShow={false} onChange={e => this.changeValue('pob', e)}/>
-          <Divider/>
-          <TextField hintText="Residence" underlineShow={false} onChange={e => this.changeValue('residence', e)}/>
-          <Divider/>
-          <TextField hintText="Passport Type" underlineShow={false} onChange={e => this.changeValue('type', e)}/>
-          <Divider/>
-          <TextField hintText="Sex" underlineShow={false} onChange={e => this.changeValue('sex', e)}/>
-          <Divider/>
-          <TextField hintText="Hash" value={this.state.newPassHash ? this.state.newPassHash : ''} disabled={true} underlineShow={false}/>
+        <Paper style={paperStyle} zDepth={5}>
+        <PassForm />
         </Paper>
-
-        <h1>Foto-Upload:</h1>
-        <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
-        <br/>
-        <img src={this.state.url}/>
-        <RaisedButton
-          backgroundColor="#a4c639"
-          label="Submit your Pass"
-          icon={<SvgIconDone/>} color={fullWhite}
-          onTouchTap={this.uploadPass.bind(this)}
-          />
-          </div>
+        </div>
       );
     }
     if (!this.state.bcpass) {
@@ -224,6 +192,60 @@ export class App extends React.Component {
               <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
         </Card>
       </div>
+    );
+  }
+}
+
+export class PassForm extends App {
+  constructor(){
+    super();
+  }
+  render() {
+    return(
+      <div>
+      <table>
+        <td>
+        <h1>Passport Formular:
+        </h1>
+        <TextField hintText="Code"  underlineShow={false}   onChange={e => this.changeValue('code', e)}/>
+        <Divider/>
+        <TextField hintText="Date of Birth" underlineShow={false}  onChange={e => this.changeValue('dob', e)} />
+        <Divider/>
+        <TextField hintText="Colour of eyes" underlineShow={false}  onChange={e => this.changeValue('eyes', e)} />
+        <Divider/>
+        <TextField hintText="Given Names" underlineShow={false} onChange={e => this.changeValue('givennames', e)}/>
+        <Divider/>
+        <TextField hintText="Height" underlineShow={false} onChange={e => this.changeValue('height', e)}/>
+        <Divider/>
+        <TextField hintText="Name" underlineShow={false} onChange={e => this.changeValue('name', e)}/>
+        <Divider/>
+        <TextField hintText="Nationality" underlineShow={false} onChange={e => this.changeValue('nationality', e)}/>
+        <Divider/>
+        <TextField hintText="Passport Number" underlineShow={false} onChange={e => this.changeValue('passnr', e)}/>
+        <Divider/>
+        <TextField hintText="Place of Birth" underlineShow={false} onChange={e => this.changeValue('pob', e)}/>
+        <Divider/>
+        <TextField hintText="Residence" underlineShow={false} onChange={e => this.changeValue('residence', e)}/>
+        <Divider/>
+        <TextField hintText="Passport Type" underlineShow={false} onChange={e => this.changeValue('type', e)}/>
+        <Divider/>
+        <TextField hintText="Sex" underlineShow={false} onChange={e => this.changeValue('sex', e)}/>
+        <Divider/>
+        <TextField hintText="Hash" value={this.state.newPassHash ? this.state.newPassHash : ''} disabled={true} underlineShow={false}/>
+        </td>
+        <td>
+      <h2>Foto-Upload:</h2>
+      <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
+      <img src={this.state.url}/>
+        </td>
+        </table>
+        <RaisedButton
+          backgroundColor="#a4c639"
+          label="Submit your Pass"
+          icon={<SvgIconDone/>} color={fullWhite}
+          onTouchTap={this.uploadPass.bind(this)}
+          />
+        </div>
     );
   }
 }
