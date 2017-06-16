@@ -36,7 +36,7 @@ const abi = new ABI();
 const paperStyle = {
   width: '70%',
   margin: 'auto',
-  'margin-top': 150,
+  marginTop: 150,
   padding: 35,
 };
 
@@ -150,7 +150,13 @@ export class App extends React.Component {
 
   render() {
     if (!this.state.address) {
-      return (<img src="pass.png"/>);
+      return (
+        <div>
+        <Paper style={paperStyle} zDepth={5}>
+        <img src="pass.png"/>
+        </Paper>
+        </div>
+        );
     }
     if (!this.state.pass) {
       return (
@@ -171,26 +177,52 @@ export class App extends React.Component {
     }**/
     return (
       <div>
-        <h1>{this.state.pass.name}</h1>
-        <Card>
-          <CardHeader title={this.state.pass.name} subtitle={this.state.pass.givennames} avatar={this.state.pass.imageUrl}/>
-          <CardText>Typ/Type/Type {this.state.pass.type}
-            Kode/Code/Code {this.state.pass.code}
-            Pass-Nr./Passport No./Passeport No {this.state.pass.passnr}</CardText>
-          <CardText>Staatsangehörigkeit/Nationality/Nationalité {this.state.pass.nationality}
-            Geburtstag/Date of birth/Date de naissance {this.state.pass.dob}</CardText>
-          <CardText>Geschlecht/Sex/Sexe {this.state.pass.sex}
-            Geburtsort/Place of birth/Lieu de naissance {this.state.pass.pob}</CardText>
-          <CardText>Wohnort/Residence/Domicile {this.state.pass.residence}
-            Größe/Height/Taille {this.state.pass.height}
-            Augenfarbe/Colour of eyes/Coleur des yeux {this.state.pass.eyes}
-          </CardText>
-          {this.state.bcpass[2]
-            ? <Chip backgroundColor={greenA200} style={styles.chip}>
-                <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-            : <Chip backgroundColor={red500} style={styles.chip}>
-              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
-        </Card>
+        <Paper style={paperStyle} zDepth={5}>
+          <table>
+            <tr>
+              <td> <img style={{width:'100%', height:'100%'}}  src={this.state.pass.imageUrl} /> </td>
+              <td>
+                <table>
+                  <tr>
+                    <td >   <DescText desc='Typ/Type/Type' val={this.state.pass.type} /></td>
+                    <td >   <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code} /></td>
+                    <td >   <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr} /></td>
+                  </tr>
+                  <tr>
+                    <td>   <DescText desc='Name/Surname/Nom' val={this.state.pass.name} /></td>
+                  </tr>
+                  <tr>
+                    <td>   <DescText desc='Vornamen/Given names/Prénoms' val={this.state.pass.givennames} /></td>
+                  </tr>
+                  <tr>
+                    <td>   <DescText desc='Staatsangehörigkeit/Nationality/Nationalité' val={this.state.pass.nationality} /></td>
+                    <td>   <DescText desc='Geburtstag/Date of birth/Date de naissance' val={this.state.pass.dob} /></td>
+                  </tr>
+                  <tr>
+                    <td>   <DescText desc='Geschlecht/Sex/Sexe' val={this.state.pass.sex} /></td>
+                    <td>   <DescText desc='Geburtsort/Place of birth/Lieu de naissance' val={this.state.pass.pob} /></td>
+                  </tr>
+                  <tr>
+                    <td>   <DescText desc='Wohnort/Residence/Domicile' val={this.state.pass.residence} /></td>
+                    <td>   <DescText desc='Größe/Height/Taille' val={this.state.pass.height} /></td>
+                    <td>   <DescText desc='Augenfarbe/Colour of eyes/Coleur des yeux' val={this.state.pass.eyes} /></td>
+                  </tr>
+
+                </table>
+
+
+                </td>
+
+            </tr>
+            <tr>
+            {this.state.bcpass[2]
+              ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+              : <Chip backgroundColor={red500} style={styles.chip}>
+                <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+            </tr>
+          </table>
+        </Paper>
       </div>
     );
   }
@@ -246,6 +278,14 @@ export class PassForm extends App {
           onTouchTap={this.uploadPass.bind(this)}
           />
         </div>
+    );
+  }
+}
+
+export class DescText extends React.Component {
+  render() {
+    return(
+      <CardText style={{fontWeight:'bold'}}><label style={{display: 'block', fontSize: 8, marginBottom: 5,fontWeight:'normal'}}>{this.props.desc}</label> {this.props.val} </CardText>
     );
   }
 }
