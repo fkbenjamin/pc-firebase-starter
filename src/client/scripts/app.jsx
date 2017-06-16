@@ -173,17 +173,23 @@ export class App extends React.Component {
     }
     /**if (this.state.pass.hash != this.state.bcpass[1]) {
       return (
-        <h1>Warning! Someone changed your passport! Please call 110</h1>
+        <div>
+        <Paper style={paperStyle} zDepth={5}>
+        <ErrorMessage val='Warning! Someone changed your passport. Hashes are not matching anymore. Please contact us!'/>
+        </Paper>
+        </div>
       );
     }**/
     return (
       <div>
         <Paper style={paperStyle} zDepth={5}>
           <table>
+          <tbody>
             <tr>
               <td> <img style={{width:'100%', height:'100%'}}  src={this.state.pass.imageUrl} /> </td>
               <td>
                 <table>
+                <tbody>
                   <tr>
                     <td >   <DescText desc='Typ/Type/Type' val={this.state.pass.type} /></td>
                     <td >   <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code} /></td>
@@ -208,28 +214,29 @@ export class App extends React.Component {
                     <td>   <DescText desc='Größe/Height/Taille' val={this.state.pass.height} /></td>
                     <td>   <DescText desc='Augenfarbe/Colour of eyes/Coleur des yeux' val={this.state.pass.eyes} /></td>
                   </tr>
-
+                  </tbody>
                 </table>
-
-
                 </td>
-
             </tr>
-            <tr>
-            {this.state.bcpass[2]
-              ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
-                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-              : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
-            </tr>
+            </tbody>
+          </table>
+          {this.state.bcpass[2]
+            ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+            : <Chip backgroundColor={red500} style={{marginTop: 30}}>
+              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
 
-            <tr>Here goes a displayed Visa once it is bought(not yet implemented)</tr>
+          <table>
+            <tbody>
+              <tr><td>Here will be a/multiple Visa</td></tr>
+            </tbody>
           </table>
           <RaisedButton
             backgroundColor="#a4c639"
             label="Add a Visa"
             icon={<SvgIconAdd/>} color={fullWhite}
             fullWidth={true}            />
+
         </Paper>
       </div>
     );
@@ -244,6 +251,8 @@ export class PassForm extends App {
     return(
       <div>
       <table>
+      <tbody>
+      <tr>
         <td>
         <h1>Passport Formular:
         </h1>
@@ -278,6 +287,8 @@ export class PassForm extends App {
       <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
       <img src={this.state.url}/>
         </td>
+        </tr>
+        </tbody>
         </table>
         <RaisedButton
           backgroundColor="#a4c639"
@@ -295,6 +306,14 @@ export class DescText extends React.Component {
   render() {
     return(
       <CardText style={{fontWeight:'bold'}}><label style={{display: 'block', fontSize: 8, marginBottom: 5,fontWeight:'normal'}}>{this.props.desc}</label> {this.props.val} </CardText>
+    );
+  }
+}
+
+export class ErrorMessage extends React.Component {
+  render() {
+    return(
+      <CardText style={{fontWeight:'bold'}}>Error:{this.props.val}</CardText>
     );
   }
 }
