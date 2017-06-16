@@ -14,6 +14,7 @@ import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
 import SvgIconDone from 'material-ui/svg-icons/action/done';
 import SvgIconWarning from 'material-ui/svg-icons/alert/warning';
+import SvgIconAdd from 'material-ui/svg-icons/content/add-circle';
 import {blue300, indigo900, greenA200, red500, fullWhite} from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -221,7 +222,14 @@ export class App extends React.Component {
               : <Chip backgroundColor={red500} style={{marginTop: 30}}>
                 <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
             </tr>
+
+            <tr>Here goes a displayed Visa once it is bought(not yet implemented)</tr>
           </table>
+          <RaisedButton
+            backgroundColor="#a4c639"
+            label="Add a Visa"
+            icon={<SvgIconAdd/>} color={fullWhite}
+            fullWidth={true}            />
         </Paper>
       </div>
     );
@@ -282,6 +290,7 @@ export class PassForm extends App {
   }
 }
 
+//Descriptive Text of Pass
 export class DescText extends React.Component {
   render() {
     return(
