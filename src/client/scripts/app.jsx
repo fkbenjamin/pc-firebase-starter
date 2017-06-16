@@ -29,6 +29,8 @@ import {sha3_256} from 'js-sha3';
 import FileUploader from 'react-firebase-file-uploader';
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
+import Dialog from 'material-ui/Dialog';
+
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
@@ -53,7 +55,8 @@ export class App extends React.Component {
       address: null,
       pass: null,
       bcpass: null,
-      newPassHash: null
+      newPassHash: null,
+      open: false
     };
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
@@ -231,11 +234,9 @@ export class App extends React.Component {
               <tr><td>Here will be a/multiple Visa</td></tr>
             </tbody>
           </table>
-          <RaisedButton
-            backgroundColor="#a4c639"
-            label="Add a Visa"
-            icon={<SvgIconAdd/>} color={fullWhite}
-            fullWidth={true}            />
+
+          <DialogExampleModal />
+
 
         </Paper>
       </div>
@@ -314,6 +315,55 @@ export class ErrorMessage extends React.Component {
   render() {
     return(
       <CardText style={{fontWeight:'bold'}}>Error:{this.props.val}</CardText>
+    );
+  }
+}
+
+export default class DialogExampleModal extends App {
+  constructor(){
+    super();
+  }
+
+  handleOpen() {
+    this.setState({open: true});
+  };
+
+  handleClose() {
+    this.setState({open: false});
+  };
+
+  render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleClose.bind(this)}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        disabled={true}
+        onTouchTap={this.handleClose.bind(this)}
+      />,
+    ];
+
+    return (
+      <div>
+      <RaisedButton
+        backgroundColor="#a4c639"
+        label="Add a Visa"
+        icon={<SvgIconAdd/>} color={fullWhite}
+        fullWidth={true}
+        onTouchTap={this.handleOpen.bind(this)}          />
+        <Dialog
+          title="Apply for a Visa"
+          actions={actions}
+          modal={true}
+          open={this.state.open}
+        >
+          In this dialog there should be the Visa Application & Payment Process
+        </Dialog>
+      </div>
     );
   }
 }
