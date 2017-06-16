@@ -218,7 +218,7 @@ export class App extends React.Component {
             {this.state.bcpass[2]
               ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
                   <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-              : <Chip backgroundColor={red500} style={styles.chip}>
+              : <Chip backgroundColor={red500} style={{marginTop: 30}}>
                 <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
             </tr>
           </table>
