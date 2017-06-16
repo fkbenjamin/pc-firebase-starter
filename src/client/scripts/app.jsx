@@ -56,7 +56,8 @@ export class App extends React.Component {
       pass: null,
       bcpass: null,
       newPassHash: null,
-      open: false
+      open: false,
+      entered: false
     };
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
@@ -148,11 +149,34 @@ export class App extends React.Component {
     fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
   }
 
+  enterAppCitizen(){
+    console.log('called');
+    this.setState({
+      entered: true,
+      userType: 'citizen'
+    });
+  }
+  enterAppImmigration(){
+    console.log('called');
+    this.setState({
+      entered: true,
+      userType: 'immigration'
+    });
+  }
+
   componentWillMount() {
     this.loadData();
   }
 
   render() {
+    if (!this.state.entered) {
+      return (
+      <Paper style={paperStyle} zDepth={5}>
+        <img src="pass.png"/>
+        <RaisedButton label="Enter as citizen" primary={true} style={{display: 'block', margin: 20}} onTouchTap={this.enterAppCitizen.bind(this)}  />
+        <RaisedButton label="Enter as immigration" primary={true} style={{display: 'block', margin: 20}} onTouchTap={this.enterAppImmigration.bind(this)} />
+      </Paper>);
+    }
     if (!this.state.address) {
       return (
         <div>
@@ -161,6 +185,15 @@ export class App extends React.Component {
         </Paper>
         </div>
         );
+    }
+    if (this.state.userType == 'immigration') {
+      return(
+      <div>
+      <Paper style={paperStyle} zDepth={5}>
+        <h1>immigration</h1>
+      </Paper>
+      </div>
+    );
     }
     if (!this.state.pass) {
       return (
