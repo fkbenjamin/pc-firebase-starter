@@ -18,4 +18,4 @@ parity.api.abi = abiPolyfill();
 // We use and dirty up the global namespace here.
 parity.bonds = setupBonds(parity.api);
 
-render(<div><img src="title.png" style={{position:'fixed', top:-15, left:-15, width: 200, height: 200}} /><MuiThemeProvider><App/></MuiThemeProvider></div>, document.getElementById('app'));
+render(<MuiThemeProvider><App/></MuiThemeProvider>, document.getElementById('app'));

@@ -187,10 +187,29 @@ export class App extends React.Component {
   componentWillMount() {
     this.loadData();
   }
+  resetApp(){
+    this.setState({tx: null,
+    address: null,
+    pass: null,
+    bcpass: null,
+    newPassHash: null,
+    open: false,
+    entered: false,
+    immigrationAddress: false,
+    immigrationAddressOpened: false});
+    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
+      this.setState({bcpass: a})
+    });
+    this.loadData();
+  }
 
   render() {
     if (!this.state.entered) {
       return (
+        <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
         <Paper style={paperStyle} zDepth={5}>
           <img src="pass.png"/>
           <RaisedButton label="Enter as citizen" primary={true} style={{
@@ -202,11 +221,15 @@ export class App extends React.Component {
             margin: 20
           }} onTouchTap={this.enterAppImmigration.bind(this)}/>
         </Paper>
+        </div>
       );
     }
     if (!this.state.address) {
       return (
         <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
           <Paper style={paperStyle} zDepth={5}>
             <img src="pass.png"/>
           </Paper>
@@ -216,6 +239,9 @@ export class App extends React.Component {
     if (this.state.userType == 'immigration' && !this.state.immigrationAddressOpened) {
       return (
         <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
           <Paper style={paperStyle} zDepth={5}>
             <h1>Scan QR-Code or enter Wallet-ID</h1>
             <Divider/>
@@ -231,6 +257,9 @@ export class App extends React.Component {
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       return (
         <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
           <Paper style={paperStyle} zDepth={5}>
             <table>
               <tbody>
@@ -316,6 +345,9 @@ export class App extends React.Component {
     if (!this.state.pass) {
       return (
         <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
           <Paper style={paperStyle} zDepth={5}>
             <PassForm/>
           </Paper>
@@ -323,7 +355,10 @@ export class App extends React.Component {
       );
     }
     if (!this.state.bcpass) {
-      return (<img src="pass.png"/>);
+      return (  <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div><img src="pass.png"/></div>);
     }
     /**if (this.state.pass.hash != this.state.bcpass[1]) {
       return (
@@ -336,6 +371,9 @@ export class App extends React.Component {
     }**/
     return (
       <div>
+        <div onClick={this.resetApp.bind(this)}>
+        <Logo />
+        </div>
         <Paper style={paperStyle} zDepth={5}>
           <table>
             <tbody>
@@ -413,7 +451,8 @@ export class App extends React.Component {
 
         </Paper>
       </div>
-      ); } } export class PassForm extends App {constructor() {
+      ); } }
+      export class PassForm extends App {constructor() {
         super();
       }
       render() {
@@ -533,4 +572,13 @@ export class App extends React.Component {
           </div>
         );
       }
+}
+export class Logo extends React.Component {
+  constructor() {
+    super();
+  }
+  render() {
+    return(
+      <img src="title.png" style={{position:'fixed', top:0, left:0, width: 190, height: 190}} />
+  )}
 }
