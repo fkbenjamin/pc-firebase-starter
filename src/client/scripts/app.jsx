@@ -299,11 +299,16 @@ export class App extends React.Component {
             <table>
               <tbody>
                 <tr>
-                  <td>Here will be a/multiple Visa</td>
+                  <td>Here will be the country's Visa</td>
                 </tr>
               </tbody>
             </table>
-
+            <RaisedButton fullWidth={true} style={{
+              marginTop: 15
+            }} label="Stamp in"/>
+            <RaisedButton fullWidth={true} style={{
+              marginTop: 15
+            }} label="Stamp out"/>
           </Paper>
         </div>
       );
