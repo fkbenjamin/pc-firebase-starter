@@ -57,7 +57,8 @@ export class App extends React.Component {
       newPassHash: null,
       open: false,
       entered: false,
-      immigrationAddress: false
+      immigrationAddress: false,
+      immigrationAddressOpened: false
     };
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
@@ -73,10 +74,24 @@ export class App extends React.Component {
       });
     });
   }
+  loadDataImmigration(_wallet) {
+    var self = this;
+    console.log('Loading Immigration Pass from Wallet: ' + _wallet);
+    this.setState({address: _wallet});
+    firebase.database().ref('pass/' + _wallet).once('value').then(function(snapshot) {
+        self.setState({pass: snapshot.val(), immigrationAddressOpened: true});
+      });
+  }
+
+  checkWalletPass(){
+    console.log('something happens here');
+    this.loadDataImmigration(this.state.immigrationAddress);
+  }
 
   checkIfAddress(_value) {
     this.setState({
-      immigrationAddress: parity.api.util.isAddressValid(_value.target.value)
+      immigrationAddress: _value.target.value,
+      immigrationAddressIsAddress: parity.api.util.isAddressValid(_value.target.value)
     })
 
   }
@@ -198,7 +213,7 @@ export class App extends React.Component {
         </div>
       );
     }
-    if (this.state.userType == 'immigration') {
+    if (this.state.userType == 'immigration' && !this.state.immigrationAddressOpened) {
       return (
         <div>
           <Paper style={paperStyle} zDepth={5}>
@@ -208,7 +223,87 @@ export class App extends React.Component {
             <Divider/>
             <RaisedButton style={{
               marginTop: 15
-            }} label="Check" fullWidth={true} disabled={!this.state.immigrationAddress}/>
+            }} label="Check" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
+          </Paper>
+        </div>
+      );
+    }
+    if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
+      return (
+        <div>
+          <Paper style={paperStyle} zDepth={5}>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <img style={{
+                      width: '100%',
+                      height: '100%'
+                    }} src={this.state.pass.imageUrl}/>
+                  </td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td >
+                            <DescText desc='Typ/Type/Type' val={this.state.pass.type}/></td>
+                          <td >
+                            <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code}/></td>
+                          <td >
+                            <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr}/></td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <DescText desc='Name/Surname/Nom' val={this.state.pass.name}/></td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <DescText desc='Vornamen/Given names/Prénoms' val={this.state.pass.givennames}/></td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <DescText desc='Staatsangehörigkeit/Nationality/Nationalité' val={this.state.pass.nationality}/></td>
+                          <td>
+                            <DescText desc='Geburtstag/Date of birth/Date de naissance' val={this.state.pass.dob}/></td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <DescText desc='Geschlecht/Sex/Sexe' val={this.state.pass.sex}/></td>
+                          <td>
+                            <DescText desc='Geburtsort/Place of birth/Lieu de naissance' val={this.state.pass.pob}/></td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <DescText desc='Wohnort/Residence/Domicile' val={this.state.pass.residence}/></td>
+                          <td>
+                            <DescText desc='Größe/Height/Taille' val={this.state.pass.height}/></td>
+                          <td>
+                            <DescText desc='Augenfarbe/Colour of eyes/Coleur des yeux' val={this.state.pass.eyes}/></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            {this.state.bcpass[2]
+              ? <Chip backgroundColor={greenA200} style={{
+                  marginTop: 30
+                }}>
+                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+              : <Chip backgroundColor={red500} style={{
+                marginTop: 30
+              }}>
+                <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+
+            <table>
+              <tbody>
+                <tr>
+                  <td>Here will be a/multiple Visa</td>
+                </tr>
+              </tbody>
+            </table>
+
           </Paper>
         </div>
       );
