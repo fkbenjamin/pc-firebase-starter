@@ -15,6 +15,7 @@ import Avatar from 'material-ui/Avatar';
 import SvgIconDone from 'material-ui/svg-icons/action/done';
 import SvgIconWarning from 'material-ui/svg-icons/alert/warning';
 import SvgIconAdd from 'material-ui/svg-icons/content/add-circle';
+import SvgIconCheckCircle from 'material-ui/svg-icons/action/check-circle';
 import {blue300, indigo900, greenA200, red500, fullWhite} from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -56,6 +57,7 @@ export class App extends React.Component {
       address: null,
       pass: null,
       bcpass: null,
+      bcvisa: null,
       newPassHash: null,
       open: false,
       entered: false,
@@ -64,6 +66,9 @@ export class App extends React.Component {
     };
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
+    });
+    this.bcvisa = this.contract.visaByOwner(parity.bonds.me, 0).then(a => {
+      this.setState({bcvisa: a});
     });
   }
 
@@ -433,14 +438,21 @@ export class App extends React.Component {
             </tr>
           </tbody>
           </table>
+          <Divider />
+          <List>
+            <Subheader>Your Visa</Subheader>
+            <ListItem
+              primaryText={this.state.bcvisa[2]}
+              leftAvatar={<AccountIcon
+	                  style={{width: '2.5em'}}
+	                  key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+	                  address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                          />}
+              rightIcon={<SvgIconCheckCircle/>}
+            />
+          </List>
+          <Divider />
 
-          <table>
-            <tbody>
-              <tr>
-                <td>Here will be a/multiple Visa</td>
-              </tr>
-            </tbody>
-          </table>
 
           <DialogExampleModal/>
 
