@@ -50,7 +50,7 @@ export class App extends React.Component {
     this.bcpass = [];
     this.newPass = {};
     //has to be updated to new contract
-    this.contract = parity.bonds.makeContract('0xdbDcE1D614d7A6076eFde8540aA38f8e738c1e7a', abi.getPassABI());
+    this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI());
     this.state = {
       tx: null,
       address: null,
