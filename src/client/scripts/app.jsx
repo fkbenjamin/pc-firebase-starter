@@ -27,6 +27,7 @@ import MenuItem from 'material-ui/MenuItem';
 import * as firebase from 'firebase';
 import {sha3_256} from 'js-sha3';
 import FileUploader from 'react-firebase-file-uploader';
+import QRCode from 'qrcode.react';
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 import Dialog from 'material-ui/Dialog';
@@ -41,6 +42,7 @@ const paperStyle = {
   marginTop: 150,
   padding: 35
 };
+const qrcode = new QRCode();
 
 export class App extends React.Component {
   constructor() {
@@ -97,72 +99,12 @@ export class App extends React.Component {
   }
 
   changeValue(_field, _value) {
-    switch (_field) {
-      case 'code':
-        {
-          this.newPass.code = _value.target.value;
-          break;
-        }
-      case 'givennames':
-        {
-          this.newPass.givennames = _value.target.value;
-          break;
-        }
-      case 'eyes':
-        {
-          this.newPass.eyes = _value.target.value;
-          break;
-        }
-      case 'height':
-        {
-          this.newPass.height = _value.target.value;
-          break;
-        }
-      case 'name':
-        {
-          this.newPass.name = _value.target.value;
-          break;
-        }
-      case 'nationality':
-        {
-          this.newPass.nationality = _value.target.value;
-          break;
-        }
-      case 'passnr':
-        {
-          this.newPass.passnr = _value.target.value;
-          break;
-        }
-      case 'pob':
-        {
-          this.newPass.pob = _value.target.value;
-          break;
-        }
-      case 'residence':
-        {
-          this.newPass.residence = _value.target.value;
-          break;
-        }
-      case 'sex':
-        {
-          this.newPass.sex = _value.target.value;
-          break;
-        }
-      case 'type':
-        {
-          this.newPass.type = _value.target.value;
-          break;
-        }
-      case 'dob':
-        {
-          this.newPass.dob = _value.target.value;
-          break;
-        }
-    }
+    this.newPass[_field] = _value.target.value;
     this.hashPass();
   }
 
   hashPass() {
+    // TODO: Is the picture included in this hash?
     this.setState({
       newPassHash: parity.api.util.sha3(this.newPass.code + this.newPass.givennames + this.newPass.eyes + this.newPass.height + this.newPass.name + this.newPass.nationality + this.newPass.passnr + this.newPass.pob + this.newPass.residence + this.newPass.sex + this.newPass.type + this.newPass.dob + this.state.url)
     });
@@ -208,19 +150,19 @@ export class App extends React.Component {
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
-          <Logo />
+            <Logo />
           </div>
-        <Paper style={paperStyle} zDepth={5}>
-          <img src="pass.png"/>
-          <RaisedButton label="Enter as citizen" primary={true} style={{
-            display: 'block',
-            margin: 20
-          }} onTouchTap={this.enterAppCitizen.bind(this)}/>
-          <RaisedButton label="Enter as immigration" primary={true} style={{
-            display: 'block',
-            margin: 20
-          }} onTouchTap={this.enterAppImmigration.bind(this)}/>
-        </Paper>
+          <Paper style={paperStyle} zDepth={5}>
+            <img src="pass.png"/>
+            <RaisedButton label="Enter as citizen" primary={true} style={{
+              display: 'block',
+              margin: 20
+            }} onTouchTap={this.enterAppCitizen.bind(this)}/>
+            <RaisedButton label="Enter as immigration" primary={true} style={{
+              display: 'block',
+              margin: 20
+            }} onTouchTap={this.enterAppImmigration.bind(this)}/>
+          </Paper>
         </div>
       );
     }
@@ -228,7 +170,7 @@ export class App extends React.Component {
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
-          <Logo />
+            <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
             <img src="pass.png"/>
@@ -372,16 +314,20 @@ export class App extends React.Component {
     return (
       <div>
         <div onClick={this.resetApp.bind(this)}>
-        <Logo />
+          <Logo />
         </div>
         <Paper style={paperStyle} zDepth={5}>
           <table>
             <tbody>
               <tr>
                 <td>
+                  {/* TODO: Let this float to the right */}
+                  {/* TODO: Put address of user in qr code. */}
+                  <QRCode value="parity.bonds.me.toString()" />
+                  <br />
                   <img style={{
-                    width: '100%',
-                    height: '100%'
+                    'maxWidth': '100%',
+                    'height': 'auto'
                   }} src={this.state.pass.imageUrl}/>
                 </td>
                 <td>
@@ -391,7 +337,7 @@ export class App extends React.Component {
                         <td >
                           <DescText desc='Typ/Type/Type' val={this.state.pass.type}/></td>
                         <td >
-                          <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code}/></td>
+                          <DescText desc='Kode/Code/Code' val={this.state.pass.code}/></td>
                         <td >
                           <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr}/></td>
                       </tr>

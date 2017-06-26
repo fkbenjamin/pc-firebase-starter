@@ -1,8 +1,9 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.0;
 
 import "./mortal.sol";
 
 /// @title Storage for Pass, Visa and Visa Offerings
+/// @version 0.2
 contract Storage is owned, mortal {
 
     string constant version = "0.1.0";
@@ -20,10 +21,6 @@ contract Storage is owned, mortal {
         if (immigrations) { require(msg.sender == immigration); }
         if (embassies) { require(msg.sender == embassy); }
         _;
-    }
-
-    // Constructor
-    function Storage() {
     }
 
     // Set Access right variables
@@ -53,14 +50,15 @@ contract Storage is owned, mortal {
 
     mapping (address => Passport) public passByOwner;
 
-    function updatePassport(address _owner, bytes32 _hashedPassport, bool _valid)
-            only(true, true, false, false) {
+    function updatePassport(address _owner, bytes32 _hashedPassport, bool _valid) {
         passByOwner[_owner] = Passport({
             owner: _owner,
             hashedPassport: _hashedPassport,
             valid: _valid
         });
     }
+
+    //-------
 
     struct VisaOffering {
         address country;
@@ -75,8 +73,7 @@ contract Storage is owned, mortal {
      */
     mapping(address => VisaOffering[]) public visaOfferingsByCountry;
 
-    function createVisaOffering(address _country, string _identifier, string _condition)
-            only(false, false, true, false) {
+    function createVisaOffering(address _country, string _identifier, string _condition) {
         visaOfferingsByCountry[_country].push(VisaOffering({
             country: _country,
             identifier: _identifier,
@@ -84,16 +81,18 @@ contract Storage is owned, mortal {
         }));
     }
 
-    function deleteAllVisaOfferings(address _country)
-            only(false, false, false, true) {
+    function deleteAllVisaOfferings(address _country) {
         delete visaOfferingsByCountry[_country];
     }
+
+    //--------------
 
     struct Visa {
         address owner;
         address country;
         string identifier;
-        bool isPayed;
+        uint amountPaid;
+        uint price;
         bool hasEntered;
         bool hasLeft;
     }
@@ -104,24 +103,28 @@ contract Storage is owned, mortal {
     /**
      * Creates a new visa and returns the index of the visa
      */
-    function createVisa(address _owner, address _country, string _identifier) returns (uint visaId) {
-        visaId = visaByOwner[_owner].push(Visa({
+    function createVisa(address _owner, address _country, string _identifier, uint _price) {
+        visaByOwner[_owner].push(Visa({
             owner: _owner,
             country: _country,
             identifier: _identifier,
-            isPayed: false,
+            amountPaid: 0,
+            price: _price,
             hasEntered: false,
             hasLeft: false
         }));
-        visaId -= 1;
     }
 
-    function updateVisa(address _owner, uint visaId, address _country, string _identifier, bool _isPayed, bool _hasEntered, bool _hasLeft) {
-        visaByOwner[_owner][visaId] = Visa({
+    function updateVisa(address _owner, uint _visaId, uint _amountPaid,
+                        bool _hasEntered, bool _hasLeft)  {
+        Visa oldVisa = visaByOwner[_owner][_visaId];
+
+        visaByOwner[_owner][_visaId] = Visa({
             owner: _owner,
-            country: _country,
-            identifier: _identifier,
-            isPayed: _isPayed,
+            country: oldVisa.country,
+            identifier: oldVisa.identifier,
+            amountPaid: _amountPaid,
+            price: oldVisa.price,
             hasEntered: _hasEntered,
             hasLeft: _hasLeft
         });

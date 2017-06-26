@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.0;
 
 import "./Storage.sol";
 
@@ -10,8 +10,7 @@ contract Citizen is owned, mortal {
     // by all entities.
     Storage private database;
 
-    function Citizen(Storage _database) {
-        super();
+    function Citizen(address _database) {
         database = _database;
     }
 
