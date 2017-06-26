@@ -272,8 +272,6 @@ export class App extends React.Component {
               </tr>
               <tr>
                 <td rowSpan='2'>
-                  {/* TODO: Let this float to the right */}
-                  {/* TODO: Put address of user in qr code. */}
                   <QRCode value={this.state.bcpass[0]} />
                 </td>
                 <td>
@@ -412,8 +410,6 @@ export class App extends React.Component {
             </tr>
             <tr>
               <td rowSpan='2'>
-                {/* TODO: Let this float to the right */}
-                {/* TODO: Put address of user in qr code. */}
                 <QRCode value={this.state.bcpass[0]} />
               </td>
               <td>
@@ -443,6 +439,7 @@ export class App extends React.Component {
             <Subheader>Your Visa</Subheader>
             <ListItem
               primaryText={this.state.bcvisa[2]}
+              secondaryText={this.state.bcvisa[3] + '/' + this.state.bcvisa[4] + ' ETH'}
               leftAvatar={<AccountIcon
 	                  style={{width: '2.5em'}}
 	                  key='0x008aB18490E729bBea993817E0c2B3c19c877115'
