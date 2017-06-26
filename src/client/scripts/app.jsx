@@ -208,8 +208,8 @@ export class App extends React.Component {
                 <tr>
                   <td>
                     <img style={{
-                      width: '100%',
-                      height: '100%'
+                      maxWidth: '100%',
+                      height: 'auto'
                     }} src={this.state.pass.imageUrl}/>
                   </td>
                   <td>
@@ -257,15 +257,42 @@ export class App extends React.Component {
                 </tr>
               </tbody>
             </table>
-            {this.state.bcpass[2]
-              ? <Chip backgroundColor={greenA200} style={{
-                  marginTop: 30
-                }}>
-                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-              : <Chip backgroundColor={red500} style={{
-                marginTop: 30
-              }}>
-                <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+
+            <table>
+            <tbody>
+              <tr>
+                <td colSpan='3'>
+                  The blockchain passport:
+                </td>
+              </tr>
+              <tr>
+                <td rowSpan='2'>
+                  {/* TODO: Let this float to the right */}
+                  {/* TODO: Put address of user in qr code. */}
+                  <QRCode value={this.state.bcpass[0]} />
+                </td>
+                <td>
+                  <DescText desc="Address" val={this.state.bcpass[0]} />
+                </td>
+                <td>
+                {this.state.bcpass[2]
+                  ? <Chip backgroundColor={greenA200} style={{
+                      marginTop: 30
+                    }}>
+                      <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+                  : <Chip backgroundColor={red500} style={{
+                    marginTop: 30
+                  }}>
+                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="2">
+                  <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+                </td>
+              </tr>
+            </tbody>
+            </table>
 
             <table>
               <tbody>
@@ -321,10 +348,6 @@ export class App extends React.Component {
             <tbody>
               <tr>
                 <td>
-                  {/* TODO: Let this float to the right */}
-                  {/* TODO: Put address of user in qr code. */}
-                  <QRCode value="parity.bonds.me.toString()" />
-                  <br />
                   <img style={{
                     'maxWidth': '100%',
                     'height': 'auto'
@@ -375,15 +398,41 @@ export class App extends React.Component {
               </tr>
             </tbody>
           </table>
-          {this.state.bcpass[2]
-            ? <Chip backgroundColor={greenA200} style={{
-                marginTop: 30
-              }}>
-                <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-            : <Chip backgroundColor={red500} style={{
-              marginTop: 30
-            }}>
-              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+          <table>
+          <tbody>
+            <tr>
+              <td colSpan='3'>
+                Your blockchain passport:
+              </td>
+            </tr>
+            <tr>
+              <td rowSpan='2'>
+                {/* TODO: Let this float to the right */}
+                {/* TODO: Put address of user in qr code. */}
+                <QRCode value={this.state.bcpass[0]} />
+              </td>
+              <td>
+                <DescText desc="Address" val={this.state.bcpass[0]} />
+              </td>
+              <td>
+              {this.state.bcpass[2]
+                ? <Chip backgroundColor={greenA200} style={{
+                    marginTop: 30
+                  }}>
+                    <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+                : <Chip backgroundColor={red500} style={{
+                  marginTop: 30
+                }}>
+                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="2">
+                <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+              </td>
+            </tr>
+          </tbody>
+          </table>
 
           <table>
             <tbody>
