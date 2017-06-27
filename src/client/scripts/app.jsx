@@ -62,7 +62,8 @@ export class App extends React.Component {
       open: false,
       entered: false,
       immigrationAddress: false,
-      immigrationAddressOpened: false
+      immigrationAddressOpened: false,
+      embassy: false
     };
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
@@ -130,6 +131,11 @@ export class App extends React.Component {
     console.log('called');
     this.setState({entered: true, userType: 'immigration'});
   }
+  enterAppEmbassy() {
+    console.log('called');
+    this.setState({entered: true, userType: 'embassy'});
+  }
+
 
   componentWillMount() {
     this.loadData();
@@ -143,7 +149,8 @@ export class App extends React.Component {
     open: false,
     entered: false,
     immigrationAddress: false,
-    immigrationAddressOpened: false});
+    immigrationAddressOpened: false,
+    embassy: false});
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
@@ -167,6 +174,10 @@ export class App extends React.Component {
               display: 'block',
               margin: 20
             }} onTouchTap={this.enterAppImmigration.bind(this)}/>
+            <RaisedButton label="Enter as embassy" primary={true} style={{
+              display: 'block',
+              margin: 20
+            }} onTouchTap={this.enterAppEmbassy.bind(this)}/>
           </Paper>
         </div>
       );
@@ -201,6 +212,20 @@ export class App extends React.Component {
         </div>
       );
     }
+
+    if (this.state.userType == 'embassy') {
+      return (
+        <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
+          <Paper style={paperStyle} zDepth={5}>
+            <h1>Blablablablab </h1>
+          </Paper>
+        </div>
+      );
+    }
+
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       return (
         <div>
