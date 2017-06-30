@@ -32,6 +32,8 @@ import QRCode from 'qrcode.react';
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 import Dialog from 'material-ui/Dialog';
+import AutoComplete from 'material-ui/AutoComplete';
+
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
@@ -52,6 +54,11 @@ export class App extends React.Component {
     this.newPass = {};
     //has to be updated to new contract
     this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI());
+    this.countryCode = abi.getCountryCode();
+    this.dataSourceConfig= {
+      text: 'name',
+      value: 'country-code'
+    };
     this.state = {
       tx: null,
       address: null,
@@ -166,6 +173,10 @@ export class App extends React.Component {
     this.loadData();
   }
 
+  getCountryCode(chosenRequest, index){
+      this.setState({countryCode:chosenRequest['country-code']});
+  }
+
   render() {
     if (!this.state.entered) {
       return (
@@ -246,7 +257,7 @@ export class App extends React.Component {
           <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <h1> Add an institution </h1>
+            <h1>Add an institution </h1>
             <SelectField floatingLabelText="Institution" value={this.state.institution} onChange={this.changeInstitution.bind(this)}>
               <MenuItem value={1} primaryText="Embassy"/>
               <MenuItem value={2} primaryText="Immigration"/>
@@ -635,7 +646,12 @@ export class App extends React.Component {
           <div>
             <RaisedButton backgroundColor="#a4c639" label="Add a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
             <Dialog title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
-              In this dialog there should be the Visa Application & Payment Process
+              <AutoComplete
+              floatingLabelText ="Country"
+              dataSource ={this.countryCode}
+              dataSourceConfig={this.dataSourceConfig}
+              onNewRequest = {this.getCountryCode.bind(this)}
+              />
             </Dialog>
           </div>
         );
