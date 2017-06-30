@@ -185,7 +185,8 @@ export class App extends React.Component {
             <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <table cellSpacing='0' cellPadding='0' style={{marginLeft: 115}}>
+
+            <table cellSpacing='0' cellPadding='0' style={{margin: 'auto'}}>
             <tbody>
               <tr style={{height:365}}>
               <td style={{width:285 ,backgroundImage:'url(pass.png)'}}></td>
