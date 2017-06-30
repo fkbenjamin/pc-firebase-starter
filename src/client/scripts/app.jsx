@@ -41,6 +41,7 @@ const fc = new FireClass();
 const abi = new ABI();
 const paperStyle = {
   width: '70%',
+  maxWidth: 1000,
   margin: 'auto',
   marginTop: 150,
   padding: 35
@@ -489,7 +490,7 @@ export class App extends React.Component {
           <tbody>
             <tr>
               <td colSpan='3'>
-                Your blockchain passport:
+                <h3>Your blockchain passport:</h3>
               </td>
             </tr>
             <tr>
