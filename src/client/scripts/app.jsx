@@ -63,8 +63,10 @@ export class App extends React.Component {
       entered: false,
       immigrationAddress: false,
       immigrationAddressOpened: false,
-      embassy: false
+      embassy: false,
+      institution: 1
     };
+
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
@@ -108,6 +110,9 @@ export class App extends React.Component {
     this.newPass[_field] = _value.target.value;
     this.hashPass();
   }
+  changeInstitution(event, index, value){
+    this.setState({institution: value});
+  }
 
   hashPass() {
     // TODO: Is the picture included in this hash?
@@ -134,6 +139,10 @@ export class App extends React.Component {
   enterAppEmbassy() {
     console.log('called');
     this.setState({entered: true, userType: 'embassy'});
+  }
+  enterAppCountry() {
+    console.log('called');
+    this.setState({entered: true, userType: 'country'});
   }
 
 
@@ -178,6 +187,10 @@ export class App extends React.Component {
               display: 'block',
               margin: 20
             }} onTouchTap={this.enterAppEmbassy.bind(this)}/>
+            <RaisedButton label="Enter as country" primary={true} style={{
+              display: 'block',
+              margin: 20
+            }} onTouchTap={this.enterAppCountry.bind(this)}/>
           </Paper>
         </div>
       );
@@ -226,6 +239,30 @@ export class App extends React.Component {
       );
     }
 
+    if (this.state.userType == 'country') {
+      return (
+        <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
+          <Paper style={paperStyle} zDepth={5}>
+            <h1> Add an institution </h1>
+            <SelectField floatingLabelText="Institution" value={this.state.institution} onChange={this.changeInstitution.bind(this)}>
+              <MenuItem value={1} primaryText="Embassy"/>
+              <MenuItem value={2} primaryText="Immigration"/>
+            </SelectField>
+            <br />
+            <Divider/>
+            <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
+            <Divider/>
+            <RaisedButton style={{
+              marginTop: 15
+            }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
+          </Paper>
+        </div>
+      );
+    }
+
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       return (
         <div>
@@ -233,6 +270,7 @@ export class App extends React.Component {
           <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
+          <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
             <table>
               <tbody>
                 <tr>
@@ -372,6 +410,7 @@ export class App extends React.Component {
           <Logo />
         </div>
         <Paper style={paperStyle} zDepth={5}>
+        <h1>Your passport and visa</h1>
           <table>
             <tbody>
               <tr>
