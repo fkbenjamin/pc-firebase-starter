@@ -16,7 +16,7 @@ import SvgIconDone from 'material-ui/svg-icons/action/done';
 import SvgIconWarning from 'material-ui/svg-icons/alert/warning';
 import SvgIconAdd from 'material-ui/svg-icons/content/add-circle';
 import SvgIconCheckCircle from 'material-ui/svg-icons/action/check-circle';
-import {blue300, indigo900, greenA200, red500, fullWhite} from 'material-ui/styles/colors';
+import {blue300, indigo900, greenA200, red500, fullWhite, orange200, brown300, grey300, grey50} from 'material-ui/styles/colors';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Divider from 'material-ui/Divider';
@@ -185,23 +185,31 @@ export class App extends React.Component {
             <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <img src="pass.png"/>
-            <RaisedButton label="Enter as citizen" primary={true} style={{
-              display: 'block',
-              margin: 20
-            }} onTouchTap={this.enterAppCitizen.bind(this)}/>
-            <RaisedButton label="Enter as immigration" primary={true} style={{
-              display: 'block',
-              margin: 20
-            }} onTouchTap={this.enterAppImmigration.bind(this)}/>
-            <RaisedButton label="Enter as embassy" primary={true} style={{
-              display: 'block',
-              margin: 20
-            }} onTouchTap={this.enterAppEmbassy.bind(this)}/>
-            <RaisedButton label="Enter as country" primary={true} style={{
-              display: 'block',
-              margin: 20
-            }} onTouchTap={this.enterAppCountry.bind(this)}/>
+            <table cellSpacing='0' cellPadding='0' style={{marginLeft: 115}}>
+            <tbody>
+              <tr style={{height:365}}>
+              <td style={{width:285 ,backgroundImage:'url(pass.png)'}}></td>
+              <td style={{width:285,backgroundImage:'url(EmptyPass.png)'}}>
+              <RaisedButton label="Enter as citizen" backgroundColor={grey300} style={{
+                display: 'block',
+                margin: 20
+              }} onTouchTap={this.enterAppCitizen.bind(this)}/>
+              <RaisedButton label="Enter as immigration" backgroundColor={grey300} style={{
+                display: 'block',
+                margin: 20
+              }} onTouchTap={this.enterAppImmigration.bind(this)}/>
+              <RaisedButton label="Enter as embassy" backgroundColor={grey300} style={{
+                display: 'block',
+                margin: 20
+              }} onTouchTap={this.enterAppEmbassy.bind(this)}/>
+              <RaisedButton label="Enter as country" backgroundColor={grey300} style={{
+                display: 'block',
+                margin: 20
+              }} onTouchTap={this.enterAppCountry.bind(this)}/>
+              </td>
+              </tr>
+              </tbody>
+            </table>
           </Paper>
         </div>
       );
