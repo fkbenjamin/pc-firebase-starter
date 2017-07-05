@@ -3,7 +3,7 @@ pragma solidity ^0.4.0;
 import "./mortal.sol";
 
 /// @title Storage for Pass, Visa and Visa Offerings
-/// @version 0.2
+/// version 0.4
 contract Storage is owned, mortal {
 
     string constant public version = "0.1.0";
@@ -65,79 +65,83 @@ contract Storage is owned, mortal {
         string identifier;
         string description;
         uint validity; // in # of blocks
-        uint price;
-        string conditions;
+        uint price;    // in wei
+        string conditions; // dummy string for conditions - will be extended with logic
     }
 
     /**
      * Get visa offering as following:
-     * visaOfferings(address country, string identifier)
+     * visaOfferings(address country)
      * @return VisaOffering
      */
-    mapping (uint => VisaOffering[]) public visaOfferingsByCountry;
+    mapping (uint => VisaOffering[]) public visaOfferings;
 
-    function createVisaOffering(address _country, string _identifier, string _condition) {
-        visaOfferingsByCountry[_country].push(VisaOffering({
+    function createVisaOffering(uint _country, string _identifier, string _description,
+                                uint _validity, uint _price, string _conditions) {
+        visaOfferings[_country].push(VisaOffering({
             country: _country,
             identifier: _identifier,
-            conditions: _condition
+            description: _description,
+            validity: _validity,
+            price: _price,
+            conditions: _conditions
         }));
     }
 
-    function deleteAllVisaOfferings(address _country) {
-        delete visaOfferingsByCountry[_country];
+    function visaOfferingsLength(uint _country) constant returns (uint) {
+        return visaOfferings[_country].length;
+    }
+
+    function deleteVisaOffering(uint _country, uint index) {
+        delete visaOfferings[_country][index];
     }
 
     //--------------
 
     struct Visa {
         address owner;
-        address country;
-        string identifier;
+        uint country; // as ISO 3166-1 numeric code
+        bytes32 identifier;
         uint amountPaid;
         uint price;
         uint entered; // highest block # when entering country
-        bool hasLeft;
+        uint left;    // highest block # when leaving country
     }
 
     /** Gets all the visa assigned to a citizen */
-    mapping(address => Visa[]) public visaByOwner;
+    mapping (address => mapping (uint => Visa[])) public visaStore;
 
     /**
      * Creates a new visa and returns the index of the visa
      */
-     function visaLength(address _owner) {
-       return visaByOwner[_owner].length;
-     }
+    function visaLength(address _owner, uint _country) constant returns (uint) {
+       return visaStore[_owner][_country].length;
+    }
 
-    function createVisa(address _owner, address _country, string _identifier, uint _price) {
-        visaByOwner[_owner].push(Visa({
+    function createVisa(address _owner, uint _country, bytes32 _identifier, uint _price) {
+        visaStore[_owner][_country].push(Visa({
             owner: _owner,
             country: _country,
             identifier: _identifier,
             amountPaid: 0,
             price: _price,
-            hasEntered: false,
-            hasLeft: false
+            entered: 0,
+            left: 0
         }));
     }
 
-    function updateVisa(address _owner, uint _visaId, uint _amountPaid,
-                        bool _hasEntered, bool _hasLeft)  {
-        Visa oldVisa = visaByOwner[_owner][_visaId];
+    function updateVisa(address _owner, uint _country, uint _visaId,
+                        uint _amountPaid, uint _entered, uint _left)  {
+        Visa oldVisa = visaStore[_owner][_country][_visaId];
 
-        visaByOwner[_owner][_visaId] = Visa({
+        visaStore[_owner][_country][_visaId] = Visa({
             owner: _owner,
             country: oldVisa.country,
             identifier: oldVisa.identifier,
             amountPaid: _amountPaid,
             price: oldVisa.price,
-            hasEntered: _hasEntered,
-            hasLeft: _hasLeft
+            entered: _entered,
+            left: _left
         });
-    }
-
-    function deleteVisa(address _owner, uint index) {
-      delete visaByOwner[_owner][index];
     }
 }
