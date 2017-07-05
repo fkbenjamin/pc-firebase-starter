@@ -33,6 +33,10 @@ import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import LinearProgress from 'material-ui/LinearProgress';
+import Snackbar from 'material-ui/Snackbar';
 
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
@@ -47,6 +51,11 @@ const paperStyle = {
   padding: 35
 };
 const qrcode = new QRCode();
+
+
+const LinearProgressExampleSimple = () => (
+  <LinearProgress mode="indeterminate" />
+);
 
 export class App extends React.Component {
   constructor() {
@@ -138,7 +147,7 @@ export class App extends React.Component {
 
   enterAppCitizen() {
     console.log('called');
-    this.setState({entered: true, userType: 'citizen'});
+    this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
   enterAppImmigration() {
     console.log('called');
@@ -192,19 +201,23 @@ export class App extends React.Component {
               <tr style={{height:365}}>
               <td style={{width:285 ,backgroundImage:'url(pass.png)'}}></td>
               <td style={{width:285,backgroundImage:'url(EmptyPass.png)'}}>
-              <RaisedButton label="Enter as citizen" backgroundColor={grey300} style={{
+                <h1  style={{textAlign: "center"}}> Login as</h1>
+              <RaisedButton label="citizen" backgroundColor={grey300} style={{
                 display: 'block',
                 margin: 20
               }} onTouchTap={this.enterAppCitizen.bind(this)}/>
-              <RaisedButton label="Enter as immigration" backgroundColor={grey300} style={{
+
+
+
+              <RaisedButton label="immigration" backgroundColor={grey300} style={{
                 display: 'block',
                 margin: 20
               }} onTouchTap={this.enterAppImmigration.bind(this)}/>
-              <RaisedButton label="Enter as embassy" backgroundColor={grey300} style={{
+              <RaisedButton label="embassy" backgroundColor={grey300} style={{
                 display: 'block',
                 margin: 20
               }} onTouchTap={this.enterAppEmbassy.bind(this)}/>
-              <RaisedButton label="Enter as country" backgroundColor={grey300} style={{
+              <RaisedButton label="nation" backgroundColor={grey300} style={{
                 display: 'block',
                 margin: 20
               }} onTouchTap={this.enterAppCountry.bind(this)}/>
@@ -243,6 +256,12 @@ export class App extends React.Component {
               marginTop: 15
             }} label="Check" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
           </Paper>
+          <Snackbar
+            open={this.state.entered}
+            message="You are now logged in as Immigration"
+            autoHideDuration={4000}
+            onRequestClose={this.handleRequestClose}
+          />
         </div>
       );
     }
@@ -253,9 +272,72 @@ export class App extends React.Component {
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
           </div>
+
           <Paper style={paperStyle} zDepth={5}>
-            <h1>Blablablablab </h1>
+          <div>
+
+</div>
+
+          <Card>
+
+          <LinearProgress mode="indeterminate" />
+            <CardHeader
+
+              title="Visum A1"
+              subtitle="Transit"
+              actAsExpander={true}
+              showExpandableButton={true}
+            />
+            <CardActions>
+              <FlatButton label="Modify" />
+              <FlatButton label="Delete" />
+            </CardActions>
+            <CardText expandable={true}>
+              Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit
+              through the United States en route to another country, with few exceptions. Immediate and continuous
+              transit is defined as a reasonably expeditious departure of the traveler in the normal course of travel
+              as the elements permit and assumes a prearranged itinerary without any unreasonable layover privileges.
+            </CardText>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Visum B1"
+              subtitle="Social"
+              actAsExpander={true}
+              showExpandableButton={true}
+            />
+            <CardActions>
+              <FlatButton label="Modify" />
+              <FlatButton label="Delete" />
+            </CardActions>
+            <CardText expandable={true}>
+            Social Cultural Visa is issued to travelers who intend to visit Indonesia for: Lecture, short Internship program,
+            short Courses, Arts, Meetings, Volunteer Program, Sport Activities, visiting family and other related Social
+            activities.
+            Social Cultural Visa (Single or Multiple Entry Visa) will allow you a maximum stay of 60 (sixty) days for each visit. This type of visa can be extended at the Indonesian Immigration Office for 4 (four) times, with each extension for maximum 30 (thirty) days.
+            </CardText>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Visum C1"
+              subtitle="Business Visitor"
+              actAsExpander={true}
+              showExpandableButton={true}
+            />
+            <CardActions>
+              <FlatButton label="Modify" />
+              <FlatButton label="Delete" />
+            </CardActions>
+            <CardText expandable={true}>
+            If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
+          </Card>
           </Paper>
+          <Snackbar
+            open={this.state.entered}
+            message="You are now logged in as Embassy"
+            autoHideDuration={4000}
+            onRequestClose={this.handleRequestClose}
+          />
         </div>
       );
     }
@@ -280,6 +362,12 @@ export class App extends React.Component {
               marginTop: 15
             }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
           </Paper>
+          <Snackbar
+            open={this.state.entered}
+            message="You are now logged in as Nation"
+            autoHideDuration={4000}
+            onRequestClose={this.handleRequestClose}
+          />
         </div>
       );
     }
@@ -397,6 +485,13 @@ export class App extends React.Component {
           </Paper>
         </div>
       );
+      <Snackbar
+        open={this.state.entered}
+        message="You are now logged in as Immigration"
+        autoHideDuration={4000}
+        onRequestClose={this.handleRequestClose}
+      />
+
     }
     if (!this.state.pass) {
       return (
@@ -539,6 +634,14 @@ export class App extends React.Component {
           <DialogExampleModal/>
 
         </Paper>
+
+        <Snackbar
+          open={this.state.entered}
+          message="You are now logged in as Citizen"
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestClose}
+        />
+
       </div>
       ); } }
       export class PassForm extends App {constructor() {
