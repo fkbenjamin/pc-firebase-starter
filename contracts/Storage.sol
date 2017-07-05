@@ -6,7 +6,7 @@ import "./mortal.sol";
 /// @version 0.2
 contract Storage is owned, mortal {
 
-    string constant version = "0.1.0";
+    string constant public version = "0.1.0";
 
     // Access right variables
     address citizen;
@@ -61,8 +61,11 @@ contract Storage is owned, mortal {
     //-------
 
     struct VisaOffering {
-        address country;
+        uint country; // as ISO 3166-1 numeric code
         string identifier;
+        string description;
+        uint validity; // in # of blocks
+        uint price;
         string conditions;
     }
 
@@ -71,7 +74,7 @@ contract Storage is owned, mortal {
      * visaOfferings(address country, string identifier)
      * @return VisaOffering
      */
-    mapping(address => VisaOffering[]) public visaOfferingsByCountry;
+    mapping (uint => VisaOffering[]) public visaOfferingsByCountry;
 
     function createVisaOffering(address _country, string _identifier, string _condition) {
         visaOfferingsByCountry[_country].push(VisaOffering({
@@ -93,7 +96,7 @@ contract Storage is owned, mortal {
         string identifier;
         uint amountPaid;
         uint price;
-        bool hasEntered;
+        uint entered; // highest block # when entering country
         bool hasLeft;
     }
 
@@ -103,6 +106,10 @@ contract Storage is owned, mortal {
     /**
      * Creates a new visa and returns the index of the visa
      */
+     function visaLength(address _owner) {
+       return visaByOwner[_owner].length;
+     }
+
     function createVisa(address _owner, address _country, string _identifier, uint _price) {
         visaByOwner[_owner].push(Visa({
             owner: _owner,
@@ -128,5 +135,9 @@ contract Storage is owned, mortal {
             hasEntered: _hasEntered,
             hasLeft: _hasLeft
         });
+    }
+
+    function deleteVisa(address _owner, uint index) {
+      delete visaByOwner[_owner][index];
     }
 }
