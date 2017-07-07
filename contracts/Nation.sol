@@ -21,21 +21,33 @@ contract Nation is owned, mortal {
     }
 
     /// Sets the contract that handles all the immigration logic
-    function setImmigration(address immigration) onlyOwner() {
-        immigrationCtrl = immigration;
+    function setImmigration(address _immigrationCtrl) onlyOwner() {
+        bool result = Immigration(_immigrationCtrl).setNation(this);
+        if (result) {
+            immigrationCtrl = _immigrationCtrl;
+            return true;
+        }
+        return false;
     }
 
     /// Sets the contract that handles all the embassy logic
-    function setEmbassy(address embassy) onlyOwner() {
-        embassyCtrl = embassy;
+    function setEmbassy(address _embassyCtrl) onlyOwner() {
+        bool result = Embassy(_embassyCtrl).setNation(this);
+        if (result) {
+            embassyCtrl = _embassyCtrl;
+            return true;
+        }
+        return false;
     }
 
     /// Adds a new immigration of a country
     function addImmigration(address immigration) returns (bool) {
         uint countryId = countries[msg.sender];
         if (immigration != 0x0 && immigrationCtrl != 0x0 && countryId != 0) {
-            Immigration(immigrationCtrl).addImmigrationOfCountry(immigration, countryId);
-            return true;
+            bool result = Immigration(immigrationCtrl).addImmigrationOfCountry(immigration, countryId);
+            if (result) {
+                return true;
+            }
         }
         return false;
     }
