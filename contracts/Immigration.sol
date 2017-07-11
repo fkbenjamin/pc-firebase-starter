@@ -128,4 +128,13 @@ contract Immigration is owned, mortal {
     function emigrate() returns (bool) {
         return false;
     }
+    function stampIn(address _owner, uint _country, uint _visaId) {
+        require(getVisaEntered(_owner,_country,_visaId) == 0);
+        Storage(usedStorage).updateVisa(_owner, _country, _visaId, getVisaAmountPaid(_owner,_country,_visaId), now, 0);
+    }
+    function stampOut(address _owner, uint _country, uint _visaId) {
+        require(getVisaLeft(_owner,_country,_visaId) == 0);
+        require(getVisaEntered(_owner,_country,_visaId) <= now);
+        Storage(usedStorage).updateVisa(_owner, _country, _visaId, getVisaAmountPaid(_owner,_country,_visaId),getVisaEntered(_owner,_country,_visaId) , now);
+    }
 }
