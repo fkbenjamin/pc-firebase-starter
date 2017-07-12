@@ -1,9 +1,9 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.11;
 
 import "./mortal.sol";
 
 /// @title Storage for Pass, Visa and Visa Offerings
-/// version 0.4
+/// version 0.5
 contract Storage is owned, mortal {
 
     string constant public version = "0.1.0";
