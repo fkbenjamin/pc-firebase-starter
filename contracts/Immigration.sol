@@ -29,21 +29,10 @@ contract Immigration is owned, mortal {
         _;
     }
 
-    /*modifier onlyCountry() {
-        require(countries[msg.sender] != 0);
-        _;
-    }*/
-
     modifier onlyNation() {
         require(msg.sender == nationCtrl);
         _;
     }
-
-    /*modifier sameCountry(uint _country) {
-        require(_country == immigrationOfCountry[msg.sender]);
-        _;
-    }*/
-
 
     function Immigration() {
         usedStorage = '0x008aB18490E729bBea993817E0c2B3c19c877115';
@@ -58,10 +47,6 @@ contract Immigration is owned, mortal {
         nationCtrl = _nation;
         return true;
     }
-
-    /*function addCountry(address _addr, uint _country) onlyOwner() {
-        countries[_addr] = _country;
-    }*/
 
     function addImmigrationOfCountry(address _immigration, uint _country) onlyNation() {
         immigrationOfCountry[_immigration] = _country;
@@ -121,20 +106,40 @@ contract Immigration is owned, mortal {
         _left = uint(g);
     }
 
-    function immigrate() returns (bool) {
-        return false;
+
+    function stampIn(address _owner, uint _country, uint _visaId) returns (bool) {
+        // Visa wasn't used so far
+        require(getVisaEntered(_owner,_country,_visaId) == 0);
+
+        Storage(usedStorage).updateVisa(
+            _owner,
+            _country,
+            _visaId,
+            getVisaAmountPaid(_owner,_country,_visaId),
+            now,
+            0
+        );
+        return true;
     }
 
-    function emigrate() returns (bool) {
-        return false;
-    }
-    function stampIn(address _owner, uint _country, uint _visaId) {
-        require(getVisaEntered(_owner,_country,_visaId) == 0);
-        Storage(usedStorage).updateVisa(_owner, _country, _visaId, getVisaAmountPaid(_owner,_country,_visaId), now, 0);
-    }
-    function stampOut(address _owner, uint _country, uint _visaId) {
-        require(getVisaLeft(_owner,_country,_visaId) == 0);
+    function stampOut(address _owner, uint _country, uint _visaId) returns (bool) {
+        // Visa was used for Entry
+        require(getVisaEntered(_owner,_country,_visaId) > 0);
+
+        // Person has to be entered in the past
         require(getVisaEntered(_owner,_country,_visaId) <= now);
-        Storage(usedStorage).updateVisa(_owner, _country, _visaId, getVisaAmountPaid(_owner,_country,_visaId),getVisaEntered(_owner,_country,_visaId) , now);
+
+        // Visa wasn't used for exit
+        require(getVisaLeft(_owner,_country,_visaId) == 0);
+
+        Storage(usedStorage).updateVisa(
+            _owner,
+            _country,
+            _visaId,
+            getVisaAmountPaid(_owner,_country,_visaId),
+            getVisaEntered(_owner,_country,_visaId) ,
+            now
+        );
+        return true;
     }
 }

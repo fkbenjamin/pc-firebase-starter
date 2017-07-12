@@ -21,7 +21,7 @@ contract Nation is owned, mortal {
     }
 
     /// Sets the contract that handles all the immigration logic
-    function setImmigration(address _immigrationCtrl) onlyOwner() {
+    function setImmigration(address _immigrationCtrl) onlyOwner() returns (bool) {
         bool result = Immigration(_immigrationCtrl).setNation(this);
         if (result) {
             immigrationCtrl = _immigrationCtrl;
@@ -31,7 +31,7 @@ contract Nation is owned, mortal {
     }
 
     /// Sets the contract that handles all the embassy logic
-    function setEmbassy(address _embassyCtrl) onlyOwner() {
+    function setEmbassy(address _embassyCtrl) onlyOwner() returns (bool) {
         bool result = Embassy(_embassyCtrl).setNation(this);
         if (result) {
             embassyCtrl = _embassyCtrl;
