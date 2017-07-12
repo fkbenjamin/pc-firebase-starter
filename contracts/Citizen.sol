@@ -4,13 +4,13 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Citizen
-/// version 0.1
+/// version 0.2
 /// A country has citizens which can obtain passports and apply for visa.
 contract Citizen is owned, mortal {
 
     // All data is stored centrally in a storage contract so it can be accessed
     // by all entities.
-    Storage private database;
+    Storage public database;
 
     struct Visa {
         address owner;

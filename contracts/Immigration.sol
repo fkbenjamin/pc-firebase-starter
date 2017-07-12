@@ -3,7 +3,7 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Immigration
-/// version 0.5
+/// version 0.6
 /// The immigration acts as a the border patrol. Citizens passing Immigration
 /// have to provide a valid visa. The visa will be stamped when entering and
 /// leaving the country
@@ -51,7 +51,7 @@ contract Immigration is owned, mortal {
         immigrationOfCountry[_immigration] = _country;
     }
 
-    function getPass(address _user) onlyImmigration() constant returns (address, bytes32, bool) {
+    function getPass(address _user) onlyImmigration() returns (address, bytes32, bool) {
         return Storage(usedStorage).passByOwner(_user);
     }
 

@@ -4,14 +4,14 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Embassy contract
-/// version 0.1
+/// version 0.2
 /// Embassies are assigned to a country and can create Visa Offerings
 /// and grant Visa.
 contract Embassy is owned, mortal {
-    address usedStorage;
-    address nationCtrl;
+    address public usedStorage;
+    address public nationCtrl;
 
-    mapping (address => uint) embassiesOfCountry;
+    mapping (address => uint) public embassiesOfCountry;
 
     modifier onlyEmbassy() {
         require(embassiesOfCountry[msg.sender] != 0);
@@ -23,8 +23,8 @@ contract Embassy is owned, mortal {
         _;
     }
 
-    function Embassy() {
-        usedStorage = '0x008aB18490E729bBea993817E0c2B3c19c877115';
+    function Embassy(address _usedStorage) {
+        usedStorage = _usedStorage;
     }
     function setStorage(address _store) onlyOwner() returns (bool) {
         usedStorage = _store;
@@ -68,8 +68,10 @@ contract Embassy is owned, mortal {
     }
 
     function verifyPass(address _owner, bytes32 _hashedPassport) {
-        var (,h,) = Storage(usedStorage).passByOwner(owner);
+        // TODO: add modifier onlyEmbassy()
+        var (,h,) = Storage(usedStorage).passByOwner(_owner);
         require(bytes32 (h) == _hashedPassport);
+        // TODO: require embassy to be of right country
         Storage(usedStorage).updatePassport(_owner, _hashedPassport, true);
     }
 }

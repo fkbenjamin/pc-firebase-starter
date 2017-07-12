@@ -6,12 +6,17 @@ import "./Immigration.sol";
 import "./Embassy.sol";
 
 /// @title Nation
-/// version 0.2
+/// version 0.5
 contract Nation is owned, mortal {
 
-    mapping (address => uint) countries;
-    address immigrationCtrl;
-    address embassyCtrl;
+    mapping (address => uint) public countries;
+    address public immigrationCtrl;
+    address public embassyCtrl;
+
+    function Nation(address _immigrationCtrl, address _embassyCtrl) {
+        immigrationCtrl = _immigrationCtrl;
+        embassyCtrl = _embassyCtrl;
+    }
 
     /// Set the address that represents a country account
     function setCountry(address country, uint countryId) onlyOwner() {
@@ -20,23 +25,13 @@ contract Nation is owned, mortal {
     }
 
     /// Sets the contract that handles all the immigration logic
-    function setImmigration(address _immigrationCtrl) onlyOwner() returns (bool) {
-        bool result = Immigration(_immigrationCtrl).setNation(this);
-        if (result) {
-            immigrationCtrl = _immigrationCtrl;
-            return true;
-        }
-        return false;
+    function setImmigrationCtrl(address _immigrationCtrl) onlyOwner() {
+        immigrationCtrl = _immigrationCtrl;
     }
 
     /// Sets the contract that handles all the embassy logic
-    function setEmbassy(address _embassyCtrl) onlyOwner() returns (bool) {
-        bool result = Embassy(_embassyCtrl).setNation(this);
-        if (result) {
-            embassyCtrl = _embassyCtrl;
-            return true;
-        }
-        return false;
+    function setEmbassyCtrl(address _embassyCtrl) onlyOwner() {
+        embassyCtrl = _embassyCtrl;
     }
 
     /// Adds a new immigration of a country
