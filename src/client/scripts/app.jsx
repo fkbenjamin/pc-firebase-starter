@@ -65,7 +65,7 @@ export class App extends React.Component {
     //has to be updated to new contract
     this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI());
     this.immigration = parity.bonds.makeContract('0xF58E62A063A3971a1d2afDE3bbF1702859Ee6E35', abi.getImmigrationABI());
-    
+
     //this.embassy =
     //this.nation =
     //this.citizen =
@@ -193,6 +193,7 @@ export class App extends React.Component {
   }
 
   render() {
+    document.body.style.backgroundColor = "#bd4e4b";
     if (!this.state.entered) {
       return (
         <div>
@@ -247,6 +248,7 @@ export class App extends React.Component {
       );
     }
     if (this.state.userType == 'immigration' && !this.state.immigrationAddressOpened) {
+      document.body.style.backgroundColor = "#2E6F72";
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
@@ -272,6 +274,7 @@ export class App extends React.Component {
     }
 
     if (this.state.userType == 'embassy') {
+      document.body.style.backgroundColor = "#BD804B";
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
@@ -348,6 +351,8 @@ export class App extends React.Component {
     }
 
     if (this.state.userType == 'country') {
+      document.body.style.backgroundColor = "#3B4E7F";
+
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
