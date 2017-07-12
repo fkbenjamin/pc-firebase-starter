@@ -93,31 +93,31 @@ contract Immigration is owned, mortal {
         bytes32 _identifier
         )
     {
-        var(a,b,c,d,e,f,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,c,,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _identifier = bytes32(c);
     }
     function getVisaAmountPaid(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         uint _amountPaid
         )     {
-        var(a,b,c,d,e,f,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,d,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _amountPaid = uint(d);
     }
     function getVisaPrice(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         uint _price
         )     {
-        var(a,b,c,d,e,f,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,,e,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _price = uint(e);
     }
     function getVisaEntered(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         uint _entered
         )     {
-        var(a,b,c,d,e,f,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,,,f,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _entered = uint(f);
     }
     function getVisaLeft(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         uint _left
         )     {
-        var(a,b,c,d,e,f,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,,,,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _left = uint(g);
     }
 
