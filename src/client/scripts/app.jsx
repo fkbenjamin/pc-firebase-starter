@@ -99,9 +99,10 @@ export class App extends React.Component {
       immigrationAddressOpened: false,
       embassy: false,
       institution: 1,
+      enteredValidation: false,
       chipData: [
       ]
-    };
+      };
 
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
@@ -132,6 +133,7 @@ export class App extends React.Component {
   checkWalletPass(){
     console.log('something happens here');
     this.loadDataImmigration(this.state.immigrationAddress);
+    this.setState({enteredValidation: true});
   }
 
   checkIfAddress(_value) {
@@ -204,12 +206,17 @@ export class App extends React.Component {
     address: null,
     pass: null,
     bcpass: null,
+    bcvisa: null,
     newPassHash: null,
     open: false,
     entered: false,
     immigrationAddress: false,
     immigrationAddressOpened: false,
-    embassy: false});
+    embassy: false,
+    institution: 1,
+    enteredValidation: false,
+    chipData: [
+    ]});
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
@@ -295,7 +302,7 @@ export class App extends React.Component {
       );
     }
 
-    if (this.state.userType == 'embassy') {
+    if (this.state.userType == 'embassy' && !this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
 
@@ -372,9 +379,196 @@ export class App extends React.Component {
                  </Tab>
                  <Tab label="Validate Pass" value="b">
                    <div>
-
-
+                    <h1>Scan QR-Code or enter Wallet-ID</h1>
+                    <Divider/>
+                    <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
+                    <Divider/>
+                    <RaisedButton style={{
+                      marginTop: 15
+                    }} label="Open" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
                    </div>
+                 </Tab>
+               </Tabs>
+
+</div>
+
+          </Paper>
+        </div>
+      );
+    }
+
+    if (this.state.userType == 'embassy' && this.state.enteredValidation) {
+      document.body.style.backgroundColor = "#BD804B";
+      return (
+
+        <div>
+          <div onClick={this.resetApp.bind(this)}>
+          <Logo />
+          </div>
+
+          <Paper style={paperStyle} zDepth={5}>
+          <div>
+          <Tabs
+                 value={this.state.value}
+                 onChange={this.handleChange}
+               >
+                 <Tab label="Offerings" value="a">
+
+                 <div>
+                 <Card>
+                 <DialogExampleModal2/>
+                 <LinearProgress mode="indeterminate" />
+                   <CardHeader
+                     title="Visum A1"
+                     subtitle="Transit"
+                     actAsExpander={true}
+                     showExpandableButton={true}
+                   />
+                   <CardActions>
+                     <FlatButton label="Delete" />
+                   </CardActions>
+                   <CardText expandable={true}>
+                     Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit
+                     through the United States en route to another country, with few exceptions. Immediate and continuous
+                     transit is defined as a reasonably expeditious departure of the traveler in the normal course of travel
+                     as the elements permit and assumes a prearranged itinerary without any unreasonable layover privileges.
+                   </CardText>
+                 </Card>
+                 <Card>
+                   <CardHeader
+                     title="Visum B1"
+                     subtitle="Social"
+                     actAsExpander={true}
+                     showExpandableButton={true}
+                   />
+                   <CardActions>
+                     <FlatButton label="Modify" />
+                     <FlatButton label="Delete" />
+                   </CardActions>
+                   <CardText expandable={true}>
+                   Social Cultural Visa is issued to travelers who intend to visit Indonesia for: Lecture, short Internship program,
+                   short Courses, Arts, Meetings, Volunteer Program, Sport Activities, visiting family and other related Social
+                   activities.
+                   Social Cultural Visa (Single or Multiple Entry Visa) will allow you a maximum stay of 60 (sixty) days for each visit. This type of visa can be extended at the Indonesian Immigration Office for 4 (four) times, with each extension for maximum 30 (thirty) days.
+                   </CardText>
+                 </Card>
+                 <Card>
+                   <CardHeader
+                     title="Visum C1"
+                     subtitle="Business Visitor"
+                     actAsExpander={true}
+                     showExpandableButton={true}
+                   />
+                   <CardActions>
+                     <FlatButton label="Modify" />
+                     <FlatButton label="Delete" />
+                   </CardActions>
+                   <CardText expandable={true}>
+                   If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
+                 </Card>
+
+
+                 </div>
+
+
+                 </Tab>
+                 <Tab label="Validate Pass" value="b">
+                   <div>
+                   <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
+                     <table>
+                       <tbody>
+                         <tr>
+                           <td>
+                             <img style={{
+                               maxWidth: '100%',
+                               height: 'auto'
+                             }} src={this.state.pass.imageUrl}/>
+                           </td>
+                           <td>
+                             <table>
+                               <tbody>
+                                 <tr>
+                                   <td >
+                                     <DescText desc='Typ/Type/Type' val={this.state.pass.type}/></td>
+                                   <td >
+                                     <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code}/></td>
+                                   <td >
+                                     <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr}/></td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                     <DescText desc='Name/Surname/Nom' val={this.state.pass.name}/></td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                     <DescText desc='Vornamen/Given names/Prénoms' val={this.state.pass.givennames}/></td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                     <DescText desc='Staatsangehörigkeit/Nationality/Nationalité' val={this.state.pass.nationality}/></td>
+                                   <td>
+                                     <DescText desc='Geburtstag/Date of birth/Date de naissance' val={this.state.pass.dob}/></td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                     <DescText desc='Geschlecht/Sex/Sexe' val={this.state.pass.sex}/></td>
+                                   <td>
+                                     <DescText desc='Geburtsort/Place of birth/Lieu de naissance' val={this.state.pass.pob}/></td>
+                                 </tr>
+                                 <tr>
+                                   <td>
+                                     <DescText desc='Wohnort/Residence/Domicile' val={this.state.pass.residence}/></td>
+                                   <td>
+                                     <DescText desc='Größe/Height/Taille' val={this.state.pass.height}/></td>
+                                   <td>
+                                     <DescText desc='Augenfarbe/Colour of eyes/Coleur des yeux' val={this.state.pass.eyes}/></td>
+                                 </tr>
+                               </tbody>
+                             </table>
+                           </td>
+                         </tr>
+                       </tbody>
+                     </table>
+
+                     <table>
+                     <tbody>
+                       <tr>
+                         <td colSpan='3'>
+                           The blockchain passport:
+                         </td>
+                       </tr>
+                       <tr>
+                         <td rowSpan='2'>
+                           <QRCode value={this.state.bcpass[0]} />
+                         </td>
+                         <td>
+                           <DescText desc="Address" val={this.state.bcpass[0]} />
+                         </td>
+                         <td>
+                         {this.state.bcpass[2]
+                           ? <Chip backgroundColor={greenA200} style={{
+                               marginTop: 30
+                             }}>
+                               <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+                           : <Chip backgroundColor={red500} style={{
+                             marginTop: 30
+                           }}>
+                             <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+                         </td>
+                       </tr>
+                       <tr>
+                         <td colSpan="2">
+                           <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+                         </td>
+                       </tr>
+                     </tbody>
+                     </table>
+
+
+                     <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
+                       marginTop: 15
+                     }} label="Verify Passport" onTouchTap={this.stampIn.bind(this)}/>
+                       </div>
                  </Tab>
                </Tabs>
 
@@ -403,6 +597,7 @@ export class App extends React.Component {
             <Divider/>
             <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
             <Divider/>
+
             <RaisedButton style={{
               marginTop: 15
             }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
