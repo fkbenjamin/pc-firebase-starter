@@ -64,6 +64,11 @@ export class App extends React.Component {
     this.newPass = {};
     //has to be updated to new contract
     this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI());
+    this.immigration = parity.bonds.makeContract('0xF58E62A063A3971a1d2afDE3bbF1702859Ee6E35', abi.getImmigrationABI());
+    
+    //this.embassy =
+    //this.nation =
+    //this.citizen =
     this.countryCode = abi.getCountryCode();
     this.dataSourceConfig= {
       text: 'name',
