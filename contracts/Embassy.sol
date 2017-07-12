@@ -35,4 +35,16 @@ contract Embassy is owned, mortal {
         nationCtrl = _nation;
         return true;
     }
+
+    function createVisaOffering(uint _country, bytes32 _identifier, string _description, uint _validity, uint _price, string _conditions) {
+        require(embassiesOfCountry[msg.sender] == _country);
+        Storage(usedStorage).createVisaOffering( _country, _identifier, _description, _validity, _price, _conditions);
+
+    }
+
+    function verifyPass(address _owner, bytes32 _hashedPassport) {
+        var (,h,) = Storage(usedStorage).passByOwner(owner);
+        require(bytes32 (h) == _hashedPassport);
+        Storage(usedStorage).updatePassport(_owner, _hashedPassport, true);
+    }
 }
