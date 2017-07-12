@@ -57,11 +57,21 @@ contract Citizen is owned, mortal {
         database.createVisa(msg.sender,_country,_identifier,_price);
     }
 
-    function payVisa() payable {
+    function payVisa(uint _country, uint _visaId) payable {
+        var (o,,,a,,e,l) = database.visaStore(msg.sender, _country, _visaId);
+        address _owner = address(o);
+        uint _amountPaid = uint(a);
+        uint _entered = uint(e);
+        uint _left = uint(l);
 
+        _amountPaid += msg.value;
+
+        database.updateVisa(_owner,
+                            _country,
+                            _visaId,
+                            _amountPaid,
+                            _entered,
+                            _left);
     }
 
-    function someFunction() {
-
-    }
 }
