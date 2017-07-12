@@ -62,7 +62,7 @@ contract Storage is owned, mortal {
 
     struct VisaOffering {
         uint country; // as ISO 3166-1 numeric code
-        string identifier;
+        bytes32 identifier;
         string description;
         uint validity; // in # of blocks
         uint price;    // in wei
@@ -76,7 +76,7 @@ contract Storage is owned, mortal {
      */
     mapping (uint => VisaOffering[]) public visaOfferings;
 
-    function createVisaOffering(uint _country, string _identifier, string _description,
+    function createVisaOffering(uint _country, bytes32 _identifier, string _description,
                                 uint _validity, uint _price, string _conditions) {
         visaOfferings[_country].push(VisaOffering({
             country: _country,

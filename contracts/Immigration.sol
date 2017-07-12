@@ -3,7 +3,7 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Immigration
-/// version 0.2
+/// version 0.3
 /// The immigration acts as a the border patrol. Citizens passing Immigration
 /// have to provide a valid visa. The visa will be stamped when entering and
 /// leaving the country
