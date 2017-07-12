@@ -766,7 +766,7 @@ handleKeyPress(e) {
     this.chipData.push(newLabel);
     this.setState({chipData: this.chipData});
     console.log(this.state.chipData);
-
+    this.refs.cond.input.value = '';
   }
 }
 handleRequestDelete (key) {
@@ -799,9 +799,6 @@ render() {
     onTouchTap = {
       this.handleClose.bind(this)
     } />, < FlatButton label = "Submit" primary = {
-      true
-    }
-    disabled = {
       true
     }
     onTouchTap = {
@@ -838,7 +835,7 @@ render() {
              <Tab label="Conditions" value="b">
                <div>
                <br/>
-               <TextField hintText="Conditions" fullWidth={true} underlineShow={false} onKeyPress={this.handleKeyPress.bind(this)} />
+               <TextField ref='cond' hintText="Conditions" fullWidth={true} underlineShow={false} onKeyPress={this.handleKeyPress.bind(this)} />
                <Divider/>
                   <br/>
 
