@@ -100,10 +100,6 @@ export class App extends React.Component {
       embassy: false,
       institution: 1,
       chipData: [
-        {key: 0, label: 'Angular'},
-        {key: 1, label: 'JQuery'},
-        {key: 2, label: 'Polymer'},
-        {key: 3, label: 'ReactJS'},
       ]
     };
 
@@ -744,6 +740,16 @@ export class App extends React.Component {
 
 export class DialogExampleModal2 extends App {constructor() {
   super();
+  this.arrayEqualizer = 1;
+  this.styles = {
+    chip: {
+      margin: 4,
+    },
+    wrapper: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+  };
 }
 
 handleOpen() {
@@ -756,13 +762,35 @@ handleClose() {
 handleKeyPress(e) {
   if(e.key === 'Enter'){
     this.chipData = this.state.chipData;
-    var newLabel = {key: this.chipData.length + 1, label: e.target.value};
+    var newLabel = {key: this.chipData.length + this.arrayEqualizer, label: e.target.value};
     this.chipData.push(newLabel);
     this.setState({chipData: this.chipData});
     console.log(this.state.chipData);
 
   }
 }
+handleRequestDelete (key) {
+
+  this.chipData = this.state.chipData;
+  const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
+  this.chipData.splice(chipToDelete, 1);
+  this.setState({chipData: this.chipData});
+  this.arrayEqualizer++;
+};
+
+renderChip(data) {
+  console.log(data);
+  return (
+    <Chip
+      key={data.key}
+      onRequestDelete={() => this.handleRequestDelete(data.key)}
+      style={this.styles.chip}
+    >
+      {data.label}
+    </Chip>
+  );
+}
+
 
 render() {
   const actions = [ < FlatButton label = "Cancel" primary = {
@@ -813,7 +841,10 @@ render() {
                <TextField hintText="Conditions" fullWidth={true} underlineShow={false} onKeyPress={this.handleKeyPress.bind(this)} />
                <Divider/>
                   <br/>
-               <ChipExampleArray/>
+
+                  <div style={this.styles.wrapper}>
+                    {this.state.chipData.map(this.renderChip.bind(this))}
+                  </div>
                </div>
              </Tab>
            </Tabs>
@@ -877,49 +908,4 @@ export class Logo extends React.Component {
     return(
       <img src="title.png" style={{position:'fixed', top:0, left:0, width: 190, height: 190}} />
   )}
-}
-
-export class ChipExampleArray extends App {
-
-  constructor() {
-    super();
-    this.styles = {
-      chip: {
-        margin: 4,
-      },
-      wrapper: {
-        display: 'flex',
-        flexWrap: 'wrap',
-      },
-    };
-  }
-
-  handleRequestDelete (key) {
-
-    this.chipData = this.state.chipData;
-    const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
-    this.chipData.splice(chipToDelete, 1);
-    this.setState({chipData: this.chipData});
-  };
-
-  renderChip(data) {
-    console.log(data);
-    return (
-      <Chip
-        key={data.key}
-        onRequestDelete={() => this.handleRequestDelete(data.key)}
-        style={this.styles.chip}
-      >
-        {data.label}
-      </Chip>
-    );
-  }
-
-  render() {
-    return (
-      <div style={this.styles.wrapper}>
-        {this.state.chipData.map(this.renderChip.bind(this))}
-      </div>
-    );
-  }
 }
