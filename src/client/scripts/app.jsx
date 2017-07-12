@@ -36,7 +36,13 @@ import AutoComplete from 'material-ui/AutoComplete';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import LinearProgress from 'material-ui/LinearProgress';
-import Snackbar from 'material-ui/Snackbar';
+import Checkbox from 'material-ui/Checkbox';
+import ActionFavorite from 'material-ui/svg-icons/action/favorite';
+import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import Visibility from 'material-ui/svg-icons/action/visibility';
+import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
+
+
 
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
@@ -256,18 +262,13 @@ export class App extends React.Component {
               marginTop: 15
             }} label="Check" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
           </Paper>
-          <Snackbar
-            open={this.state.entered}
-            message="You are now logged in as Immigration"
-            autoHideDuration={4000}
-            onRequestClose={this.handleRequestClose}
-          />
         </div>
       );
     }
 
     if (this.state.userType == 'embassy') {
       return (
+
         <div>
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
@@ -279,9 +280,12 @@ export class App extends React.Component {
 </div>
 
           <Card>
-
+  <DialogExampleModal2/>
           <LinearProgress mode="indeterminate" />
+
             <CardHeader
+
+
 
               title="Visum A1"
               subtitle="Transit"
@@ -289,7 +293,7 @@ export class App extends React.Component {
               showExpandableButton={true}
             />
             <CardActions>
-              <FlatButton label="Modify" />
+
               <FlatButton label="Delete" />
             </CardActions>
             <CardText expandable={true}>
@@ -332,12 +336,6 @@ export class App extends React.Component {
             If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
           </Card>
           </Paper>
-          <Snackbar
-            open={this.state.entered}
-            message="You are now logged in as Embassy"
-            autoHideDuration={4000}
-            onRequestClose={this.handleRequestClose}
-          />
         </div>
       );
     }
@@ -362,12 +360,6 @@ export class App extends React.Component {
               marginTop: 15
             }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
           </Paper>
-          <Snackbar
-            open={this.state.entered}
-            message="You are now logged in as Nation"
-            autoHideDuration={4000}
-            onRequestClose={this.handleRequestClose}
-          />
         </div>
       );
     }
@@ -485,12 +477,6 @@ export class App extends React.Component {
           </Paper>
         </div>
       );
-      <Snackbar
-        open={this.state.entered}
-        message="You are now logged in as Immigration"
-        autoHideDuration={4000}
-        onRequestClose={this.handleRequestClose}
-      />
 
     }
     if (!this.state.pass) {
@@ -635,12 +621,6 @@ export class App extends React.Component {
 
         </Paper>
 
-        <Snackbar
-          open={this.state.entered}
-          message="You are now logged in as Citizen"
-          autoHideDuration={4000}
-          onRequestClose={this.handleRequestClose}
-        />
 
       </div>
       ); } }
@@ -726,7 +706,80 @@ export class App extends React.Component {
       }
 }
 
-      export default class DialogExampleModal extends App {constructor() {
+export class DialogExampleModal2 extends App {constructor() {
+  super();
+}
+
+handleOpen() {
+  this.setState({open: true});
+};
+
+handleClose() {
+  this.setState({open: false});
+};
+
+render() {
+  const actions = [ < FlatButton label = "Cancel" primary = {
+      true
+    }
+    onTouchTap = {
+      this.handleClose.bind(this)
+    } />, < FlatButton label = "Submit" primary = {
+      true
+    }
+    disabled = {
+      true
+    }
+    onTouchTap = {
+      this.handleClose.bind(this)
+    } />
+  ];
+
+  return (
+    <div>
+      <RaisedButton label="New"  icon={< SvgIconAdd />} fullWidth={true} color={fullWhite}  onTouchTap={this.handleOpen.bind(this)}/>
+      <Dialog title="New Visa Offering" style={{textAlign: "center"}} actions={actions} modal={true} open={this.state.open}>
+
+      <Tabs
+             value={this.state.value}
+             onChange={this.handleChange}
+           >
+             <Tab label="General" value="a">
+               <div>
+               <br/>
+               <TextField hintText="Designation" fullWidth={true}  underlineShow={false} />
+               <Divider/>
+                 <TextField
+                   floatingLabelText="Description"
+                   multiLine={true}
+                   rows={2}
+                   underlineShow={false}
+                   fullWidth={true}
+                 />
+                 <Divider/>
+                 <TextField hintText="Price" fullWidth={true} underlineShow={false} />
+                 <Divider/>
+               </div>
+             </Tab>
+             <Tab label="Conditions" value="b">
+               <div>
+               <br/>
+               <TextField hintText="Conditions" fullWidth={true} underlineShow={false} />
+               <Divider/>
+                  <br/>
+               <ChipExampleArray/>
+               </div>
+             </Tab>
+           </Tabs>
+<br/>
+      </Dialog>
+    </div>
+  );
+}
+}
+
+
+      export class DialogExampleModal extends App {constructor() {
         super();
       }
 
@@ -778,4 +831,58 @@ export class Logo extends React.Component {
     return(
       <img src="title.png" style={{position:'fixed', top:0, left:0, width: 190, height: 190}} />
   )}
+}
+
+export default class ChipExampleArray extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {chipData: [
+      {key: 0, label: 'Angular'},
+      {key: 1, label: 'JQuery'},
+      {key: 2, label: 'Polymer'},
+      {key: 3, label: 'ReactJS'},
+    ]};
+    this.styles = {
+      chip: {
+        margin: 4,
+      },
+      wrapper: {
+        display: 'flex',
+        flexWrap: 'wrap',
+      },
+    };
+  }
+
+  handleRequestDelete (key) {
+    if (key === 3) {
+      alert('Why would you want to delete React?! :)');
+      return;
+    }
+
+    this.chipData = this.state.chipData;
+    const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
+    this.chipData.splice(chipToDelete, 1);
+    this.setState({chipData: this.chipData});
+  };
+
+  renderChip(data) {
+    return (
+      <Chip
+        key={data.key}
+        onRequestDelete={() => this.handleRequestDelete(data.key)}
+        style={this.styles.chip}
+      >
+        {data.label}
+      </Chip>
+    );
+  }
+
+  render() {
+    return (
+      <div style={this.styles.wrapper}>
+        {this.state.chipData.map(this.renderChip, this)}
+      </div>
+    );
+  }
 }
