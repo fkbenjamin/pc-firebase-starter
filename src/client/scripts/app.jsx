@@ -184,6 +184,20 @@ export class App extends React.Component {
     console.log('called');
     this.setState({entered: true, userType: 'country'});
   }
+  stampIn() {
+    var owner = this.state.immigrationAddress;
+    console.log(owner);
+    console.log('here');
+    console.log(this.immigration);
+    this.immigration.immigrationOfCountry[this.state.address];
+    console.log(country);
+    var visaId = this.immigration.getVisaLength(owner, country);
+    console.log(visaId);
+    this.immigration.stampIn( owner, country, visaId);
+  }
+  stampOut() {
+    this.immigration.stampOut(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me],this.immigration.getVisaLength(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me]) );
+  }
 
 
   componentWillMount() {
@@ -492,10 +506,10 @@ export class App extends React.Component {
             </table>
             <RaisedButton fullWidth={true} style={{
               marginTop: 15
-            }} label="Stamp in"/>
+            }} label="Stamp in" onTouchTap={this.stampIn.bind(this)}/>
             <RaisedButton fullWidth={true} style={{
               marginTop: 15
-            }} label="Stamp out"/>
+            }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>
           </Paper>
         </div>
       );
