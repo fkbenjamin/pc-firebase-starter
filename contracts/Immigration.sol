@@ -3,13 +3,13 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Immigration
-/// version 0.4
+/// version 0.5
 /// The immigration acts as a the border patrol. Citizens passing Immigration
 /// have to provide a valid visa. The visa will be stamped when entering and
 /// leaving the country
 contract Immigration is owned, mortal {
-    address usedStorage;
-    address nationCtrl;
+    address public usedStorage ;
+    address public nationCtrl;
 
     struct Visa {
         address owner;
@@ -21,7 +21,7 @@ contract Immigration is owned, mortal {
         uint left;    // highest block # when leaving country
     }
 
-    mapping (address => uint) immigrationOfCountry;
+    mapping (address => uint) public immigrationOfCountry;
 
     modifier onlyImmigration() {
         require(immigrationOfCountry[msg.sender] != 0);
@@ -33,8 +33,8 @@ contract Immigration is owned, mortal {
         _;
     }
 
-    function Immigration() {
-        usedStorage = '0x008aB18490E729bBea993817E0c2B3c19c877115';
+    function Immigration(address _usedStorage) {
+        usedStorage = _usedStorage;
     }
 
     function setStorage(address _store) onlyOwner() returns (bool) {
