@@ -2,12 +2,11 @@ pragma solidity ^0.4.11;
 
 import "./mortal.sol";
 
-import "./Storage.sol";
 import "./Immigration.sol";
 import "./Embassy.sol";
 
 /// @title Nation
-/// version 0.1
+/// version 0.2
 contract Nation is owned, mortal {
 
     mapping (address => uint) countries;

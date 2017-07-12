@@ -4,6 +4,7 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Citizen
+/// version 0.1
 /// A country has citizens which can obtain passports and apply for visa.
 contract Citizen is owned, mortal {
 

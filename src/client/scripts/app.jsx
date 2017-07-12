@@ -63,8 +63,14 @@ export class App extends React.Component {
     this.bcpass = [];
     this.newPass = {};
     //has to be updated to new contract
-    this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI());
-    this.immigration = parity.bonds.makeContract('0xF58E62A063A3971a1d2afDE3bbF1702859Ee6E35', abi.getImmigrationABI());
+    this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI()); // v?
+    // this.contract = parity.bonds.makeContract('0x8FF82AA6f3c12F4EAC29aEd5A7aecB18Ba134B6b', abi.getPassABI()); // v0.5
+    
+    this.immigration = parity.bonds.makeContract('0x60ee406E1bE5528d2834c13b13398FD12BB334b9', abi.getImmigrationABI()); //v0.4
+    this.citizen = parity.bonds.makeContract('0x7B9a037FC41D7cFdCd4FF5660F2aCd0c11475295', abi.getCitizenABI()); // v0.1
+    this.nation = parity.bonds.makeContract('0x31a376740362DB9131bF90Bc3488a6591786370d', abi.getNationABI()); // v0.1
+    this.embassy = parity.bonds.makeContract('0x46f86e63DAA8f3Fc534527368E36E838E78Dc6eD', abi.getEmbassyABI()); // v0.1
+
 
     //this.embassy =
     //this.nation =
