@@ -98,7 +98,13 @@ export class App extends React.Component {
       immigrationAddress: false,
       immigrationAddressOpened: false,
       embassy: false,
-      institution: 1
+      institution: 1,
+      chipData: [
+        {key: 0, label: 'Angular'},
+        {key: 1, label: 'JQuery'},
+        {key: 2, label: 'Polymer'},
+        {key: 3, label: 'ReactJS'},
+      ]
     };
 
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
@@ -733,6 +739,16 @@ handleOpen() {
 handleClose() {
   this.setState({open: false});
 };
+handleKeyPress(e) {
+  if(e.key === 'Enter'){
+    this.chipData = this.state.chipData;
+    var newLabel = {key: this.chipData.length + 1, label: e.target.value};
+    this.chipData.push(newLabel);
+    this.setState({chipData: this.chipData});
+    console.log(this.state.chipData);
+
+  }
+}
 
 render() {
   const actions = [ < FlatButton label = "Cancel" primary = {
@@ -780,7 +796,7 @@ render() {
              <Tab label="Conditions" value="b">
                <div>
                <br/>
-               <TextField hintText="Conditions" fullWidth={true} underlineShow={false} />
+               <TextField hintText="Conditions" fullWidth={true} underlineShow={false} onKeyPress={this.handleKeyPress.bind(this)} />
                <Divider/>
                   <br/>
                <ChipExampleArray/>
@@ -849,16 +865,10 @@ export class Logo extends React.Component {
   )}
 }
 
-export default class ChipExampleArray extends React.Component {
+export class ChipExampleArray extends App {
 
-  constructor(props) {
-    super(props);
-    this.state = {chipData: [
-      {key: 0, label: 'Angular'},
-      {key: 1, label: 'JQuery'},
-      {key: 2, label: 'Polymer'},
-      {key: 3, label: 'ReactJS'},
-    ]};
+  constructor() {
+    super();
     this.styles = {
       chip: {
         margin: 4,
@@ -871,10 +881,6 @@ export default class ChipExampleArray extends React.Component {
   }
 
   handleRequestDelete (key) {
-    if (key === 3) {
-      alert('Why would you want to delete React?! :)');
-      return;
-    }
 
     this.chipData = this.state.chipData;
     const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
@@ -883,6 +889,7 @@ export default class ChipExampleArray extends React.Component {
   };
 
   renderChip(data) {
+    console.log(data);
     return (
       <Chip
         key={data.key}
@@ -897,7 +904,7 @@ export default class ChipExampleArray extends React.Component {
   render() {
     return (
       <div style={this.styles.wrapper}>
-        {this.state.chipData.map(this.renderChip, this)}
+        {this.state.chipData.map(this.renderChip.bind(this))}
       </div>
     );
   }
