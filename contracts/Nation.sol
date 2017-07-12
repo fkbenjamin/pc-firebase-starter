@@ -2,12 +2,11 @@ pragma solidity ^0.4.11;
 
 import "./mortal.sol";
 
-import "./Storage.sol";
 import "./Immigration.sol";
 import "./Embassy.sol";
 
 /// @title Nation
-/// version 0.1
+/// version 0.2
 contract Nation is owned, mortal {
 
     mapping (address => uint) countries;
@@ -41,25 +40,19 @@ contract Nation is owned, mortal {
     }
 
     /// Adds a new immigration of a country
-    function addImmigration(address immigration) returns (bool) {
+    function addImmigration(address immigration) {
         uint countryId = countries[msg.sender];
         if (immigration != 0x0 && immigrationCtrl != 0x0 && countryId != 0) {
-            bool result = Immigration(immigrationCtrl).addImmigrationOfCountry(immigration, countryId);
-            if (result) {
-                return true;
-            }
+            Immigration(immigrationCtrl).addImmigrationOfCountry(immigration, countryId);
         }
-        return false;
     }
 
     /// Adds a new embassy of a country
-    function addEmbassy(address embassy) returns (bool) {
+    function addEmbassy(address embassy) {
         uint countryId = countries[msg.sender];
         if (embassy != 0x0 && embassyCtrl != 0x0 && countryId != 0) {
             Embassy(embassyCtrl).addEmbassyOfCountry(embassy, countryId);
-            return true;
         }
-        return false;
     }
 
     /// Not yet implemented in immigration

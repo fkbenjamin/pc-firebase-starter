@@ -1,9 +1,9 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.11;
 
 import "./mortal.sol";
 
 /// @title Storage for Pass, Visa and Visa Offerings
-/// version 0.4
+/// version 0.5
 contract Storage is owned, mortal {
 
     string constant public version = "0.1.0";
@@ -63,10 +63,10 @@ contract Storage is owned, mortal {
     struct VisaOffering {
         uint country; // as ISO 3166-1 numeric code
         bytes32 identifier;
-        string description;
+        bytes32 description;
         uint validity; // in # of blocks
         uint price;    // in wei
-        string conditions; // dummy string for conditions - will be extended with logic
+        bytes32 conditions; // dummy string for conditions - will be extended with logic
     }
 
     /**
@@ -76,8 +76,8 @@ contract Storage is owned, mortal {
      */
     mapping (uint => VisaOffering[]) public visaOfferings;
 
-    function createVisaOffering(uint _country, bytes32 _identifier, string _description,
-                                uint _validity, uint _price, string _conditions) {
+    function createVisaOffering(uint _country, bytes32 _identifier, bytes32 _description,
+                                uint _validity, uint _price, bytes32 _conditions) {
         visaOfferings[_country].push(VisaOffering({
             country: _country,
             identifier: _identifier,

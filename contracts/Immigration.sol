@@ -3,7 +3,7 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Immigration
-/// version 0.3
+/// version 0.4
 /// The immigration acts as a the border patrol. Citizens passing Immigration
 /// have to provide a valid visa. The visa will be stamped when entering and
 /// leaving the country
@@ -21,7 +21,6 @@ contract Immigration is owned, mortal {
         uint left;    // highest block # when leaving country
     }
 
-    /*mapping(address => uint) countries;*/
     mapping (address => uint) immigrationOfCountry;
 
     modifier onlyImmigration() {
@@ -52,8 +51,12 @@ contract Immigration is owned, mortal {
         immigrationOfCountry[_immigration] = _country;
     }
 
-    function getPassData(address _user) onlyImmigration() constant returns (address, bytes32, bool) {
+    function getPass(address _user) onlyImmigration() constant returns (address, bytes32, bool) {
         return Storage(usedStorage).passByOwner(_user);
+    }
+
+    function getVisaLength(address _owner, uint _country) constant returns (uint) {
+        return Storage(usedStorage).visaLength(_owner, _country);
     }
 
     function getVisa(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
@@ -74,6 +77,7 @@ contract Immigration is owned, mortal {
         _left = getVisaLeft(_user, _country, _arrayPosition);
 
     }
+
     function getVisaIdentifier(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         bytes32 _identifier
         )
@@ -81,6 +85,7 @@ contract Immigration is owned, mortal {
         var(,,c,,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _identifier = bytes32(c);
     }
+
     function getVisaAmountPaid(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
         uint _amountPaid
         )     {
