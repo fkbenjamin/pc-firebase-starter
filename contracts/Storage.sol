@@ -111,6 +111,7 @@ contract Storage is owned, mortal {
     }
 
     /** Gets all the visa assigned to a citizen */
+    // access with visaStore(ownerAddress, countryId, visaIndex) returns Visa
     mapping (address => mapping (uint => Visa[])) public visaStore;
 
     /**

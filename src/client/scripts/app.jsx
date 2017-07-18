@@ -84,10 +84,6 @@ export class App extends React.Component {
 
     this.nameresolver = parity.bonds.makeContract('0x53708Ea1EF858086Afcb2E063E5CA7CDF7EC9d76', abi.getNameresolverABI()); // v0.4
 
-
-    //this.embassy =
-    //this.nation =
-    //this.citizen =
     this.countryCode = abi.getCountryCode();
     this.dataSourceConfig= {
       text: 'name',
@@ -98,7 +94,7 @@ export class App extends React.Component {
       address: null,
       pass: null,
       bcpass: null,
-      bcvisa: null,
+      bcvisa: [],
       newPassHash: null,
       open: false,
       entered: false,
@@ -110,15 +106,17 @@ export class App extends React.Component {
       nationAddress: null,
       chipData: [
       ]
-      };
+    };
 
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
+
+    this.loadBcArray(parity.bonds.me, 288, 'visa');
     //First 0 is the country code
-    this.bcvisa = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
-      this.setState({bcvisa: a});
-    });
+    // this.state.bcvisa[0] = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
+    //   this.setState({bcvisa: a});
+    // });
   }
 
   loadData() {
@@ -130,17 +128,45 @@ export class App extends React.Component {
       });
     });
   }
+
   loadDataImmigration(_wallet) {
     var self = this;
     console.log('Loading Immigration Pass from Wallet: ' + _wallet);
     this.setState({address: _wallet});
     firebase.database().ref('pass/' + _wallet).once('value').then(function(snapshot) {
         self.setState({pass: snapshot.val(), immigrationAddressOpened: true});
-      });
+    });
+
+    this.bcpass = this.contract.passByOwner(_wallet).then(a => {
+      this.setState({bcpass: a});
+    });
+
+    this.loadBcArray(_wallet, 288, 'visa');
+  }
+
+  loadBcArray(_wallet, _country, type) {
+      console.log(`called bc array for ${type}`, _wallet);
+      if (type == 'visa') {
+          this.contract.visaLength(_wallet, _country).then(length => {
+              console.log(`Found ${length} visa to load.`, this.contract.visaStore);
+              for (let i = 0; i < length; i++) {
+                  this.contract.visaStore(_wallet,_country, i).then(visa => {
+                      let visatmp = this.state.bcvisa || [];
+                      console.log('before visatmp', visatmp);
+                      visatmp.push(visa);
+                      console.log('after visatmp', visatmp);
+                      this.setState({bcvisa: visatmp});
+                      console.log(`Visa ${i}, this ${this}, visa ${visa}`);
+                  });
+              }
+          });
+      } else if ('visaOffering') {
+          return;
+      }
   }
 
   checkWalletPass(){
-    console.log('something happens here');
+    console.log('Checking Wallet Pass');
     this.loadDataImmigration(this.state.immigrationAddress);
     this.bcpass = this.contract.passByOwner(this.state.immigrationAddress).then(a => {
       this.setState({bcpass: a})
@@ -151,14 +177,15 @@ export class App extends React.Component {
     });
     this.setState({enteredValidation: true});
   }
+
   handleScan(data){
     if(parity.api.util.isAddressValid(data)){
-    console.log(data);
-    this.setState({
-      immigrationAddress: data,
-    })
-    this.checkWalletPass();
-  }
+        console.log('scan', data);
+        this.setState({
+          immigrationAddress: data,
+        })
+        this.checkWalletPass();
+    }
 }
 
   checkIfAddress(_value) {
@@ -250,28 +277,28 @@ export class App extends React.Component {
     this.loadData();
   }
   resetApp(){
-    this.setState({tx: null,
-    address: null,
-    pass: null,
-    bcpass: null,
-    bcvisa: null,
-    newPassHash: null,
-    open: false,
-    entered: false,
-    immigrationAddress: false,
-    immigrationAddressOpened: false,
-    embassy: false,
-    institution: 1,
-    enteredValidation: false,
-    chipData: [
-    ]});
+    this.setState({
+        tx: null,
+        address: null,
+        pass: null,
+        bcpass: null,
+        bcvisa: null,
+        newPassHash: null,
+        open: false,
+        entered: false,
+        immigrationAddress: false,
+        immigrationAddressOpened: false,
+        embassy: false,
+        institution: 1,
+        enteredValidation: false,
+        chipData: [],
+    });
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
     //First 0 is the country code
-    this.bcvisa = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
-      this.setState({bcvisa: a});
-    });
+    // TODO: Load own visa
+
     this.loadData();
   }
 
@@ -284,6 +311,7 @@ export class App extends React.Component {
 
   render() {
     document.body.style.backgroundColor = "#bd4e4b";
+    // Welcome Page
     if (!this.state.entered) {
       return (
         <div>
@@ -325,6 +353,7 @@ export class App extends React.Component {
         </div>
       );
     }
+    // No connection to Parity
     if (!this.state.address) {
       return (
         <div>
@@ -337,6 +366,7 @@ export class App extends React.Component {
         </div>
       );
     }
+    // Logged in as immigration but hasn't opened a passport
     if (this.state.userType == 'immigration' && !this.state.immigrationAddressOpened) {
       document.body.style.backgroundColor = "#2E6F72";
       return (
@@ -362,7 +392,7 @@ export class App extends React.Component {
         </div>
       );
     }
-
+    // Logged in as embassy
     if (this.state.userType == 'embassy' && !this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
@@ -457,13 +487,13 @@ export class App extends React.Component {
                  </Tab>
                </Tabs>
 
-</div>
+            </div>
 
           </Paper>
         </div>
       );
     }
-
+    // Logged in as embassy and has opened a passport
     if (this.state.userType == 'embassy' && this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
@@ -638,14 +668,12 @@ export class App extends React.Component {
                        </div>
                  </Tab>
                </Tabs>
-
-</div>
-
+              </div>
           </Paper>
         </div>
       );
     }
-
+    // Logged in as nation
     if (this.state.userType == 'country') {
       document.body.style.backgroundColor = "#3B4E7F";
 
@@ -672,7 +700,7 @@ export class App extends React.Component {
         </div>
       );
     }
-
+    // Logged in as immigration has opened a passport
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       document.body.style.backgroundColor = "#2E6F72";
       return (
@@ -914,12 +942,12 @@ export class App extends React.Component {
           <List>
             <Subheader>Your Visa</Subheader>
             <ListItem
-              primaryText={this.state.bcvisa[0]}
-              secondaryText={this.state.bcvisa[1] + '/' + this.state.bcvisa[2] + ' ETH'}
+              primaryText={this.state.bcvisa[0][0]}
+              secondaryText={this.state.bcvisa[0][1] + '/' + this.state.bcvisa[0][2] + ' ETH'}
               leftAvatar={<AccountIcon
-	                  style={{width: '2.5em'}}
-	                  key='0x008aB18490E729bBea993817E0c2B3c19c877115'
-	                  address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                      style={{width: '2.5em'}}
+                      key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                      address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                           />}
               rightIcon={<SvgIconCheckCircle/>}
             />
