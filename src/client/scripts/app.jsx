@@ -75,7 +75,6 @@ export class App extends React.Component {
 
     //all contracts
     this.contract = parity.bonds.makeContract('0xca16D554f2974F32C16212c6C39e678dA958b50e', abi.getStorageABI()); // v0.6
-    // this.contract = parity.bonds.makeContract('0x8FF82AA6f3c12F4EAC29aEd5A7aecB18Ba134B6b', abi.getPassABI()); // v0.5
 
     this.immigration = parity.bonds.makeContract('0x42Da049B7E5c7AAcF5506cE7198b1a7B23070C93', abi.getImmigrationABI()); //v0.8
     this.citizen = parity.bonds.makeContract('0x90f8092B9f6E596D8D2937c971D64B93f866dD80', abi.getCitizenABI()); // v0.4
@@ -89,12 +88,21 @@ export class App extends React.Component {
       text: 'name',
       value: 'country-code'
     };
+
+    // handle all other initialization routines in reset function
+    this.resetApp();
+  }
+
+  // reset app to home screen
+  resetApp(){
     this.state = {
       tx: null,
-      address: null,
-      pass: null,
-      bcpass: null,
+      address: null, // own address
+      pass: null,  // firebase passport
+      bcpass: null, // blockchain passport
       bcvisa: [],
+      bcvisaofferings: [],
+      countryId: null, // own countryId or 0 (if not a country)
       newPassHash: null,
       open: false,
       entered: false,
@@ -108,17 +116,11 @@ export class App extends React.Component {
       ]
     };
 
-    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
-      this.setState({bcpass: a})
-    });
-
-    this.loadBcArray(parity.bonds.me, 288, 'visa');
-    //First 0 is the country code
-    // this.state.bcvisa[0] = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
-    //   this.setState({bcvisa: a});
-    // });
+    // loads user's data
+    this.loadData();
   }
 
+  // loads user's data and populates this.state.address
   loadData() {
     var self = this;
     parity.bonds.me.then(snap => {
@@ -127,11 +129,26 @@ export class App extends React.Component {
         self.setState({pass: snapshot.val()});
       });
     });
+
+    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
+      this.setState({bcpass: a})
+    });
+
+    // TODO: let user change country or load all countries
+    this.loadVisa(parity.bonds.me, 288, 'visa');
   }
 
   loadDataImmigration(_wallet) {
-    var self = this;
     console.log('Loading Immigration Pass from Wallet: ' + _wallet);
+    this.loadPass(_wallet);
+    // TODO: get own country id
+    this.loadVisa(_wallet, 288);
+    // this.loadVisaOfferings(_country);
+  }
+
+  // Populates this.state.bcpass with loaded visa
+  loadPass(_wallet) {
+    var self = this;
     this.setState({address: _wallet});
     firebase.database().ref('pass/' + _wallet).once('value').then(function(snapshot) {
         self.setState({pass: snapshot.val(), immigrationAddressOpened: true});
@@ -140,41 +157,45 @@ export class App extends React.Component {
     this.bcpass = this.contract.passByOwner(_wallet).then(a => {
       this.setState({bcpass: a});
     });
-
-    this.loadBcArray(_wallet, 288, 'visa');
   }
 
-  loadBcArray(_wallet, _country, type) {
-      console.log(`called bc array for ${type}`, _wallet);
-      if (type == 'visa') {
+  // Populates this.state.bcvisa with loaded visa
+  loadVisa(_wallet, _country) {
+      // TODO: Make sure this is only called when needed not at every Single
+      // view change.
+      console.log(`called bc array for `, _wallet);
           this.contract.visaLength(_wallet, _country).then(length => {
-              console.log(`Found ${length} visa to load.`, this.contract.visaStore);
+              console.log(`Found ${length} visa to load.`);
               for (let i = 0; i < length; i++) {
                   this.contract.visaStore(_wallet,_country, i).then(visa => {
                       let visatmp = this.state.bcvisa || [];
-                      console.log('before visatmp', visatmp);
                       visatmp.push(visa);
-                      console.log('after visatmp', visatmp);
                       this.setState({bcvisa: visatmp});
-                      console.log(`Visa ${i}, this ${this}, visa ${visa}`);
+                      console.log(`Visa #${i}: ${visa}`);
                   });
               }
           });
-      } else if ('visaOffering') {
-          return;
-      }
+  }
+
+  // Populates this.state.bcvisaofferings with loaded visaOfferings
+  loadVisaOfferings(_country) {
+    // FIXME: Method is not yet tested!
+    this.contract.visaOfferingsLength(_country).then(length => {
+        console.log(`Found ${length} visaOfferings to load.`, this.contract.visaStore);
+        for (let i = 0; i < length; i++) {
+            this.contract.visaOfferings(_country, i).then(offer => {
+                let offertmp = this.state.bcvisaofferings || [];
+                offertmp.push(offer);
+                this.setState({bcvisaofferings: offertmp});
+                console.log(`Offer #${i}: ${offer}`);
+            });
+        }
+    });
   }
 
   checkWalletPass(){
     console.log('Checking Wallet Pass');
     this.loadDataImmigration(this.state.immigrationAddress);
-    this.bcpass = this.contract.passByOwner(this.state.immigrationAddress).then(a => {
-      this.setState({bcpass: a})
-    });
-    //First 0 is the country code
-    this.bcvisa = this.contract.visaStore(this.state.immigrationAddress,0, 0).then(a => {
-      this.setState({bcvisa: a});
-    });
     this.setState({enteredValidation: true});
   }
 
@@ -186,7 +207,7 @@ export class App extends React.Component {
         })
         this.checkWalletPass();
     }
-}
+  }
 
   checkIfAddress(_value) {
     this.setState({
@@ -225,7 +246,7 @@ export class App extends React.Component {
   }
 
   enterAppCitizen() {
-    console.log('called');
+    console.log('called enterAppCitizen');
     this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
   enterAppImmigration() {
@@ -244,14 +265,16 @@ export class App extends React.Component {
     var owner = this.state.immigrationAddress;
     var country = this.immigration.immigrationOfCountry(parity.bonds.me);
     //where do we get the real id?
-    var visaId = 0;
+    // TODO: Get real visa id
+    var visaId = 1;
+    console.log('stampin', owner, country, visaId);
     this.immigration.stampIn( owner, country, visaId);
   }
   stampOut() {
     var owner = this.state.immigrationAddress;
     var country = this.immigration.immigrationOfCountry(parity.bonds.me);
     //where do we get the real id?
-    var visaId = 0;
+    var visaId = 1;
     this.immigration.stampOut(owner, country, visaId);
   }
 
@@ -272,34 +295,9 @@ export class App extends React.Component {
     }
   }
 
-
+  // called by react as soon as components are available
   componentWillMount() {
-    this.loadData();
-  }
-  resetApp(){
-    this.setState({
-        tx: null,
-        address: null,
-        pass: null,
-        bcpass: null,
-        bcvisa: null,
-        newPassHash: null,
-        open: false,
-        entered: false,
-        immigrationAddress: false,
-        immigrationAddressOpened: false,
-        embassy: false,
-        institution: 1,
-        enteredValidation: false,
-        chipData: [],
-    });
-    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
-      this.setState({bcpass: a})
-    });
-    //First 0 is the country code
-    // TODO: Load own visa
-
-    this.loadData();
+    this.resetApp();
   }
 
   getCountryCode(chosenRequest, index){
@@ -319,7 +317,6 @@ export class App extends React.Component {
             <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-
             <table cellSpacing='0' cellPadding='0' style={{margin: 'auto'}}>
             <tbody>
               <tr style={{height:365}}>
@@ -330,9 +327,6 @@ export class App extends React.Component {
                 display: 'block',
                 margin: 20
               }} onTouchTap={this.enterAppCitizen.bind(this)}/>
-
-
-
               <RaisedButton label="immigration" backgroundColor={grey300} style={{
                 display: 'block',
                 margin: 20
@@ -355,6 +349,7 @@ export class App extends React.Component {
     }
     // No connection to Parity
     if (!this.state.address) {
+      console.log(`Unknown state ${this.state.userType} and address not set ${this.state.address}. Please debug.`);
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
