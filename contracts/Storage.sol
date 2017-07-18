@@ -3,16 +3,16 @@ pragma solidity ^0.4.11;
 import "./mortal.sol";
 
 /// @title Storage for Pass, Visa and Visa Offerings
-/// version 0.5
+/// version 0.7
 contract Storage is owned, mortal {
 
-    string constant public version = "0.1.0";
+    string constant public version = "0.7.0";
 
     // Access right variables
-    address citizen;
-    address country;
-    address immigration;
-    address embassy;
+    address public citizen;
+    address public country;
+    address public immigration;
+    address public embassy;
 
     // Modifiers
     modifier only(bool citizens, bool countries, bool immigrations, bool embassies) {
@@ -44,15 +44,17 @@ contract Storage is owned, mortal {
     // Actual contract logic
     struct Passport {
         address owner;
+        uint country;
         bytes32 hashedPassport;
         bool valid;
     }
 
     mapping (address => Passport) public passByOwner;
 
-    function updatePassport(address _owner, bytes32 _hashedPassport, bool _valid) {
+    function updatePassport(address _owner, uint _country, bytes32 _hashedPassport, bool _valid) {
         passByOwner[_owner] = Passport({
             owner: _owner,
+            country: _country,
             hashedPassport: _hashedPassport,
             valid: _valid
         });
@@ -96,11 +98,11 @@ contract Storage is owned, mortal {
         delete visaOfferings[_country][index];
     }
 
-    //--------------
+    //--------------//
+    //     Visa     //
+    //--------------//
 
     struct Visa {
-        address owner;
-        uint country; // as ISO 3166-1 numeric code
         bytes32 identifier;
         uint amountPaid;
         uint price;
@@ -120,8 +122,6 @@ contract Storage is owned, mortal {
 
     function createVisa(address _owner, uint _country, bytes32 _identifier, uint _price) {
         visaStore[_owner][_country].push(Visa({
-            owner: _owner,
-            country: _country,
             identifier: _identifier,
             amountPaid: 0,
             price: _price,
@@ -130,16 +130,12 @@ contract Storage is owned, mortal {
         }));
     }
 
-    function updateVisa(address _owner, uint _country, uint _visaId,
-                        uint _amountPaid, uint _entered, uint _left)  {
-        Visa oldVisa = visaStore[_owner][_country][_visaId];
-
+    function updateVisa(address _owner, uint _country, uint _visaId, bytes32 _identifier,
+                        uint _amountPaid, uint _price, uint _entered, uint _left)  {
         visaStore[_owner][_country][_visaId] = Visa({
-            owner: _owner,
-            country: oldVisa.country,
-            identifier: oldVisa.identifier,
+            identifier: _identifier,
             amountPaid: _amountPaid,
-            price: oldVisa.price,
+            price: _price,
             entered: _entered,
             left: _left
         });

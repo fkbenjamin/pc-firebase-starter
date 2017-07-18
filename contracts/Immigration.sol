@@ -3,11 +3,12 @@ import "./mortal.sol";
 import "./Storage.sol";
 
 /// @title Immigration
-/// version 0.6
 /// The immigration acts as a the border patrol. Citizens passing Immigration
 /// have to provide a valid visa. The visa will be stamped when entering and
 /// leaving the country
 contract Immigration is owned, mortal {
+    string constant public version = "0.8.0";
+
     address public usedStorage ;
     address public nationCtrl;
 
@@ -33,8 +34,9 @@ contract Immigration is owned, mortal {
         _;
     }
 
-    function Immigration(address _usedStorage) {
-        usedStorage = _usedStorage;
+    function Immigration(address _usedStorage, address _nationCtrl) {
+        if (_usedStorage != 0x0) {usedStorage = _usedStorage;}
+        if (_nationCtrl != 0x0) {nationCtrl = _nationCtrl;}
     }
 
     function setStorage(address _store) onlyOwner() returns (bool) {
@@ -51,88 +53,68 @@ contract Immigration is owned, mortal {
         immigrationOfCountry[_immigration] = _country;
     }
 
-    function getPass(address _user) onlyImmigration() returns (address, bytes32, bool) {
-        return Storage(usedStorage).passByOwner(_user);
-    }
-
-    function getVisaLength(address _owner, uint _country) constant returns (uint) {
-        return Storage(usedStorage).visaLength(_owner, _country);
-    }
-
-    function getVisa(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
-        address _userAdd,
-        uint _countryId,
-        bytes32 _identifier,
-        uint _amountPaid,
-        uint _price,
-        uint _entered,
-        uint _left)
-    {
-        _userAdd = _user;
-        _countryId = _country;
-        _identifier = getVisaIdentifier(_user, _country, _arrayPosition);
-        _amountPaid = getVisaAmountPaid(_user, _country, _arrayPosition);
-        _price = getVisaPrice(_user, _country, _arrayPosition);
-        _entered = getVisaEntered(_user, _country, _arrayPosition);
-        _left = getVisaLeft(_user, _country, _arrayPosition);
-
-    }
-
-    function getVisaIdentifier(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
+    function getVisaIdentifier(address _user, uint _country, uint _arrayPosition) onlyImmigration() returns(
         bytes32 _identifier
         )
     {
-        var(,,c,,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(c,,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _identifier = bytes32(c);
     }
 
-    function getVisaAmountPaid(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
+    function getVisaAmountPaid(address _user, uint _country, uint _arrayPosition) onlyImmigration() returns(
         uint _amountPaid
         )     {
-        var(,,,d,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,d,,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _amountPaid = uint(d);
     }
-    function getVisaPrice(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
+    function getVisaPrice(address _user, uint _country, uint _arrayPosition) onlyImmigration() returns(
         uint _price
         )     {
-        var(,,,,e,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,e,,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _price = uint(e);
     }
-    function getVisaEntered(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
+    function getVisaEntered(address _user, uint _country, uint _arrayPosition) onlyImmigration() returns(
         uint _entered
         )     {
-        var(,,,,,f,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,f,) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _entered = uint(f);
     }
-    function getVisaLeft(address _user, uint _country, uint _arrayPosition) onlyImmigration() constant returns(
+    function getVisaLeft(address _user, uint _country, uint _arrayPosition) onlyImmigration() returns(
         uint _left
         )     {
-        var(,,,,,,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
+        var(,,,,g) = Storage(usedStorage).visaStore(_user, _country, _arrayPosition);
         _left = uint(g);
     }
 
 
-    function stampIn(address _owner, uint _country, uint _visaId) returns (bool) {
+    function stampIn(address _owner, uint _country, uint _visaId) {
         // Visa wasn't used so far
         require(getVisaEntered(_owner,_country,_visaId) == 0);
+
+        // Visa has to be paid
+        uint _amountPaid = getVisaAmountPaid(_owner,_country,_visaId);
+        require(_amountPaid >= getVisaPrice(_owner, _country, _visaId));
 
         Storage(usedStorage).updateVisa(
             _owner,
             _country,
             _visaId,
-            getVisaAmountPaid(_owner,_country,_visaId),
+            getVisaIdentifier(_owner, _country, _visaId),
+            _amountPaid,
+            getVisaPrice(_owner, _country, _visaId),
             now,
             0
         );
-        return true;
     }
 
-    function stampOut(address _owner, uint _country, uint _visaId) returns (bool) {
+    function stampOut(address _owner, uint _country, uint _visaId) {
+        uint entered = getVisaEntered(_owner,_country,_visaId);
+
         // Visa was used for Entry
-        require(getVisaEntered(_owner,_country,_visaId) > 0);
+        require(entered > 0);
 
         // Person has to be entered in the past
-        require(getVisaEntered(_owner,_country,_visaId) <= now);
+        require(entered < now);
 
         // Visa wasn't used for exit
         require(getVisaLeft(_owner,_country,_visaId) == 0);
@@ -141,10 +123,11 @@ contract Immigration is owned, mortal {
             _owner,
             _country,
             _visaId,
+            getVisaIdentifier(_owner, _country, _visaId),
             getVisaAmountPaid(_owner,_country,_visaId),
-            getVisaEntered(_owner,_country,_visaId) ,
+            getVisaPrice(_owner, _country, _visaId),
+            entered,
             now
         );
-        return true;
     }
 }
