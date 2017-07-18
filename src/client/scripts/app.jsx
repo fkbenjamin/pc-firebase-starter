@@ -142,6 +142,13 @@ export class App extends React.Component {
   checkWalletPass(){
     console.log('something happens here');
     this.loadDataImmigration(this.state.immigrationAddress);
+    this.bcpass = this.contract.passByOwner(this.state.immigrationAddress).then(a => {
+      this.setState({bcpass: a})
+    });
+    //First 0 is the country code
+    this.bcvisa = this.contract.visaStore(this.state.immigrationAddress,0, 0).then(a => {
+      this.setState({bcvisa: a});
+    });
     this.setState({enteredValidation: true});
   }
   handleScan(data){
