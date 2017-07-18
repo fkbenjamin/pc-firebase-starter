@@ -403,6 +403,12 @@ export class App extends React.Component {
                    <div>
                     <h1>Scan QR-Code or enter Wallet-ID</h1>
                     <Divider/>
+                    <QrReader
+                 style={previewStyle}
+                 onError={this.handleError.bind(this)}
+                 onScan={this.handleScan.bind(this)}
+                 />
+                 <Divider/>
                     <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
                     <Divider/>
                     <RaisedButton style={{
