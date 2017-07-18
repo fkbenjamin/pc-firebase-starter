@@ -72,14 +72,17 @@ export class App extends React.Component {
     super();
     this.bcpass = [];
     this.newPass = {};
-    //has to be updated to new contract
-    this.contract = parity.bonds.makeContract('0x51CC78d6fd5fd7076147Ac2b84Fb1FA0d7E53343', abi.getPassABI()); // v?
+
+    //all contracts
+    this.contract = parity.bonds.makeContract('0xca16D554f2974F32C16212c6C39e678dA958b50e', abi.getStorageABI()); // v0.6
     // this.contract = parity.bonds.makeContract('0x8FF82AA6f3c12F4EAC29aEd5A7aecB18Ba134B6b', abi.getPassABI()); // v0.5
 
-    this.immigration = parity.bonds.makeContract('0xCF1d21D0C8400385D708501EB1C1f6A4a60785A5', abi.getImmigrationABI()); //v0.5
-    this.citizen = parity.bonds.makeContract('0x7B9a037FC41D7cFdCd4FF5660F2aCd0c11475295', abi.getCitizenABI()); // v0.1
-    this.nation = parity.bonds.makeContract('0x31a376740362DB9131bF90Bc3488a6591786370d', abi.getNationABI()); // v0.1
-    this.embassy = parity.bonds.makeContract('0x46f86e63DAA8f3Fc534527368E36E838E78Dc6eD', abi.getEmbassyABI()); // v0.1
+    this.immigration = parity.bonds.makeContract('0x42Da049B7E5c7AAcF5506cE7198b1a7B23070C93', abi.getImmigrationABI()); //v0.8
+    this.citizen = parity.bonds.makeContract('0x90f8092B9f6E596D8D2937c971D64B93f866dD80', abi.getCitizenABI()); // v0.4
+    this.nation = parity.bonds.makeContract('0x75e0292B68FaADc14B4Ac64E7ED6D6A1b2706654', abi.getNationABI()); // v0.5
+    this.embassy = parity.bonds.makeContract('0x6b96d593126ACa0c135791542d0C10593116bB31', abi.getEmbassyABI()); // v0.4
+
+    this.nameresolver = parity.bonds.makeContract('0x53708Ea1EF858086Afcb2E063E5CA7CDF7EC9d76', abi.getNameresolverABI()); // v0.4
 
 
     //this.embassy =

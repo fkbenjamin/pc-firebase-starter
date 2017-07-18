@@ -9,7 +9,7 @@ import "./Storage.sol";
 contract Immigration is owned, mortal {
     string constant public version = "0.8.0";
 
-    address public usedStorage ;
+    address public usedStorage;
     address public nationCtrl;
 
     struct Visa {
