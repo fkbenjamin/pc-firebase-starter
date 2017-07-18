@@ -215,17 +215,17 @@ export class App extends React.Component {
   }
   stampIn() {
     var owner = this.state.immigrationAddress;
-    console.log(owner);
-    console.log('here');
-    console.log(this.immigration);
-    this.immigration.immigrationOfCountry[this.state.address];
-    console.log(country);
-    var visaId = this.immigration.getVisaLength(owner, country);
-    console.log(visaId);
+    var country = this.immigration.immigrationOfCountry(parity.bonds.me);
+    //where do we get the real id?
+    var visaId = 0;
     this.immigration.stampIn( owner, country, visaId);
   }
   stampOut() {
-    this.immigration.stampOut(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me],this.immigration.getVisaLength(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me]) );
+    var owner = this.state.immigrationAddress;
+    var country = this.immigration.immigrationOfCountry(parity.bonds.me);
+    //where do we get the real id?
+    var visaId = 0;
+    this.immigration.stampOut(owner, country, visaId);
   }
 
   verifyPassport() {
@@ -674,6 +674,7 @@ export class App extends React.Component {
     }
 
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
+      document.body.style.backgroundColor = "#2E6F72";
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
