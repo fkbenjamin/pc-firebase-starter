@@ -107,6 +107,7 @@ export class App extends React.Component {
       embassy: false,
       institution: 1,
       enteredValidation: false,
+      nationAddress: null,
       chipData: [
       ]
       };
@@ -156,6 +157,13 @@ export class App extends React.Component {
   checkIfAddress(_value) {
     this.setState({
       immigrationAddress: _value.target.value,
+      immigrationAddressIsAddress: parity.api.util.isAddressValid(_value.target.value)
+    })
+  }
+
+  checkIfAddressForNationView(_value) {
+    this.setState({
+      nationAddress: _value.target.value,
       immigrationAddressIsAddress: parity.api.util.isAddressValid(_value.target.value)
     })
 
@@ -213,6 +221,16 @@ export class App extends React.Component {
   }
   stampOut() {
     this.immigration.stampOut(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me],this.immigration.getVisaLength(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me]) );
+  }
+  addFromNation() {
+    switch(this.state.institution) {
+      case 1:     this.nation.addEmbassy(this.state.nationAddress);
+                  break;
+      case 2:    this.nation.addImmigration(this.state.nationAddress);
+                  break;
+      default: console.log('ERROR while adding a institution');
+
+    }
   }
 
 
@@ -628,12 +646,12 @@ export class App extends React.Component {
             </SelectField>
             <br />
             <Divider/>
-            <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
+            <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddressForNationView(e)}/>
             <Divider/>
 
             <RaisedButton style={{
               marginTop: 15
-            }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
+            }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.addFromNation.bind(this)} />
           </Paper>
         </div>
       );
