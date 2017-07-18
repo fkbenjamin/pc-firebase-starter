@@ -41,7 +41,7 @@ import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
-
+import QrReader from 'react-qr-reader';
 
 
 
@@ -56,6 +56,10 @@ const paperStyle = {
   marginTop: 150,
   padding: 35
 };
+const previewStyle = {
+      height: 450,
+      width: '100%',
+    };
 const qrcode = new QRCode();
 
 
@@ -135,6 +139,15 @@ export class App extends React.Component {
     this.loadDataImmigration(this.state.immigrationAddress);
     this.setState({enteredValidation: true});
   }
+  handleScan(data){
+    if(parity.api.util.isAddressValid(data)){
+    console.log(data);
+    this.setState({
+      immigrationAddress: data,
+    })
+    this.checkWalletPass();
+  }
+}
 
   checkIfAddress(_value) {
     this.setState({
@@ -226,6 +239,9 @@ export class App extends React.Component {
   getCountryCode(chosenRequest, index){
       this.setState({countryCode:chosenRequest['country-code']});
   }
+  handleError(err){
+   console.error(err)
+ }
 
   render() {
     document.body.style.backgroundColor = "#bd4e4b";
@@ -292,6 +308,12 @@ export class App extends React.Component {
           <Paper style={paperStyle} zDepth={5}>
             <h1>Scan QR-Code or enter Wallet-ID</h1>
             <Divider/>
+            <QrReader
+         style={previewStyle}
+         onError={this.handleError.bind(this)}
+         onScan={this.handleScan.bind(this)}
+         />
+         <Divider/>
             <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
             <Divider/>
             <RaisedButton style={{
