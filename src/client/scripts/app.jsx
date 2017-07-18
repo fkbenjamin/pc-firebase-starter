@@ -187,15 +187,13 @@ export class App extends React.Component {
   hashPass() {
     // TODO: Is the picture included in this hash?
     this.setState({
-      newPassHash: parity.api.util.sha3(this.newPass.code + this.newPass.givennames + this.newPass.eyes + this.newPass.height + this.newPass.name + this.newPass.nationality + this.newPass.passnr + this.newPass.pob + this.newPass.residence + this.newPass.sex + this.newPass.type + this.newPass.dob + this.state.url)
+      newPassHash: parity.api.util.sha3(this.newPass.code + this.newPass.givennames + this.newPass.eyes + this.newPass.height + this.newPass.name + this.newPass.nationality + this.newPass.passnr + this.newPass.pob + this.newPass.residence + this.newPass.sex + this.newPass.type + this.newPass.dob + this.state.url )
     });
   }
   uploadPass() {
     console.log('Uploading Pass');
-    //country code
-    this.setState({
-      tx: this.contract.updatePassport(parity.bonds.me, 1, this.state.newPassHash, false)
-    });
+    this.citizen.createPassport(this.state.countryCode, this.state.newPassHash);
+    console.log('after contract call');
     fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
   }
 
@@ -947,6 +945,13 @@ export class App extends React.Component {
                   <td>
                     <h1>Passport Formular:
                     </h1>
+                    <AutoComplete
+                    floatingLabelText ="Country"
+                    dataSource ={this.countryCode}
+                    dataSourceConfig={this.dataSourceConfig}
+                    onNewRequest = {this.getCountryCode.bind(this)}
+                    />
+                    <Divider/>
                     <TextField hintText="Code" underlineShow={false} onChange={e => this.changeValue('code', e)}/>
                     <Divider/>
                     <TextField hintText="Date of Birth" underlineShow={false} onChange={e => this.changeValue('dob', e)}/>
