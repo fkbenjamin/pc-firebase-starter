@@ -222,6 +222,10 @@ export class App extends React.Component {
   stampOut() {
     this.immigration.stampOut(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me],this.immigration.getVisaLength(this.state.immigrationAddress, this.immigration.immigrationOfCountry[parity.bonds.me]) );
   }
+
+  verifyPassport() {
+    this.embassy.verifyPass();
+  }
   addFromNation() {
     switch(this.state.institution) {
       case 1:     this.nation.addEmbassy(this.state.nationAddress);
@@ -255,6 +259,10 @@ export class App extends React.Component {
     ]});
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
+    });
+    //First 0 is the country code
+    this.bcvisa = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
+      this.setState({bcvisa: a});
     });
     this.loadData();
   }
@@ -618,7 +626,7 @@ export class App extends React.Component {
 
                      <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
                        marginTop: 15
-                     }} label="Verify Passport" onTouchTap={this.stampIn.bind(this)}/>
+                     }} label="Verify Passport" onTouchTap={this.verifyPassport.bind(this)}/>
                        </div>
                  </Tab>
                </Tabs>
