@@ -224,7 +224,10 @@ export class App extends React.Component {
   }
 
   verifyPassport() {
-    this.embassy.verifyPass();
+    console.log(this.state.immigrationAddress);
+    console.log(this.state.pass.hash);
+
+    this.embassy.verifyPass(this.state.immigrationAddress ,this.state.pass.hash);
   }
   addFromNation() {
     switch(this.state.institution) {
