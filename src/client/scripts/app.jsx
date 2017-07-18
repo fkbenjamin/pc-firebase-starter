@@ -114,7 +114,8 @@ export class App extends React.Component {
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
-    this.bcvisa = this.contract.visaByOwner(parity.bonds.me, 0).then(a => {
+    //First 0 is the country code
+    this.bcvisa = this.contract.visaStore(parity.bonds.me,0, 0).then(a => {
       this.setState({bcvisa: a});
     });
   }
@@ -176,8 +177,9 @@ export class App extends React.Component {
   }
   uploadPass() {
     console.log('Uploading Pass');
+    //country code
     this.setState({
-      tx: this.contract.updatePassport(parity.bonds.me, this.state.newPassHash, false)
+      tx: this.contract.updatePassport(parity.bonds.me, 1, this.state.newPassHash, false)
     });
     fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
   }
@@ -522,7 +524,7 @@ export class App extends React.Component {
                                    <td >
                                      <DescText desc='Typ/Type/Type' val={this.state.pass.type}/></td>
                                    <td >
-                                     <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code}/></td>
+                                     <DescText desc='Kode/Code/Code' val={this.state.pass.code}/></td>
                                    <td >
                                      <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr}/></td>
                                  </tr>
@@ -576,7 +578,7 @@ export class App extends React.Component {
                            <DescText desc="Address" val={this.state.bcpass[0]} />
                          </td>
                          <td>
-                         {this.state.bcpass[2]
+                         {this.state.bcpass[3]
                            ? <Chip backgroundColor={greenA200} style={{
                                marginTop: 30
                              }}>
@@ -589,7 +591,7 @@ export class App extends React.Component {
                        </tr>
                        <tr>
                          <td colSpan="2">
-                           <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+                           <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
                          </td>
                        </tr>
                      </tbody>
@@ -661,7 +663,7 @@ export class App extends React.Component {
                           <td >
                             <DescText desc='Typ/Type/Type' val={this.state.pass.type}/></td>
                           <td >
-                            <DescText desc='CardText>Kode/Code/Code' val={this.state.pass.code}/></td>
+                            <DescText desc='Kode/Code/Code' val={this.state.pass.code}/></td>
                           <td >
                             <DescText desc='Pass-Nr./Passport No./Passeport No' val={this.state.pass.passnr}/></td>
                         </tr>
@@ -715,7 +717,7 @@ export class App extends React.Component {
                   <DescText desc="Address" val={this.state.bcpass[0]} />
                 </td>
                 <td>
-                {this.state.bcpass[2]
+                {this.state.bcpass[3]
                   ? <Chip backgroundColor={greenA200} style={{
                       marginTop: 30
                     }}>
@@ -728,7 +730,7 @@ export class App extends React.Component {
               </tr>
               <tr>
                 <td colSpan="2">
-                  <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+                  <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
                 </td>
               </tr>
             </tbody>
@@ -855,7 +857,7 @@ export class App extends React.Component {
                 <DescText desc="Address" val={this.state.bcpass[0]} />
               </td>
               <td>
-              {this.state.bcpass[2]
+              {this.state.bcpass[3]
                 ? <Chip backgroundColor={greenA200} style={{
                     marginTop: 30
                   }}>
@@ -868,7 +870,7 @@ export class App extends React.Component {
             </tr>
             <tr>
               <td colSpan="2">
-                <DescText desc="Hashed Pass" val={this.state.bcpass[1]} />
+                <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
               </td>
             </tr>
           </tbody>
@@ -877,8 +879,8 @@ export class App extends React.Component {
           <List>
             <Subheader>Your Visa</Subheader>
             <ListItem
-              primaryText={this.state.bcvisa[2]}
-              secondaryText={this.state.bcvisa[3] + '/' + this.state.bcvisa[4] + ' ETH'}
+              primaryText={this.state.bcvisa[0]}
+              secondaryText={this.state.bcvisa[1] + '/' + this.state.bcvisa[2] + ' ETH'}
               leftAvatar={<AccountIcon
 	                  style={{width: '2.5em'}}
 	                  key='0x008aB18490E729bBea993817E0c2B3c19c877115'
