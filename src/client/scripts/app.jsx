@@ -1001,16 +1001,16 @@ export class App extends React.Component {
             <Subheader>Your Visa</Subheader>
             {this.state.bcvisa.length == 0 ?
               <h3>You don't have any visa yet.</h3>
-            : <ListItem
-              primaryText={this.state.bcvisa[0][0]}
-              secondaryText={this.state.bcvisa[0][1] + '/' + this.state.bcvisa[0][2] + ' ETH'}
+            : this.state.bcvisa.map(visa => <ListItem
+              primaryText={visa[0]}
+              secondaryText={visa[1] + '/' + visa[2] + ' ETH'}
               leftAvatar={<AccountIcon
                       style={{width: '2.5em'}}
                       key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                       address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                           />}
               rightIcon={<SvgIconCheckCircle/>}
-            />}
+            />)}
           </List>
           <Divider />
 
