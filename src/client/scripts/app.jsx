@@ -4,7 +4,7 @@ import styles from "../style.css";
 import {Bond} from 'oo7';
 import {RRaisedButton, Rspan, TextBond, HashBond} from 'oo7-react';
 import {bonds, formatBlockNumber, formatBalance, isNullData, makeContract} from 'oo7-parity';
-import {TransactionProgressBadge, AccountIcon} from 'parity-reactive-ui';
+import {TransactionProgressBadge, TransactionProgressLabel, AccountIcon} from 'parity-reactive-ui';
 import {List, ListItem} from 'material-ui/List';
 import ActionInfo from 'material-ui/svg-icons/action/info';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -138,6 +138,8 @@ export class App extends React.Component {
     this.loadVisa(parity.bonds.me, 288, 'visa');
   }
 
+
+
   loadDataImmigration(_wallet) {
     console.log('Loading Immigration Pass from Wallet: ' + _wallet);
     this.loadPass(_wallet);
@@ -240,9 +242,19 @@ export class App extends React.Component {
   }
   uploadPass() {
     console.log('Uploading Pass');
-    this.citizen.createPassport(this.state.countryCode, this.state.newPassHash);
+    this.setState({tx: this.citizen.createPassport(this.state.countryCode, this.state.newPassHash)});
+    let tx = this.citizen.createPassport(this.state.countryCode, this.state.newPassHash);
     console.log('after contract call');
     fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
+    tx.done(s => this.checkTransaction(s).bind(this));
+  }
+  checkTransaction(s){
+    console.log('arrived');
+    if(s.confirmed.blockHash){
+      this.loadData();
+    }
+
+
   }
 
   enterAppCitizen() {
@@ -819,8 +831,59 @@ export class App extends React.Component {
           <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <PassForm/>
-          </Paper>
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <h1>Passport Formular:
+                    </h1>
+                    <AutoComplete
+                    floatingLabelText ="Country"
+                    dataSource ={this.countryCode}
+                    dataSourceConfig={this.dataSourceConfig}
+                    onNewRequest = {this.getCountryCode.bind(this)}
+                    />
+                    <Divider/>
+                    <TextField hintText="Code" underlineShow={false} onChange={e => this.changeValue('code', e)}/>
+                    <Divider/>
+                    <TextField hintText="Date of Birth" underlineShow={false} onChange={e => this.changeValue('dob', e)}/>
+                    <Divider/>
+                    <TextField hintText="Colour of eyes" underlineShow={false} onChange={e => this.changeValue('eyes', e)}/>
+                    <Divider/>
+                    <TextField hintText="Given Names" underlineShow={false} onChange={e => this.changeValue('givennames', e)}/>
+                    <Divider/>
+                    <TextField hintText="Height" underlineShow={false} onChange={e => this.changeValue('height', e)}/>
+                    <Divider/>
+                    <TextField hintText="Name" underlineShow={false} onChange={e => this.changeValue('name', e)}/>
+                    <Divider/>
+                    <TextField hintText="Nationality" underlineShow={false} onChange={e => this.changeValue('nationality', e)}/>
+                    <Divider/>
+                    <TextField hintText="Passport Number" underlineShow={false} onChange={e => this.changeValue('passnr', e)}/>
+                    <Divider/>
+                    <TextField hintText="Place of Birth" underlineShow={false} onChange={e => this.changeValue('pob', e)}/>
+                    <Divider/>
+                    <TextField hintText="Residence" underlineShow={false} onChange={e => this.changeValue('residence', e)}/>
+                    <Divider/>
+                    <TextField hintText="Passport Type" underlineShow={false} onChange={e => this.changeValue('type', e)}/>
+                    <Divider/>
+                    <TextField hintText="Sex" underlineShow={false} onChange={e => this.changeValue('sex', e)}/>
+                    <Divider/>
+                    <TextField hintText="Hash" value={this.state.newPassHash
+                      ? this.state.newPassHash
+                      : ''} disabled={true} underlineShow={false}/>
+                  </td>
+                  <td>
+                    <h2>Foto-Upload:</h2>
+                    <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
+                    <img src={this.state.url}/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <RaisedButton backgroundColor="#a4c639" label="Submit your Pass" icon={< SvgIconDone />} color={fullWhite} onTouchTap={this.uploadPass.bind(this)}/>
+	             <TransactionProgressBadge value={this.state.tx}/>
+          </div>          </Paper>
         </div>
       );
     }
@@ -936,7 +999,9 @@ export class App extends React.Component {
           <Divider />
           <List>
             <Subheader>Your Visa</Subheader>
-            <ListItem
+            {this.state.bcvisa.length == 0 ?
+              <h3>You don't have any visa yet.</h3>
+            : <ListItem
               primaryText={this.state.bcvisa[0][0]}
               secondaryText={this.state.bcvisa[0][1] + '/' + this.state.bcvisa[0][2] + ' ETH'}
               leftAvatar={<AccountIcon
@@ -945,7 +1010,7 @@ export class App extends React.Component {
                       address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                           />}
               rightIcon={<SvgIconCheckCircle/>}
-            />
+            />}
           </List>
           <Divider />
 
@@ -957,66 +1022,6 @@ export class App extends React.Component {
 
       </div>
       ); } }
-      export class PassForm extends App {constructor() {
-        super();
-      }
-      render() {
-        return (
-          <div>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <h1>Passport Formular:
-                    </h1>
-                    <AutoComplete
-                    floatingLabelText ="Country"
-                    dataSource ={this.countryCode}
-                    dataSourceConfig={this.dataSourceConfig}
-                    onNewRequest = {this.getCountryCode.bind(this)}
-                    />
-                    <Divider/>
-                    <TextField hintText="Code" underlineShow={false} onChange={e => this.changeValue('code', e)}/>
-                    <Divider/>
-                    <TextField hintText="Date of Birth" underlineShow={false} onChange={e => this.changeValue('dob', e)}/>
-                    <Divider/>
-                    <TextField hintText="Colour of eyes" underlineShow={false} onChange={e => this.changeValue('eyes', e)}/>
-                    <Divider/>
-                    <TextField hintText="Given Names" underlineShow={false} onChange={e => this.changeValue('givennames', e)}/>
-                    <Divider/>
-                    <TextField hintText="Height" underlineShow={false} onChange={e => this.changeValue('height', e)}/>
-                    <Divider/>
-                    <TextField hintText="Name" underlineShow={false} onChange={e => this.changeValue('name', e)}/>
-                    <Divider/>
-                    <TextField hintText="Nationality" underlineShow={false} onChange={e => this.changeValue('nationality', e)}/>
-                    <Divider/>
-                    <TextField hintText="Passport Number" underlineShow={false} onChange={e => this.changeValue('passnr', e)}/>
-                    <Divider/>
-                    <TextField hintText="Place of Birth" underlineShow={false} onChange={e => this.changeValue('pob', e)}/>
-                    <Divider/>
-                    <TextField hintText="Residence" underlineShow={false} onChange={e => this.changeValue('residence', e)}/>
-                    <Divider/>
-                    <TextField hintText="Passport Type" underlineShow={false} onChange={e => this.changeValue('type', e)}/>
-                    <Divider/>
-                    <TextField hintText="Sex" underlineShow={false} onChange={e => this.changeValue('sex', e)}/>
-                    <Divider/>
-                    <TextField hintText="Hash" value={this.state.newPassHash
-                      ? this.state.newPassHash
-                      : ''} disabled={true} underlineShow={false}/>
-                  </td>
-                  <td>
-                    <h2>Foto-Upload:</h2>
-                    <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
-                    <img src={this.state.url}/>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <RaisedButton backgroundColor="#a4c639" label="Submit your Pass" icon={< SvgIconDone />} color={fullWhite} onTouchTap={this.uploadPass.bind(this)}/>
-          </div>
-        );
-      }
-}
 
       //Descriptive Text of Pass
        export class DescText extends React.Component {
