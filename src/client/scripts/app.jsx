@@ -178,6 +178,9 @@ export class App extends React.Component {
               for (let i = 0; i < length; i++) {
                   this.contract.visaStore(_wallet,_country, i).then(visa => {
                       let visatmp = this.state.bcvisa || [];
+                      visa.country = _country;
+                      visa.id = i;
+                      console.log('Visa with id&country',visa);
                       visatmp.push(visa);
                       this.setState({bcvisa: visatmp});
                       console.log(`Visa #${i}: ${visa}`);
@@ -370,7 +373,7 @@ export class App extends React.Component {
  }
  //here you pay for your visa
  payForBCVisa(visa){
-   console.log(visa);
+   this.citizen.payVisa(visa.country, visa.id);
  }
 
   render() {
