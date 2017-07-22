@@ -12,6 +12,7 @@ import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader';
 import Chip from 'material-ui/Chip';
 import Avatar from 'material-ui/Avatar';
+import Snackbar from 'material-ui/Snackbar';
 import SvgIconDone from 'material-ui/svg-icons/action/done';
 import SvgIconWarning from 'material-ui/svg-icons/alert/warning';
 import SvgIconAdd from 'material-ui/svg-icons/content/add-circle';
@@ -105,6 +106,7 @@ export class App extends React.Component {
       countryId: null, // own countryId or 0 (if not a country)
       newPassHash: null,
       open: false,
+      snackOpen: false,
       entered: false,
       immigrationAddress: false,
       immigrationAddressOpened: false,
@@ -263,22 +265,34 @@ export class App extends React.Component {
   }
   enterAppImmigration() {
     console.log('called');
-    let ioc = this.immigration.immigrationOfCountry(parity.bonds.me).then(s => {
+    this.immigration.immigrationOfCountry(parity.bonds.me).then(s => {
       console.log('Das ist in s:', s.c[0]);
       if(s.c[0]>0){
         this.setState({entered: true, userType: 'immigration', countryForVisa: s.c[0]});
       }
-      else console.log('This is no immigration address!');
+      else this.setState({snackOpen: true});
     });
   }
 
   enterAppEmbassy() {
     console.log('called');
-    this.setState({entered: true, userType: 'embassy'});
+    this.embassy.embassiesOfCountry(parity.bonds.me).then(s => {
+      console.log('Das ist in s:', s.c[0]);
+      if(s.c[0]>0){
+        this.setState({entered: true, userType: 'embassy',countryForVisa: s.c[0]});
+      }
+      else this.setState({snackOpen: true});
+    });
   }
   enterAppCountry() {
     console.log('called');
-    this.setState({entered: true, userType: 'country'});
+    this.nation.countries(parity.bonds.me).then(s => {
+      console.log('Das ist in s:', s.c[0]);
+      if(s.c[0]>0){
+        this.setState({entered: true, userType: 'country',countryForVisa: s.c[0]});
+      }
+      else this.setState({snackOpen: true});
+    });
   }
   stampIn() {
     var owner = this.state.immigrationAddress;
@@ -363,6 +377,11 @@ export class App extends React.Component {
               </tbody>
             </table>
           </Paper>
+          <Snackbar
+          open={this.state.snackOpen}
+          message="Your wallet doesn't have access to that view"
+          autoHideDuration={3000}
+        />
         </div>
       );
     }
