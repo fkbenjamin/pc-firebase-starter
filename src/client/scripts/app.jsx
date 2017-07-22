@@ -287,14 +287,14 @@ export class App extends React.Component {
     // TODO: Get real visa id
     var visaId = 1;
     console.log('stampin', owner, country, visaId);
-    this.immigration.stampIn( owner, country, visaId);
+    this.setState({tx: this.immigration.stampIn( owner, country, visaId)});
   }
   stampOut() {
     var owner = this.state.immigrationAddress;
     var country = this.immigration.immigrationOfCountry(parity.bonds.me);
     //where do we get the real id?
     var visaId = 1;
-    this.immigration.stampOut(owner, country, visaId);
+    this.setState({tx: this.immigration.stampOut(owner, country, visaId)});
   }
 
   verifyPassport() {
@@ -836,6 +836,7 @@ export class App extends React.Component {
             <RaisedButton fullWidth={true} style={{
               marginTop: 15
             }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>
+            <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
       );
