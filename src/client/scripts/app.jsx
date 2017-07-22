@@ -115,7 +115,8 @@ export class App extends React.Component {
       enteredValidation: false,
       nationAddress: null,
       chipData: [
-      ]
+      ],
+      alpha: ''
     };
 
     // loads user's data
@@ -261,6 +262,7 @@ export class App extends React.Component {
 
   enterAppCitizen() {
     console.log('called enterAppCitizen');
+    this.getFlag();
     this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
   enterAppImmigration() {
@@ -294,6 +296,17 @@ export class App extends React.Component {
       else this.setState({snackOpen: true});
     });
   }
+  //generates alpha-2 country code from numeric country code
+  getFlag() {
+    for(var i = 0; i < this.countryCode.length; i++){
+      if(this.countryCode[i]["country-code"] == this.state.bcpass[1]) {
+        this.setState({alpha: this.countryCode[i]["alpha-2"]});
+      }
+    }
+
+
+  }
+
   stampIn() {
     var owner = this.state.immigrationAddress;
     var country = this.immigration.immigrationOfCountry(parity.bonds.me);
@@ -1005,6 +1018,7 @@ export class App extends React.Component {
             <tr>
               <td colSpan='3'>
                 <h3>Your blockchain passport:</h3>
+                <img src={"flags/" + this.state.alpha + ".png"}/>
               </td>
             </tr>
             <tr>
