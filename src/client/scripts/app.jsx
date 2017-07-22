@@ -144,10 +144,16 @@ export class App extends React.Component {
 
   loadDataImmigration(_wallet) {
     console.log('Loading Immigration Pass from Wallet: ' + _wallet);
+    //clear visa to avoid mixup of visa
+    this.clearBcVisa();
     this.loadPass(_wallet);
     // TODO: get own country id
     this.loadVisa(_wallet, 288);
     // this.loadVisaOfferings(_country);
+  }
+
+  clearBcVisa(){
+    this.setState({bcvisa: []});
   }
 
   // Populates this.state.bcpass with loaded visa
