@@ -319,6 +319,13 @@ export class App extends React.Component {
       }
     }
   }
+  getAlpha(country) {
+    for(var i = 0; i < this.countryCode.length; i++){
+      if(this.countryCode[i]["country-code"] == country) {
+        return this.countryCode[i]["alpha-2"];
+      }
+    }
+  }
 
   stampIn() {
     var owner = this.state.immigrationAddress;
@@ -883,11 +890,7 @@ export class App extends React.Component {
                     : this.state.bcvisa.map(visa => <ListItem
                       primaryText={visa[0]}
                       secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
-                      leftAvatar={<AccountIcon
-                              style={{width: '2.5em'}}
-                              key='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                              address='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                                  />}
+                      leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
                       rightIcon={<SvgIconCheckCircle/>}
                     />)}
                   </List>
@@ -1085,10 +1088,7 @@ export class App extends React.Component {
             : this.state.bcvisa.map(visa => <ListItem
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
-              leftAvatar={<AccountIcon
-                      style={{width: '2.5em'}}
-                      key='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                      address='0x008aB18490E729bBea993817E0c2B3c19c877115'/>}
+              leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
               rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
             />)}
           </List>
