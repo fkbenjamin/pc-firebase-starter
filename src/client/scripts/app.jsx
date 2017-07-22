@@ -368,6 +368,10 @@ export class App extends React.Component {
   handleError(err){
    console.error(err)
  }
+ //here you pay for your visa
+ payForBCVisa(visa){
+   console.log(visa);
+ }
 
   render() {
     document.body.style.backgroundColor = "#bd4e4b";
@@ -1080,7 +1084,7 @@ export class App extends React.Component {
                       key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                       address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                           />}
-              rightIcon={<SvgIconCheckCircle/>}
+              rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
             />)}
           </List>
           <Divider />
@@ -1248,7 +1252,7 @@ render() {
       handleClose() {
         this.setState({open: false});
       };
-      debugFunction(index){
+      applyForBcVisa(index){
         this.citizen.applyForVisa(this.state.countryCode, index);
         console.log('Button was pressed', index);
       }
@@ -1291,7 +1295,7 @@ render() {
                         key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                         address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                             />}
-                rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Apply"} color={fullWhite} onTouchTap={this.debugFunction.bind(this, index)}/>} />)
+                rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Apply"} color={fullWhite} onTouchTap={this.applyForBcVisa.bind(this, index)}/>} />)
               }
               </List>
             </Dialog>
