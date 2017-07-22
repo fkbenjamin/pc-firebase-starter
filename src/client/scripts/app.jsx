@@ -891,16 +891,15 @@ export class App extends React.Component {
                       primaryText={visa[0]}
                       secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
                       leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-                      rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> : <SvgIconWarning/>}
+                      rightIcon={visa[2] - visa [1] <= 0 ? visa[3] == 0 ? <RaisedButton style={{
+                        marginTop: 15, minWidth:100
+                      }} label="Stamp in" onTouchTap={this.stampIn.bind(this)}/> : <RaisedButton style={{
+                        marginTop: 15, minWidth:100
+                      }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>: <SvgIconWarning/>}
                     />)}
                   </List>
 
-            <RaisedButton fullWidth={true} style={{
-              marginTop: 15
-            }} label="Stamp in" onTouchTap={this.stampIn.bind(this)}/>
-            <RaisedButton fullWidth={true} style={{
-              marginTop: 15
-            }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>
+          
             <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
