@@ -1277,7 +1277,7 @@ render() {
               dataSourceConfig={this.dataSourceConfig}
               onNewRequest = {this.getCountryCode.bind(this)}
               />
-              <List >
+              <List>
               {this.state.bcvisaofferings.length == 0 ?
                 <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
               : this.state.bcvisaofferings.map(offering => <ListItem
@@ -1288,7 +1288,7 @@ render() {
                         key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                         address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                             />}
-                rightIcon={<SvgIconCheckCircle/>} />)
+                rightIcon={<RaisedButton backgroundColor="#a4c639" label="Apply" color={fullWhite} onTouchTap={this.handleOpen.bind(this)}/>} />)
               }
               </List>
             </Dialog>
