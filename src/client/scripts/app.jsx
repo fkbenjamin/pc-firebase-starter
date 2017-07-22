@@ -332,9 +332,9 @@ export class App extends React.Component {
   }
   addFromNation() {
     switch(this.state.institution) {
-      case 1:     this.nation.addEmbassy(this.state.nationAddress);
+      case 1:     this.setState({tx: this.nation.addEmbassy(this.state.nationAddress)});
                   break;
-      case 2:    this.nation.addImmigration(this.state.nationAddress);
+      case 2:    this.setState({tx: this.nation.addImmigration(this.state.nationAddress)});
                   break;
       default: console.log('ERROR while adding a institution');
 
@@ -742,6 +742,7 @@ export class App extends React.Component {
             <RaisedButton style={{
               marginTop: 15
             }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.addFromNation.bind(this)} />
+            <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
       );
