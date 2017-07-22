@@ -135,7 +135,6 @@ export class App extends React.Component {
     this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
       this.setState({bcpass: a})
     });
-
     // TODO: let user change country or load all countries
     this.loadVisa(parity.bonds.me, 288, 'visa');
   }
@@ -873,7 +872,7 @@ export class App extends React.Component {
                       <h3>This user doesn't have any visa yet.</h3>
                     : this.state.bcvisa.map(visa => <ListItem
                       primaryText={visa[0]}
-                      secondaryText={visa[1] + '/' + visa[2] + ' ETH'}
+                      secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
                       leftAvatar={<AccountIcon
                               style={{width: '2.5em'}}
                               key='0x008aB18490E729bBea993817E0c2B3c19c877115'
@@ -1075,7 +1074,7 @@ export class App extends React.Component {
               <h3>You don't have any visa yet.</h3>
             : this.state.bcvisa.map(visa => <ListItem
               primaryText={visa[0]}
-              secondaryText={visa[1] + '/' + visa[2] + ' ETH'}
+              secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
               leftAvatar={<AccountIcon
                       style={{width: '2.5em'}}
                       key='0x008aB18490E729bBea993817E0c2B3c19c877115'
@@ -1249,6 +1248,10 @@ render() {
       handleClose() {
         this.setState({open: false});
       };
+      debugFunction(index){
+        this.citizen.applyForVisa(this.state.countryCode, index);
+        console.log('Button was pressed', index);
+      }
 
       render() {
         const actions = [ < FlatButton label = "Cancel" primary = {
@@ -1270,7 +1273,7 @@ render() {
         return (
           <div>
             <RaisedButton backgroundColor="#a4c639" label="Add a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
-            <Dialog style={{minHeight: 500}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
+            <Dialog style={{minHeight: 700, minWidth: 1200}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
               <AutoComplete
               floatingLabelText ="Country"
               dataSource ={this.countryCode}
@@ -1280,15 +1283,15 @@ render() {
               <List>
               {this.state.bcvisaofferings.length == 0 ?
                 <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
-              : this.state.bcvisaofferings.map(offering => <ListItem
+              : this.state.bcvisaofferings.map((offering, index) => <ListItem
                 primaryText={offering[1]}
-                secondaryText={offering[2]}
+                secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. " + offering[2]}
                 leftAvatar={<AccountIcon
                         style={{width: '2.5em'}}
                         key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                         address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                             />}
-                rightIcon={<RaisedButton backgroundColor="#a4c639" label="Apply" color={fullWhite} onTouchTap={this.handleOpen.bind(this)}/>} />)
+                rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Apply"} color={fullWhite} onTouchTap={this.debugFunction.bind(this, index)}/>} />)
               }
               </List>
             </Dialog>
