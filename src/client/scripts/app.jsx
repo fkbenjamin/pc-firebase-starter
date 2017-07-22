@@ -269,6 +269,8 @@ export class App extends React.Component {
 
   enterAppCitizen() {
     console.log('called enterAppCitizen');
+    this.clearBcVisa();
+    this.loadVisa(this.state.address, 288);
     this.getFlag();
     this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
@@ -898,8 +900,6 @@ export class App extends React.Component {
                       }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>: <SvgIconWarning/>}
                     />)}
                   </List>
-
-          
             <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
