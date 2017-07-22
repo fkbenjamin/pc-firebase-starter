@@ -891,7 +891,7 @@ export class App extends React.Component {
                       primaryText={visa[0]}
                       secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
                       leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-                      rightIcon={<SvgIconCheckCircle/>}
+                      rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> : <SvgIconWarning/>}
                     />)}
                   </List>
 
@@ -1089,7 +1089,7 @@ export class App extends React.Component {
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
               leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-              rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
+              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> :<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
             />)}
           </List>
           <Divider />
