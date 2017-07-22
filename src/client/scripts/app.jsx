@@ -263,8 +263,15 @@ export class App extends React.Component {
   }
   enterAppImmigration() {
     console.log('called');
-    this.setState({entered: true, userType: 'immigration'});
+    let ioc = this.immigration.immigrationOfCountry(parity.bonds.me).then(s => {
+      console.log('Das ist in s:', s.c[0]);
+      if(s.c[0]>0){
+        this.setState({entered: true, userType: 'immigration', countryForVisa: s.c[0]});
+      }
+      else console.log('This is no immigration address!');
+    });
   }
+
   enterAppEmbassy() {
     console.log('called');
     this.setState({entered: true, userType: 'embassy'});
@@ -806,13 +813,23 @@ export class App extends React.Component {
             </tbody>
             </table>
 
-            <table>
-              <tbody>
-                <tr>
-                  <td>Here will be the country's Visa</td>
-                </tr>
-              </tbody>
-            </table>
+            <List>
+                    <Subheader>Your Visa</Subheader>
+                    {console.log('So sieht das Visa aus:', this.state.bcvisa)}
+                    {this.state.bcvisa.length == 0 ?
+                      <h3>This user doesn't have any visa yet.</h3>
+                    : this.state.bcvisa.map(visa => <ListItem
+                      primaryText={visa[0]}
+                      secondaryText={visa[1] + '/' + visa[2] + ' ETH'}
+                      leftAvatar={<AccountIcon
+                              style={{width: '2.5em'}}
+                              key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                              address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                                  />}
+                      rightIcon={<SvgIconCheckCircle/>}
+                    />)}
+                  </List>
+
             <RaisedButton fullWidth={true} style={{
               marginTop: 15
             }} label="Stamp in" onTouchTap={this.stampIn.bind(this)}/>
