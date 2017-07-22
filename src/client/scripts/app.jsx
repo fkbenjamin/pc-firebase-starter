@@ -116,7 +116,6 @@ export class App extends React.Component {
       nationAddress: null,
       chipData: [
       ],
-      alpha: ''
     };
 
     // loads user's data
@@ -300,11 +299,17 @@ export class App extends React.Component {
   getFlag() {
     for(var i = 0; i < this.countryCode.length; i++){
       if(this.countryCode[i]["country-code"] == this.state.bcpass[1]) {
-        this.setState({alpha: this.countryCode[i]["alpha-2"]});
+        this.alpha = this.countryCode[i]["alpha-2"];
       }
     }
-
-
+  }
+  getFlagImmigration() {
+    console.log('Flag IMMI', this.state.bcpass[1].c[0])
+    for(var i = 0; i < this.countryCode.length; i++){
+      if(this.countryCode[i]["country-code"] == this.state.bcpass[1].c[0]) {
+        this.alpha = this.countryCode[i]["alpha-2"];
+      }
+    }
   }
 
   stampIn() {
@@ -677,7 +682,7 @@ export class App extends React.Component {
                      <tbody>
                        <tr>
                          <td colSpan='3'>
-                           The blockchain passport:
+                         <h3>The blockchain passport:</h3>
                          </td>
                        </tr>
                        <tr>
@@ -750,6 +755,8 @@ export class App extends React.Component {
     // Logged in as immigration has opened a passport
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       document.body.style.backgroundColor = "#2E6F72";
+      console.log('Whats the bcpass?', this.state.bcpass);
+      this.getFlagImmigration();
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
@@ -816,7 +823,8 @@ export class App extends React.Component {
             <tbody>
               <tr>
                 <td colSpan='3'>
-                  The blockchain passport:
+                <h3>The blockchain passport:</h3>
+                <img src={"flags/" + this.alpha + ".png"}/>
                 </td>
               </tr>
               <tr>
@@ -1019,7 +1027,7 @@ export class App extends React.Component {
             <tr>
               <td colSpan='3'>
                 <h3>Your blockchain passport:</h3>
-                <img src={"flags/" + this.state.alpha + ".png"}/>
+                <img src={"flags/" + this.alpha + ".png"}/>
               </td>
             </tr>
             <tr>
