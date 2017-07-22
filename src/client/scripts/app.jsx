@@ -191,7 +191,7 @@ export class App extends React.Component {
   loadVisaOfferings(_country) {
     // FIXME: Method is not yet tested!
     this.contract.visaOfferingsLength(_country).then(length => {
-        console.log(`Found ${length} visaOfferings to load.`, this.contract.visaStore);
+        console.log(`Found ${length} visaOfferings to load.`);
         for (let i = 0; i < length; i++) {
             this.contract.visaOfferings(_country, i).then(offer => {
                 let offertmp = this.state.bcvisaofferings || [];
@@ -359,6 +359,12 @@ export class App extends React.Component {
 
   getCountryCode(chosenRequest, index){
       this.setState({countryCode:chosenRequest['country-code']});
+      this.clearVisaOfferings();
+      this.loadVisaOfferings(chosenRequest['country-code']);
+  }
+
+  clearVisaOfferings() {
+      this.setState({bcvisaofferings: []});
   }
   handleError(err){
    console.error(err)
@@ -1264,13 +1270,27 @@ render() {
         return (
           <div>
             <RaisedButton backgroundColor="#a4c639" label="Add a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
-            <Dialog title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
+            <Dialog style={{minHeight: 500}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
               <AutoComplete
               floatingLabelText ="Country"
               dataSource ={this.countryCode}
               dataSourceConfig={this.dataSourceConfig}
               onNewRequest = {this.getCountryCode.bind(this)}
               />
+              <List >
+              {this.state.bcvisaofferings.length == 0 ?
+                <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
+              : this.state.bcvisaofferings.map(offering => <ListItem
+                primaryText={offering[1]}
+                secondaryText={offering[2]}
+                leftAvatar={<AccountIcon
+                        style={{width: '2.5em'}}
+                        key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                        address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                            />}
+                rightIcon={<SvgIconCheckCircle/>} />)
+              }
+              </List>
             </Dialog>
           </div>
         );
