@@ -4,7 +4,7 @@ import styles from "../style.css";
 import {Bond} from 'oo7';
 import {RRaisedButton, Rspan, TextBond, HashBond} from 'oo7-react';
 import {bonds, formatBlockNumber, formatBalance, isNullData, makeContract} from 'oo7-parity';
-import {TransactionProgressBadge, TransactionProgressLabel, AccountIcon} from 'parity-reactive-ui';
+import {TransactionProgressBadge, TransactionProgressLabel, AccountIcon, TransactButton} from 'parity-reactive-ui';
 import {List, ListItem} from 'material-ui/List';
 import ActionInfo from 'material-ui/svg-icons/action/info';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -373,7 +373,10 @@ export class App extends React.Component {
  }
  //here you pay for your visa
  payForBCVisa(visa){
-   this.citizen.payVisa(visa.country, visa.id);
+   let dataString = 'payVisa(';
+   dataString += visa.country + ', ' + visa.id + ')';
+   //parity.bonds.post({to:0x90f8092B9f6E596D8D2937c971D64B93f866dD80, value: 0.04 * 1e15});
+   this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
  }
 
   render() {
@@ -876,7 +879,7 @@ export class App extends React.Component {
                     <Subheader>Your Visa</Subheader>
                     {console.log('So sieht das Visa aus:', this.state.bcvisa)}
                     {this.state.bcvisa.length == 0 ?
-                      <h3>This user doesn't have any visa yet.</h3>
+                      <h3>This user doesnt have any visa yet.</h3>
                     : this.state.bcvisa.map(visa => <ListItem
                       primaryText={visa[0]}
                       secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
@@ -1078,15 +1081,14 @@ export class App extends React.Component {
           <List>
             <Subheader>Your Visa</Subheader>
             {this.state.bcvisa.length == 0 ?
-              <h3>You don't have any visa yet.</h3>
+              <h3>You dont have any visa yet.</h3>
             : this.state.bcvisa.map(visa => <ListItem
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
               leftAvatar={<AccountIcon
                       style={{width: '2.5em'}}
                       key='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                      address='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                          />}
+                      address='0x008aB18490E729bBea993817E0c2B3c19c877115'/>}
               rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
             />)}
           </List>
