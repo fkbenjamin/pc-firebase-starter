@@ -116,6 +116,7 @@ export class App extends React.Component {
       institution: 1,
       enteredValidation: false,
       nationAddress: null,
+      countryForVisa: null,
       chipData: [],
     };
 
@@ -145,12 +146,12 @@ export class App extends React.Component {
   }
 
   loadDataImmigration(_wallet) {
-    console.log('Loading Immigration Pass from Wallet: ' + _wallet);
+    console.log(`Immigration of country ${this.state.countryForVisa} loads ${_wallet}.`);
     //clear visa to avoid mixup of visa
     this.clearBcVisa();
     this.loadPass(_wallet);
     // TODO: get own country id
-    this.loadVisa(_wallet, 288);
+    this.loadVisa(_wallet, this.state.countryForVisa);
     // this.loadVisaOfferings(_country);
   }
 
@@ -249,15 +250,34 @@ export class App extends React.Component {
     this.newPass[_field] = _value.target.value;
     this.hashPass();
   }
+
   changeInstitution(event, index, value){
     this.setState({institution: value});
   }
 
   hashPass() {
-    // TODO: Is the picture included in this hash?
     this.setState({
-      newPassHash: parity.api.util.sha3(this.newPass.code + this.newPass.givennames + this.newPass.eyes + this.newPass.height + this.newPass.name + this.newPass.nationality + this.newPass.passnr + this.newPass.pob + this.newPass.residence + this.newPass.sex + this.newPass.type + this.newPass.dob + this.state.url )
+      newPassHash:  calcHashByPass(this.newPass),
     });
+  }
+
+  calcHashByPass(pass) {
+    let str = "";
+    str += pass.code || "";
+    str += pass.givennames || "";
+    str += pass.eyes || "";
+    str += pass.height || "";
+    str += pass.name || "";
+    str += pass.nationality || "";
+    str += pass.passnr || "";
+    str += pass.pob || "";
+    str += pass.residence || "";
+    str += pass.sex || "";
+    str += pass.type || "";
+    str += pass.dob || "";
+    str += pass.url || "";
+    console.log(str);
+    return parity.api.util.sha3(str);
   }
 
   uploadPass() {
@@ -268,6 +288,7 @@ export class App extends React.Component {
     fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
     tx.done(s => this.checkTransaction(s).bind(this));
   }
+
   checkTransaction(s){
     console.log('arrived');
     if(s.confirmed.blockHash){
@@ -326,7 +347,6 @@ export class App extends React.Component {
   }
 
   getFlagImmigration() {
-    console.log('Flag IMMI', this.state.bcpass[1].c[0])
     for(var i = 0; i < this.countryCode.length; i++){
       if(this.countryCode[i]["country-code"] == this.state.bcpass[1].c[0]) {
         this.alpha = this.countryCode[i]["alpha-2"];
@@ -384,30 +404,32 @@ export class App extends React.Component {
     }
   }
 
-  // called by react as soon as components are available
-  componentWillMount() {
-    // this.resetApp();
-  }
-
   getCountryCode(chosenRequest, index){
-      this.setState({countryCode:chosenRequest['country-code']});
-      this.clearVisaOfferings();
-      this.loadVisaOfferings(chosenRequest['country-code']);
+    this.setState({countryCode:chosenRequest['country-code']});
+    this.clearVisaOfferings();
+    this.loadVisaOfferings(chosenRequest['country-code']);
   }
 
   clearVisaOfferings() {
-      this.setState({bcvisaofferings: []});
+    this.setState({bcvisaofferings: []});
   }
+
+  //here you pay for your visa
+  payForBCVisa(visa){
+    let dataString = 'payVisa(';
+    dataString += visa.country + ', ' + visa.id + ')';
+    //parity.bonds.post({to:0x90f8092B9f6E596D8D2937c971D64B93f866dD80, value: 0.04 * 1e15});
+    this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
+  }
+
   handleError(err){
-   console.error(err)
- }
- //here you pay for your visa
- payForBCVisa(visa){
-   let dataString = 'payVisa(';
-   dataString += visa.country + ', ' + visa.id + ')';
-   //parity.bonds.post({to:0x90f8092B9f6E596D8D2937c971D64B93f866dD80, value: 0.04 * 1e15});
-   this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
- }
+    console.error(err)
+  }
+
+  // called by react as soon as components are available
+  componentWillMount() {
+    // nothing
+  }
 
   render() {
     document.body.style.backgroundColor = "#bd4e4b";
@@ -803,10 +825,16 @@ export class App extends React.Component {
       return (
         <div>
           <div onClick={this.resetApp.bind(this)}>
-          <Logo />
+            <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-          <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
+            <h1>
+              Passport of {this.state.pass.givennames} {this.state.pass.name}
+              <div style={{float:'right'}}>
+                <img src={"flags/" + this.alpha + ".png"}/>
+              </div>
+            </h1>
+
             <table>
               <tbody>
                 <tr>
@@ -866,8 +894,7 @@ export class App extends React.Component {
             <tbody>
               <tr>
                 <td colSpan='3'>
-                <h3>The blockchain passport:</h3>
-                <img src={"flags/" + this.alpha + ".png"}/>
+                  <h3>The blockchain passport:</h3>
                 </td>
               </tr>
               <tr>
