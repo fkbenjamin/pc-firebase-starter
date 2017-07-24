@@ -30,8 +30,6 @@ import * as firebase from 'firebase';
 import {sha3_256} from 'js-sha3';
 import FileUploader from 'react-firebase-file-uploader';
 import QRCode from 'qrcode.react';
-import {FireClass} from './fireclass.jsx';
-import {ABI} from './ABI.jsx';
 import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -44,12 +42,16 @@ import Visibility from 'material-ui/svg-icons/action/visibility';
 import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import QrReader from 'react-qr-reader';
 
+import {FireClass} from './fireclass.jsx';
+import {ABI} from './ABI.jsx';
 
 
 //creats new instant of FireClass, which handles all Firebase Stuff => see fireclass.jsx
 const fc = new FireClass();
-//loads Class of ABI's
+//loads Class of ABI's => see ABI.jsx
 const abi = new ABI();
+const qrcode = new QRCode();
+
 const paperStyle = {
   width: '70%',
   maxWidth: 1000,
@@ -58,16 +60,18 @@ const paperStyle = {
   padding: 35
 };
 const previewStyle = {
-      height: 450,
-      width: '100%',
-    };
-const qrcode = new QRCode();
-
+  height: 450,
+  width: '100%',
+};
 
 const LinearProgressExampleSimple = () => (
   <LinearProgress mode="indeterminate" />
 );
 
+// Constants:
+const COUNTRIES = [288,752,40]; // only these countries will be used for visa
+
+// App:
 export class App extends React.Component {
   constructor() {
     super();
@@ -97,11 +101,11 @@ export class App extends React.Component {
   // reset app to home screen
   resetApp(){
     this.state = {
-      tx: null,
-      address: null, // own address
+      tx: null, // current transaction (and its status)
+      address: null, // own parity address
       pass: null,  // firebase passport
       bcpass: null, // blockchain passport
-      bcvisa: [],
+      bcvisa: [], // blockchain visa
       bcvisaofferings: [],
       countryId: null, // own countryId or 0 (if not a country)
       newPassHash: null,
@@ -114,8 +118,7 @@ export class App extends React.Component {
       institution: 1,
       enteredValidation: false,
       nationAddress: null,
-      chipData: [
-      ],
+      chipData: [],
     };
 
     // loads user's data
@@ -125,21 +128,23 @@ export class App extends React.Component {
   // loads user's data and populates this.state.address
   loadData() {
     var self = this;
-    parity.bonds.me.then(snap => {
-      this.setState({address: snap});
-      firebase.database().ref('pass/' + snap).once('value').then(function(snapshot) {
+    console.log('I am ' + this.state.address);
+    parity.bonds.me.then(me => {
+      console.log('I am ' + me);
+      self.setState({address: me});
+
+      firebase.database().ref('pass/' + me).once('value').then(function(snapshot) {
         self.setState({pass: snapshot.val()});
       });
+
+      this.bcpass = this.contract.passByOwner(me).then(a => {
+        this.setState({bcpass: a})
+      });
+
+      this.loadAllVisa(me);
     });
 
-    this.bcpass = this.contract.passByOwner(parity.bonds.me).then(a => {
-      this.setState({bcpass: a})
-    });
-    // TODO: let user change country or load all countries
-    this.loadVisa(parity.bonds.me, 288, 'visa');
   }
-
-
 
   loadDataImmigration(_wallet) {
     console.log('Loading Immigration Pass from Wallet: ' + _wallet);
@@ -155,12 +160,12 @@ export class App extends React.Component {
     this.setState({bcvisa: []});
   }
 
-  // Populates this.state.bcpass with loaded visa
+  // Populates this.state.bcpass
   loadPass(_wallet) {
     var self = this;
-    this.setState({address: _wallet});
     firebase.database().ref('pass/' + _wallet).once('value').then(function(snapshot) {
-        self.setState({pass: snapshot.val(), immigrationAddressOpened: true});
+      self.setState({address: _wallet});
+      self.setState({pass: snapshot.val(), immigrationAddressOpened: true});
     });
 
     this.bcpass = this.contract.passByOwner(_wallet).then(a => {
@@ -168,25 +173,30 @@ export class App extends React.Component {
     });
   }
 
+  loadAllVisa(_wallet) {
+    for (let c of COUNTRIES) {
+      this.loadVisa(_wallet, c);
+    }
+  }
+
   // Populates this.state.bcvisa with loaded visa
   loadVisa(_wallet, _country) {
-      // TODO: Make sure this is only called when needed not at every Single
-      // view change.
-      console.log(`called bc array for `, _wallet);
-          this.contract.visaLength(_wallet, _country).then(length => {
-              console.log(`Found ${length} visa to load.`);
-              for (let i = 0; i < length; i++) {
-                  this.contract.visaStore(_wallet,_country, i).then(visa => {
-                      let visatmp = this.state.bcvisa || [];
-                      visa.country = _country;
-                      visa.id = i;
-                      console.log('Visa with id&country',visa);
-                      visatmp.push(visa);
-                      this.setState({bcvisa: visatmp});
-                      console.log(`Visa #${i}: ${visa}`);
-                  });
-              }
+    // TODO: Make sure this is only called when needed not at every Single
+    // view change.
+    console.log(`Loading visa of ${_country} for `, _wallet);
+      this.contract.visaLength(_wallet, _country).then(length => {
+        console.log(`Found ${length} visa of ${_country} to load.`);
+        for (let i = 0; i < length; i++) {
+          this.contract.visaStore(_wallet, _country, i).then(visa => {
+            let visatmp = this.state.bcvisa || [];
+            visa.country = _country;
+            visa.id = i;
+            visatmp.push(visa);
+            this.setState({bcvisa: visatmp});
+            console.log(`Visa #${i}: ${visa}`);
           });
+        }
+      });
   }
 
   // Populates this.state.bcvisaofferings with loaded visaOfferings
@@ -211,6 +221,7 @@ export class App extends React.Component {
     this.setState({enteredValidation: true});
   }
 
+  // Called on scanning a qr code
   handleScan(data){
     if(parity.api.util.isAddressValid(data)){
         console.log('scan', data);
@@ -250,6 +261,7 @@ export class App extends React.Component {
       newPassHash: parity.api.util.sha3(this.newPass.code + this.newPass.givennames + this.newPass.eyes + this.newPass.height + this.newPass.name + this.newPass.nationality + this.newPass.passnr + this.newPass.pob + this.newPass.residence + this.newPass.sex + this.newPass.type + this.newPass.dob + this.state.url )
     });
   }
+
   uploadPass() {
     console.log('Uploading Pass');
     this.setState({tx: this.citizen.createPassport(this.state.countryCode, this.state.newPassHash)});
@@ -263,19 +275,18 @@ export class App extends React.Component {
     if(s.confirmed.blockHash){
       this.loadData();
     }
-
-
   }
 
   enterAppCitizen() {
-    console.log('called enterAppCitizen');
+    console.log('entered as citizen');
     this.clearBcVisa();
-    this.loadVisa(this.state.address, 288);
+    this.loadAllVisa(this.state.address);
     this.getFlag();
     this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
+
   enterAppImmigration() {
-    console.log('called');
+    console.log('entered as immigration');
     this.immigration.immigrationOfCountry(parity.bonds.me).then(s => {
       console.log('Das ist in s:', s.c[0]);
       if(s.c[0]>0){
@@ -286,7 +297,7 @@ export class App extends React.Component {
   }
 
   enterAppEmbassy() {
-    console.log('called');
+    console.log('entered as embassy');
     this.embassy.embassiesOfCountry(parity.bonds.me).then(s => {
       console.log('Das ist in s:', s.c[0]);
       if(s.c[0]>0){
@@ -295,8 +306,9 @@ export class App extends React.Component {
       else this.setState({snackOpen: true});
     });
   }
+
   enterAppCountry() {
-    console.log('called');
+    console.log('entered as country');
     this.nation.countries(parity.bonds.me).then(s => {
       console.log('Das ist in s:', s.c[0]);
       if(s.c[0]>0){
@@ -305,6 +317,7 @@ export class App extends React.Component {
       else this.setState({snackOpen: true});
     });
   }
+
   //generates alpha-2 country code from numeric country code
   getFlag() {
     for(var i = 0; i < this.countryCode.length; i++){
@@ -313,6 +326,7 @@ export class App extends React.Component {
       }
     }
   }
+
   getFlagImmigration() {
     console.log('Flag IMMI', this.state.bcpass[1].c[0])
     for(var i = 0; i < this.countryCode.length; i++){
@@ -321,6 +335,7 @@ export class App extends React.Component {
       }
     }
   }
+
   getAlpha(country) {
     for(var i = 0; i < this.countryCode.length; i++){
       if(this.countryCode[i]["country-code"] == country) {
@@ -329,21 +344,25 @@ export class App extends React.Component {
     }
   }
 
-  stampIn() {
-    var owner = this.state.immigrationAddress;
-    var country = this.immigration.immigrationOfCountry(parity.bonds.me);
-    //where do we get the real id?
-    // TODO: Get real visa id
-    var visaId = 1;
+  stampIn(visa) {
+    let owner = this.state.immigrationAddress;
+    let country = visa.country;
+    let visaId = visa.id;
+
     console.log('stampin', owner, country, visaId);
-    this.setState({tx: this.immigration.stampIn( owner, country, visaId)});
+    this.setState({tx: this.immigration.stampIn( owner, country, visaId).then(this.stamped)});
   }
-  stampOut() {
-    var owner = this.state.immigrationAddress;
-    var country = this.immigration.immigrationOfCountry(parity.bonds.me);
-    //where do we get the real id?
-    var visaId = 1;
-    this.setState({tx: this.immigration.stampOut(owner, country, visaId)});
+  stampOut(visa) {
+    let owner = this.state.immigrationAddress;
+    let country = visa.country;
+    let visaId = visa.id;
+
+    console.log('stampOut', owner, country, visaId);
+    this.setState({tx: this.immigration.stampOut(owner, country, visaId).then(this.stamped)});
+  }
+  stamped(ele) {
+    console.log('stamped this', this);
+    console.log('stamped ele', ele);
   }
 
   verifyPassport() {
@@ -352,20 +371,24 @@ export class App extends React.Component {
 
     this.embassy.verifyPass(this.state.immigrationAddress ,this.state.pass.hash);
   }
+
   addFromNation() {
     switch(this.state.institution) {
-      case 1:     this.setState({tx: this.nation.addEmbassy(this.state.nationAddress)});
-                  break;
-      case 2:    this.setState({tx: this.nation.addImmigration(this.state.nationAddress)});
-                  break;
-      default: console.log('ERROR while adding a institution');
-
+      case 1:
+        this.setState({tx: this.nation.addEmbassy(this.state.nationAddress)});
+        break;
+      case 2:
+        this.setState({tx: this.nation.addImmigration(this.state.nationAddress)});
+        break;
+      default:
+        console.log('ERROR while adding a institution');
+        break;
     }
   }
 
   // called by react as soon as components are available
   componentWillMount() {
-    this.resetApp();
+    // this.resetApp();
   }
 
   getCountryCode(chosenRequest, index){
@@ -885,27 +908,31 @@ export class App extends React.Component {
             </table>
 
             <List>
-                    <Subheader>Your Visa</Subheader>
-                    {console.log('So sieht das Visa aus:', this.state.bcvisa)}
-                    {this.state.bcvisa.length == 0 ?
-                      <h3>This user doesnt have any visa yet.</h3>
-                    : this.state.bcvisa.map(visa => <ListItem
-                      primaryText={visa[0]}
-                      secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
-                      leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-                      rightIcon={visa[2] - visa [1] <= 0 ? visa[3] == 0 ? <RaisedButton style={{
-                        marginTop: 15, minWidth:100
-                      }} label="Stamp in" onTouchTap={this.stampIn.bind(this)}/> : <RaisedButton style={{
-                        marginTop: 15, minWidth:100
-                      }} label="Stamp out" onTouchTap={this.stampOut.bind(this)}/>: <SvgIconWarning/>}
-                    />)}
-                  </List>
+              <Subheader>Your Visa</Subheader>
+              {console.log('So sieht das Visa aus:', this.state.bcvisa)}
+              {this.state.bcvisa.length == 0 ?
+                <h3>This user doesnt have any visa yet.</h3>
+              : this.state.bcvisa.map(visa =>
+                  <ListItem
+                  primaryText={visa[0]}
+                  secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
+                  leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
+                  rightIcon={
+                    visa[2] - visa[1] <= 0
+                    ? visa[3] == 0
+                    ? <RaisedButton style={{marginTop: 15, minWidth:100}} label="Stamp in" onTouchTap={this.stampIn.bind(this, visa)}/>
+                    : <RaisedButton style={{marginTop: 15, minWidth:100}} label="Stamp out" onTouchTap={this.stampOut.bind(this, visa)}/>
+                    : <SvgIconWarning/>}
+                  />)
+              }
+            </List>
             <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
       );
 
     }
+    // Enter a new pass
     if (!this.state.pass) {
       return (
         <div>
@@ -1130,7 +1157,8 @@ export class App extends React.Component {
       }
 }
 
-export class DialogExampleModal2 extends App {constructor() {
+export class DialogExampleModal2 extends App {
+  constructor() {
   super();
   this.arrayEqualizer = 1;
   this.styles = {
@@ -1289,19 +1317,28 @@ render() {
               onNewRequest = {this.getCountryCode.bind(this)}
               />
               <List>
-              {this.state.bcvisaofferings.length == 0 ?
-                <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
-              : this.state.bcvisaofferings.map((offering, index) => <ListItem
-                primaryText={offering[1]}
-                secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. " + offering[2]}
-                leftAvatar={<AccountIcon
-                        style={{width: '2.5em'}}
-                        key='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                        address='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                            />}
-                rightIcon={<RaisedButton backgroundColor="#a4c639" label={"Apply"} color={fullWhite} onTouchTap={this.applyForBcVisa.bind(this, index)}/>} />)
+              {
+                this.state.bcvisaofferings.length == 0
+                ? <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
+                : this.state.bcvisaofferings.map((offering, index) =>
+                  <ListItem
+                    primaryText={offering[1]}
+                    secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. - " + offering[2]}
+                    leftAvatar={<AccountIcon
+                            style={{width: '2.5em'}}
+                            key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                            address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                    />}
+                    rightIcon={<RaisedButton
+                            backgroundColor="#a4c639"
+                            label={"Apply"}
+                            color={fullWhite}
+                            onTouchTap={this.applyForBcVisa.bind(this, index)}
+                    />}
+                  />)
               }
               </List>
+            <TransactionProgressBadge value={this.state.tx} />
             </Dialog>
           </div>
         );
