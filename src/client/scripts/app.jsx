@@ -167,7 +167,7 @@ export class App extends React.Component {
     // this.loadVisaOfferings(_country);
   }
 
-  clearBcVisa(){
+  clearBcVisa() {
     this.setState({bcvisa: []});
   }
 
@@ -212,18 +212,26 @@ export class App extends React.Component {
 
   // Populates this.state.bcvisaofferings with loaded visaOfferings
   loadVisaOfferings(_country) {
-    // FIXME: Method is not yet tested!
+
     this.contract.visaOfferingsLength(_country).then(length => {
         console.log(`Found ${length} visaOfferings to load.`);
         for (let i = 0; i < length; i++) {
             this.contract.visaOfferings(_country, i).then(offer => {
-                let offertmp = this.state.bcvisaofferings || [];
-                offertmp.push(offer);
-                this.setState({bcvisaofferings: offertmp});
-                console.log(`Offer #${i}: ${offer}`);
+
+                if (offer[1] != "") {
+                  console.log(`Offer #${i}: ${offer}`);
+                  let offertmp = this.state.bcvisaofferings || [];
+                  offer.country = _country;
+                  offer.id = i;
+                  offertmp.push(offer);
+                  this.setState({bcvisaofferings: offertmp});
+                } else {
+                  console.log(`Offer #${i}: ${offer} is empty.`);
+                }
             });
         }
     });
+
   }
 
   checkWalletPass(){
@@ -233,7 +241,7 @@ export class App extends React.Component {
   }
 
   // Called on scanning a qr code
-  handleScan(data){
+  handleScan(data) {
     if(parity.api.util.isAddressValid(data)){
         console.log('scan', data);
         this.setState({
@@ -361,6 +369,7 @@ export class App extends React.Component {
   }
 
   getFlagImmigration() {
+    console.log('Getting immigration flag');
     for(var i = 0; i < this.countryCode.length; i++){
       if(this.countryCode[i]["country-code"] == this.state.bcpass[1].c[0]) {
         this.alpha = this.countryCode[i]["alpha-2"];
@@ -424,6 +433,11 @@ export class App extends React.Component {
     this.loadVisaOfferings(chosenRequest['country-code']);
   }
 
+  deleteBcVisaOffering(index){
+    this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    console.log('Button was pressed', index);
+  }
+
   clearVisaOfferings() {
     this.setState({bcvisaofferings: []});
   }
@@ -434,6 +448,10 @@ export class App extends React.Component {
     dataString += visa.country + ', ' + visa.id + ')';
     //parity.bonds.post({to:0x90f8092B9f6E596D8D2937c971D64B93f866dD80, value: 0.04 * 1e15});
     this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
+  }
+
+  hashToReadable(hash) {
+    return hash.slice(0,7) + '...' + hash.slice(-4);
   }
 
   handleError(err){
@@ -529,9 +547,11 @@ export class App extends React.Component {
          <Divider/>
             <TextField hintText="PassChain-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
             <Divider/>
-            <RaisedButton style={{
-              marginTop: 15
-            }} label="Check" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.checkWalletPass.bind(this)} />
+            <RaisedButton style={{marginTop: 15}}
+                          label="Check"
+                          fullWidth={true}
+                          disabled={!this.state.immigrationAddressIsAddress}
+                          onTouchTap={this.checkWalletPass.bind(this)} />
           </Paper>
         </div>
       );
@@ -540,27 +560,26 @@ export class App extends React.Component {
     if (this.state.userType == 'embassy' && !this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
-
         <div>
-        <div style={backHeadingStyle}>
-          Embassy
-        </div>
+          <div style={backHeadingStyle}>
+            Embassy
+          </div>
           <div onClick={this.resetApp.bind(this)}>
             <Logo />
           </div>
 
           <Paper style={{width: '70%',
-          maxWidth: 1000,
-          margin: 'auto',
-          marginTop: 150,
-          }} zDepth={5}>
+                        maxWidth: 1000,
+                        margin: 'auto',
+                        marginTop: 150,
+                        }} zDepth={5}>
             <div>
               <Tabs value={this.state.value}  tabItemContainerStyle={{backgroundColor:"#bd4e4b", width:'100%' }} inkBarStyle={{backgroundColor: 'indigo900'}} onChange={this.handleChange}>
                 <Tab label="Offerings" value="a">
                   <div style={{padding: 35}}>
                   <List>
-                  {
-                    this.state.bcvisaofferings.length == 0
+                  {console.log('Debugging for Embassy', this.state.bcvisaofferings.length)}
+                  {this.state.bcvisaofferings.length == 0
                     ? <h3>Your country has no Visa offerings yet.</h3>
                     : this.state.bcvisaofferings.map((offering, index) =>
                       <ListItem
@@ -572,15 +591,15 @@ export class App extends React.Component {
                                 address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                         />}
                         rightIcon={<RaisedButton
-                                backgroundColor="#a4c639"
-                                label={"Apply"}
+                                backgroundColor="#bd4e4b"
+                                label={"Delete"}
                                 color={fullWhite}
-                                onTouchTap={this.applyForBcVisa.bind(this, index)}
+                                onTouchTap={this.deleteBcVisaOffering.bind(this, offering.id)}
                         />}
                       />)
                   }
                   </List>
-                    <DialogExampleModal2/>
+                  <DialogExampleModal2/>
 
                   </div>
                 </Tab>
@@ -839,15 +858,14 @@ export class App extends React.Component {
             <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <div style={{float:'right'}}>
-              <h1>
+            <div>
+              <h1 style={{float:'left'}}>
                 Passport of {this.state.pass.givennames} {this.state.pass.name}
-                <div style={{float:'right'}}>
-                  <img src={"flags/" + this.alpha + ".png"}/>
-                </div>
               </h1>
+              <div style={{float:'right'}}>
+                <img src={"flags/" + this.alpha + ".png"}/>
+              </div>
             </div>
-
             <table>
               <tbody>
                 <tr>
@@ -1140,12 +1158,20 @@ export class App extends React.Component {
                 : <Chip backgroundColor={red500} style={{
                   marginTop: 30
                 }}>
-                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>
+                }
+              {this.state.pass.hash == this.state.bcpass[2]
+                ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
+                : <Chip backgroundColor={red500} style={{marginTop: 30}}>
+                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
+              }
               </td>
             </tr>
             <tr>
               <td colSpan="2">
-                <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
+                <DescText desc='Hash of Passport Data' val={this.state.pass.hash}/>
+                <DescText desc="Saved Hash in Blockchain" val={this.state.bcpass[2]} />
               </td>
             </tr>
           </tbody>
@@ -1159,8 +1185,8 @@ export class App extends React.Component {
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
               leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> :<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
-            />)}
+              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> : <RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/> }
+            /> )}
           </List>
           <Divider />
           <DialogExampleModal/>
@@ -1188,7 +1214,7 @@ export class App extends React.Component {
       }
 }
 
-      export class ErrorMessage extends React.Component {render() {
+export class ErrorMessage extends React.Component {render() {
         return (
           <CardText style={{
             fontWeight: 'bold'
@@ -1358,7 +1384,7 @@ render() {
                             backgroundColor="#a4c639"
                             label={"Apply"}
                             color={fullWhite}
-                            onTouchTap={this.applyForBcVisa.bind(this, index)}
+                            onTouchTap={this.applyForBcVisa.bind(this, offering.id)}
                     />}
                   />)
               }
