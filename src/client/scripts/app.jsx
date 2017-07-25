@@ -409,8 +409,9 @@ export class App extends React.Component {
   verifyPassport() {
     console.log(this.state.immigrationAddress);
     console.log(this.state.pass.hash);
-
-    this.embassy.verifyPass(this.state.immigrationAddress);
+    let tx = this.embassy.verifyPass(this.state.immigrationAddress);
+    tx.done(t => this.checkTransaction(t).bind(this));
+    this.setState({tx: tx});
   }
 
   addFromNation() {
@@ -599,7 +600,7 @@ export class App extends React.Component {
                       />)
                   }
                   </List>
-                  <DialogExampleModal2/>
+                  <DialogExampleModal2 loadVisaOfferings={this.loadVisaOfferings} clearVisaOfferings={this.clearVisaOfferings}/>
 
                   </div>
                 </Tab>
@@ -805,6 +806,7 @@ export class App extends React.Component {
                      <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
                        marginTop: 15
                      }} label="Verify Passport" onTouchTap={this.verifyPassport.bind(this)}/>
+                       <TransactionProgressBadge value={this.state.tx}/>
                        </div>
                  </Tab>
                </Tabs>
@@ -1276,11 +1278,19 @@ renderChip(data) {
     </Chip>
   );
 }
+
 addNewVisaOffering(){
   console.log(this.newvisaoffering);
-  this.embassy.embassiesOfCountry(parity.bonds.me).then( s =>
-    this.setState({tx: this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions)})
-     );
+  this.embassy.embassiesOfCountry(parity.bonds.me).then( s => {
+    let tx = this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
+    console.log(tx);
+    tx.done(t => {this.handleClose(); this.props.clearVisaOfferings(); this.props.loadVisaOfferings(s.c[0])});
+    this.setState({tx: tx});
+  });
+
+
+
+
 }
 changeOffering(_field, _value) {
   this.newvisaoffering[_field] = _value.target.value;
