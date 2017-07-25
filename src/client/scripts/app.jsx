@@ -789,7 +789,7 @@ export class App extends React.Component {
                             ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
                               <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
                             : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
+                              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
                           }
                         </td>
                        </tr>
@@ -949,7 +949,7 @@ export class App extends React.Component {
                   ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
                     <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
                   : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
+                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
                 }
                 </td>
               </tr>
@@ -1165,7 +1165,7 @@ export class App extends React.Component {
                 ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
                   <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
                 : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
+                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
               }
               </td>
             </tr>
@@ -1182,7 +1182,7 @@ export class App extends React.Component {
           <h3>Your Visas:</h3>
           <List>
             {this.state.bcvisa.length == 0 ?
-              <h3>You dont have any visa yet.</h3>
+              <h3>You do not have any visa yet.</h3>
             : this.state.bcvisa.map(visa => <ListItem
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
