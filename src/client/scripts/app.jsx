@@ -1059,7 +1059,7 @@ export class App extends React.Component {
                       : ''} disabled={true} underlineShow={false}/>
                   </td>
                   <td>
-                    <h2>Foto-Upload:</h2>
+                    <h2>Picture-Upload:</h2>
                     <FileUploader accept="image/*" name="avatar" filename={fc.getAddress()} storageRef={firebase.storage().ref()} onUploadStart={fc.handleUploadStart} onUploadError={fc.handleUploadError} onUploadSuccess={fc.handleUploadSuccess.bind(this)} onProgress={fc.handleProgress}/>
                     <img src={this.state.url}/>
                   </td>
@@ -1211,8 +1211,6 @@ export class App extends React.Component {
           <DialogExampleModal/>
 
         </Paper>
-
-
       </div>
       ); } }
 
