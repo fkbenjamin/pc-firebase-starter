@@ -669,66 +669,6 @@ export class App extends React.Component {
         </div>
         <Paper style={paperStyle} zDepth={5}>
         <div>
-          <Tabs value={this.state.value}
-                onChange={this.handleChange}>
-            <Tab label="Offerings" value="a">
-              <div>
-                <Card>
-                  <DialogExampleModal2/>
-                   <LinearProgress mode="indeterminate" />
-                   <CardHeader
-                     title="Visum A1"
-                     subtitle="Transit"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                     Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit
-                     through the United States en route to another country, with few exceptions. Immediate and continuous
-                     transit is defined as a reasonably expeditious departure of the traveler in the normal course of travel
-                     as the elements permit and assumes a prearranged itinerary without any unreasonable layover privileges.
-                   </CardText>
-                 </Card>
-                 <Card>
-                   <CardHeader
-                     title="Visum B1"
-                     subtitle="Social"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Modify" />
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                   Social Cultural Visa is issued to travelers who intend to visit Indonesia for: Lecture, short Internship program,
-                   short Courses, Arts, Meetings, Volunteer Program, Sport Activities, visiting family and other related Social
-                   activities.
-                   Social Cultural Visa (Single or Multiple Entry Visa) will allow you a maximum stay of 60 (sixty) days for each visit. This type of visa can be extended at the Indonesian Immigration Office for 4 (four) times, with each extension for maximum 30 (thirty) days.
-                   </CardText>
-                 </Card>
-                 <Card>
-                   <CardHeader
-                     title="Visum C1"
-                     subtitle="Business Visitor"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Modify" />
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                   If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
-                 </Card>
-                 </div>
-                 </Tab>
-
-                 <Tab label="Validate Pass" value="b">
-                   <div>
                      <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
                      <table>
                        <tbody>
@@ -833,9 +773,6 @@ export class App extends React.Component {
                      }} label="Verify Passport" onTouchTap={this.verifyPassport.bind(this)}/>
                        <TransactionProgressBadge value={this.state.tx}/>
                        </div>
-                 </Tab>
-               </Tabs>
-              </div>
           </Paper>
         </div>
       );
@@ -1231,7 +1168,7 @@ export class App extends React.Component {
               )}
           </List>
           <Divider />
-          <DialogExampleModal />
+          <DialogExampleModal this={this} />
         </Paper>
       </div>
     );
@@ -1386,7 +1323,9 @@ render() {
         this.setState({open: false});
       };
       applyForBcVisa(index){
-        this.citizen.applyForVisa(this.state.countryCode, index);
+        let tx = this.citizen.applyForVisa(this.state.countryCode, index);
+        tx.done(t => {this.handleClose(); this.props.this.checkTransaction(t).bind(this)});
+        this.setState({tx: tx});
         console.log('Button was pressed', index);
       }
 
@@ -1416,7 +1355,8 @@ render() {
               dataSource ={this.countryCode}
               dataSourceConfig={this.dataSourceConfig}
               onNewRequest = {this.getCountryCode.bind(this)}
-              />
+              />            <TransactionProgressBadge value={this.state.tx} />
+
               <List>
               {
                 this.state.bcvisaofferings.length == 0
@@ -1439,7 +1379,6 @@ render() {
                   />)
               }
               </List>
-            <TransactionProgressBadge value={this.state.tx} />
             </Dialog>
           </div>
         );
