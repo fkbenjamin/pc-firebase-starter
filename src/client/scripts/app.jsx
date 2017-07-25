@@ -63,6 +63,16 @@ const previewStyle = {
   height: 450,
   width: '100%',
 };
+const backHeadingStyle = {
+  position:'absolute',
+  top:0,
+  right:10,
+  fontSize:130,
+  fontWeight:'bold',
+  textTransform:'uppercase',
+  zIndex:-1,
+  opacity:0.3,
+};
 
 const LinearProgressExampleSimple = () => (
   <LinearProgress mode="indeterminate" />
@@ -259,7 +269,7 @@ export class App extends React.Component {
 
   hashPass() {
     this.setState({
-      newPassHash:  calcHashByPass(this.newPass),
+      newPassHash:  this.calcHashByPass(this.newPass),
     });
   }
 
@@ -440,15 +450,7 @@ export class App extends React.Component {
     if (!this.state.entered) {
       return (
         <div>
-          <div style={{position:'absolute',
-                       top:0,
-                       right:10,
-                       fontSize:130,
-                       fontWeight:'bold',
-                       textTransform:'uppercase',
-                       zIndex:-1,
-                       opacity:0.3,
-                     }}>
+          <div style={backHeadingStyle}>
             Home
           </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -509,15 +511,7 @@ export class App extends React.Component {
       document.body.style.backgroundColor = "#2E6F72";
       return (
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Immigration
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -547,15 +541,7 @@ export class App extends React.Component {
       return (
 
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Embassy
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -630,15 +616,7 @@ export class App extends React.Component {
       return (
 
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Embassy
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -821,15 +799,7 @@ export class App extends React.Component {
 
       return (
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Nation
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -861,15 +831,7 @@ export class App extends React.Component {
       this.getFlagImmigration();
       return (
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Immigration
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -1001,15 +963,7 @@ export class App extends React.Component {
     if (!this.state.pass) {
       return (
         <div>
-        <div style={{position:'absolute',
-                     top:0,
-                     right:10,
-                     fontSize:130,
-                     fontWeight:'bold',
-                     textTransform:'uppercase',
-                     zIndex:-1,
-                     opacity:0.3,
-                   }}>
+        <div style={backHeadingStyle}>
           Citizen
         </div>
           <div onClick={this.resetApp.bind(this)}>
@@ -1067,8 +1021,9 @@ export class App extends React.Component {
               </tbody>
             </table>
             <RaisedButton backgroundColor="#a4c639" label="Submit your Pass" icon={< SvgIconDone />} color={fullWhite} onTouchTap={this.uploadPass.bind(this)}/>
-	             <TransactionProgressBadge value={this.state.tx}/>
-          </div>          </Paper>
+	          <TransactionProgressBadge value={this.state.tx}/>
+          </div>
+          </Paper>
         </div>
       );
     }
@@ -1089,15 +1044,7 @@ export class App extends React.Component {
     }**/
     return (
       <div>
-      <div style={{position:'absolute',
-                   top:0,
-                   right:10,
-                   fontSize:130,
-                   fontWeight:'bold',
-                   textTransform:'uppercase',
-                   zIndex:-1,
-                   opacity:0.3,
-                 }}>
+      <div style={backHeadingStyle}>
         Citizen
       </div>
         <div onClick={this.resetApp.bind(this)}>
