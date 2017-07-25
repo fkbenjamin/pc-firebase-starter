@@ -1153,8 +1153,6 @@ export class App extends React.Component {
             />)}
           </List>
           <Divider />
-
-
           <DialogExampleModal/>
 
         </Paper>
@@ -1245,13 +1243,11 @@ renderChip(data) {
 addNewVisaOffering(){
   console.log(this.newvisaoffering);
   console.log(this.state.countryForVisa);
-  let tx = this.embassy.createVisaOffering(288, this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
-  tx.done(s => this.handleClose.bind(this));
+  this.setState({tx: this.embassy.createVisaOffering(288, this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions)})
 }
 changeOffering(_field, _value) {
   this.newvisaoffering[_field] = _value.target.value;
 }
-
 
 render() {
   const actions = [ < FlatButton label = "Cancel" primary = {
@@ -1283,6 +1279,7 @@ render() {
                 <Divider/>
                 <TextField hintText="Validity in Seconds" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
                 <Divider/>
+                <TransactionProgressBadge value={this.state.tx} />
                </div>
       </Dialog>
     </div>
