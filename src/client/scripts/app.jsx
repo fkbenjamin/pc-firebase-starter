@@ -521,7 +521,7 @@ export class App extends React.Component {
           <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <h1>Scan QR-Code or enter Wallet-ID</h1>
+            <h1>Scan QR-Code or enter PassChain-ID</h1>
             <Divider/>
             <QrReader
               style={previewStyle}
@@ -529,7 +529,7 @@ export class App extends React.Component {
               onScan={this.handleScan.bind(this)}
             />
          <Divider/>
-            <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
+            <TextField hintText="PassChain-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
             <Divider/>
             <RaisedButton style={{
               marginTop: 15
@@ -618,7 +618,7 @@ export class App extends React.Component {
                 </Tab>
                 <Tab label="Validate Pass" value="b">
                   <div>
-                    <h1>Scan QR-Code or enter Wallet-ID</h1>
+                    <h1>Scan QR-Code or enter PassChain-ID</h1>
                     <Divider />
                     <QrReader
                       style={previewStyle}
@@ -626,7 +626,7 @@ export class App extends React.Component {
                       onScan={this.handleScan.bind(this)}
                       />
                     <Divider />
-                    <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
+                    <TextField hintText="PassChain-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
                     <Divider />
                     <RaisedButton
                       style={{marginTop: 15}}
@@ -855,19 +855,19 @@ export class App extends React.Component {
           <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <h1>Add an institution </h1>
+            <h1>Activate a PassChain-ID as institution</h1>
             <SelectField floatingLabelText="Institution" value={this.state.institution} onChange={this.changeInstitution.bind(this)}>
               <MenuItem value={1} primaryText="Embassy"/>
               <MenuItem value={2} primaryText="Immigration"/>
             </SelectField>
             <br />
             <Divider/>
-            <TextField hintText="Wallet-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddressForNationView(e)}/>
+            <TextField hintText="Enter PassChain-ID here" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddressForNationView(e)}/>
             <Divider/>
 
             <RaisedButton style={{
               marginTop: 15
-            }} label="Submit" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.addFromNation.bind(this)} />
+            }} label="Nominate" fullWidth={true} disabled={!this.state.immigrationAddressIsAddress} onTouchTap={this.addFromNation.bind(this)} />
             <TransactionProgressBadge value={this.state.tx}/>
           </Paper>
         </div>
