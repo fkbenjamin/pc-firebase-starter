@@ -459,7 +459,9 @@ export class App extends React.Component {
   }
 
   deleteBcVisaOffering(index){
-    this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    let tx = this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    tx.done(t => {this.clearVisaOfferings(); this.loadVisaOfferings(this.state.countryForVisa)});
+    this.setState({tx: tx});
     console.log('Button was pressed', index);
   }
 
@@ -622,6 +624,7 @@ export class App extends React.Component {
                   }
                   </List>
                   <DialogExampleModal2 this={this}/>
+                  <TransactionProgressBadge value={this.state.tx}/>
 
                   </div>
                 </Tab>
