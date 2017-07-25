@@ -77,6 +77,7 @@ export class App extends React.Component {
     super();
     this.bcpass = [];
     this.newPass = {};
+    this.newvisaoffering = {};
 
     //all contracts
     this.contract = parity.bonds.makeContract('0xca16D554f2974F32C16212c6C39e678dA958b50e', abi.getStorageABI()); // v0.6
@@ -118,6 +119,7 @@ export class App extends React.Component {
       nationAddress: null,
       countryForVisa: null,
       chipData: [],
+      newvisaoffering: []
     };
 
     // loads user's data
@@ -320,6 +322,7 @@ export class App extends React.Component {
     this.embassy.embassiesOfCountry(parity.bonds.me).then(s => {
       console.log('Das ist in s:', s.c[0]);
       if(s.c[0]>0){
+        this.loadVisaOfferings(s.c[0]);
         this.setState({entered: true, userType: 'embassy',countryForVisa: s.c[0]});
       }
       else this.setState({snackOpen: true});
@@ -559,65 +562,43 @@ export class App extends React.Component {
             <Logo />
           </div>
 
-          <Paper style={paperStyle} zDepth={5}>
+          <Paper style={{width: '70%',
+          maxWidth: 1000,
+          margin: 'auto',
+          marginTop: 150,
+          }} zDepth={5}>
             <div>
-              <Tabs value={this.state.value} onChange={this.handleChange}>
+              <Tabs value={this.state.value}  tabItemContainerStyle={{backgroundColor:"#bd4e4b", width:'100%' }} inkBarStyle={{backgroundColor: 'indigo900'}} onChange={this.handleChange}>
                 <Tab label="Offerings" value="a">
-                  <div>
-                    <Card>
-                      <DialogExampleModal2/>
-                      <CardHeader
-                        title="Visum A1"
-                        subtitle="Transit"
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                      />
-                      <CardActions>
-                        <FlatButton label="Delete" />
-                      </CardActions>
-                      <CardText expandable={true}>
-                        Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit
-                        through the United States en route to another country, with few exceptions. Immediate and continuous
-                        transit is defined as a reasonably expeditious departure of the traveler in the normal course of travel
-                        as the elements permit and assumes a prearranged itinerary without any unreasonable layover privileges.
-                      </CardText>
-                    </Card>
-                    <Card>
-                      <CardHeader
-                        title="Visum B1"
-                        subtitle="Social"
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                      />
-                      <CardActions>
-                        <FlatButton label="Modify" />
-                        <FlatButton label="Delete" />
-                      </CardActions>
-                      <CardText expandable={true}>
-                        Social Cultural Visa is issued to travelers who intend to visit Indonesia for: Lecture, short Internship program,
-                        short Courses, Arts, Meetings, Volunteer Program, Sport Activities, visiting family and other related Social
-                        activities.
-                        Social Cultural Visa (Single or Multiple Entry Visa) will allow you a maximum stay of 60 (sixty) days for each visit. This type of visa can be extended at the Indonesian Immigration Office for 4 (four) times, with each extension for maximum 30 (thirty) days.
-                      </CardText>
-                    </Card>
-                    <Card>
-                      <CardHeader
-                        title="Visum C1"
-                        subtitle="Business Visitor"
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                      />
-                      <CardActions>
-                        <FlatButton label="Modify" />
-                        <FlatButton label="Delete" />
-                      </CardActions>
-                      <CardText expandable={true}>
-                      If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
-                    </Card>
+                  <div style={{padding: 35}}>
+                  <List>
+                  {
+                    this.state.bcvisaofferings.length == 0
+                    ? <h3>Your country has no Visa offerings yet.</h3>
+                    : this.state.bcvisaofferings.map((offering, index) =>
+                      <ListItem
+                        primaryText={offering[1]}
+                        secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. - " + offering[2]}
+                        leftAvatar={<AccountIcon
+                                style={{width: '2.5em'}}
+                                key='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                                address='0x008aB18490E729bBea993817E0c2B3c19c877115'
+                        />}
+                        rightIcon={<RaisedButton
+                                backgroundColor="#a4c639"
+                                label={"Apply"}
+                                color={fullWhite}
+                                onTouchTap={this.applyForBcVisa.bind(this, index)}
+                        />}
+                      />)
+                  }
+                  </List>
+                    <DialogExampleModal2/>
+
                   </div>
                 </Tab>
                 <Tab label="Validate Pass" value="b">
-                  <div>
+                  <div style={{padding: 35}}>
                     <h1>Scan QR-Code or enter PassChain-ID</h1>
                     <Divider />
                     <QrReader
@@ -1316,6 +1297,15 @@ renderChip(data) {
     </Chip>
   );
 }
+addNewVisaOffering(){
+  console.log(this.newvisaoffering);
+  console.log(this.state.countryForVisa);
+  let tx = this.embassy.createVisaOffering(288, this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
+  tx.done(s => this.handleClose.bind(this));
+}
+changeOffering(_field, _value) {
+  this.newvisaoffering[_field] = _value.target.value;
+}
 
 
 render() {
@@ -1328,50 +1318,27 @@ render() {
       true
     }
     onTouchTap = {
-      this.handleClose.bind(this)
+      this.addNewVisaOffering.bind(this)
     } />
   ];
 
   return (
     <div>
-      <RaisedButton label="New"  icon={< SvgIconAdd />} fullWidth={true} color={fullWhite}  onTouchTap={this.handleOpen.bind(this)}/>
-      <Dialog title="New Visa Offering" style={{textAlign: "center"}} actions={actions} modal={true} open={this.state.open}>
+    <RaisedButton backgroundColor="#a4c639" label="Add a Visa Offering" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
+      <Dialog title="Add a new Visa Offering" actions={actions} modal={true} open={this.state.open}>
 
-      <Tabs
-             value={this.state.value}
-             onChange={this.handleChange}
-           >
-             <Tab label="General" value="a">
                <div>
-               <br/>
-               <TextField hintText="Designation" fullWidth={true}  underlineShow={false} />
-               <Divider/>
-                 <TextField
-                   floatingLabelText="Description"
-                   multiLine={true}
-                   rows={2}
-                   underlineShow={false}
-                   fullWidth={true}
-                 />
-                 <Divider/>
-                 <TextField hintText="Price" fullWidth={true} underlineShow={false} />
-                 <Divider/>
+                <TextField hintText="Name of Visa" fullWidth={true} onChange={e => this.changeOffering('identifier', e)}  underlineShow={false} />
+                <Divider/>
+                <TextField hintText="Short Description" underlineShow={false} onChange={e => this.changeOffering('description', e)} fullWidth={true} />
+                <Divider/>
+                <TextField hintText="Conditions" fullWidth={true} onChange={e => this.changeOffering('conditions', e)} underlineShow={false}/>
+                <Divider/>
+                <TextField hintText="Price in ETH" fullWidth={true} onChange={e => this.changeOffering('price', e)} underlineShow={false} />
+                <Divider/>
+                <TextField hintText="Validity in Seconds" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
+                <Divider/>
                </div>
-             </Tab>
-             <Tab label="Conditions" value="b">
-               <div>
-               <br/>
-               <TextField ref='cond' hintText="Conditions" fullWidth={true} underlineShow={false} onKeyPress={this.handleKeyPress.bind(this)} />
-               <Divider/>
-                  <br/>
-
-                  <div style={this.styles.wrapper}>
-                    {this.state.chipData.map(this.renderChip.bind(this))}
-                  </div>
-               </div>
-             </Tab>
-           </Tabs>
-<br/>
       </Dialog>
     </div>
   );
