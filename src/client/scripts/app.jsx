@@ -1408,7 +1408,7 @@ render() {
 
         return (
           <div>
-            <RaisedButton backgroundColor="#a4c639" label="Add a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
+            <RaisedButton backgroundColor="#a4c639" label="Apply for a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
             <Dialog style={{minHeight: 700, minWidth: 1200}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
               <AutoComplete
               floatingLabelText ="Country"
