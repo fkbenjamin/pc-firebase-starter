@@ -640,22 +640,18 @@ export class App extends React.Component {
         <div style={backHeadingStyle}>
           Embassy
         </div>
-          <div onClick={this.resetApp.bind(this)}>
+        <div onClick={this.resetApp.bind(this)}>
           <Logo />
-          </div>
-
-          <Paper style={paperStyle} zDepth={5}>
-          <div>
-          <Tabs
-                 value={this.state.value}
-                 onChange={this.handleChange}
-               >
-                 <Tab label="Offerings" value="a">
-
-                 <div>
-                 <Card>
-                 <DialogExampleModal2/>
-                 <LinearProgress mode="indeterminate" />
+        </div>
+        <Paper style={paperStyle} zDepth={5}>
+        <div>
+          <Tabs value={this.state.value}
+                onChange={this.handleChange}>
+            <Tab label="Offerings" value="a">
+              <div>
+                <Card>
+                  <DialogExampleModal2/>
+                   <LinearProgress mode="indeterminate" />
                    <CardHeader
                      title="Visum A1"
                      subtitle="Transit"
@@ -704,15 +700,12 @@ export class App extends React.Component {
                    <CardText expandable={true}>
                    If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
                  </Card>
-
-
                  </div>
-
-
                  </Tab>
+
                  <Tab label="Validate Pass" value="b">
                    <div>
-                   <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
+                     <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
                      <table>
                        <tbody>
                          <tr>
@@ -767,6 +760,7 @@ export class App extends React.Component {
                          </tr>
                        </tbody>
                      </table>
+                    <Divider />
 
                      <table>
                      <tbody>
@@ -792,13 +786,20 @@ export class App extends React.Component {
                              marginTop: 30
                            }}>
                              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
-                         </td>
+                          {this.state.pass.hash == this.state.bcpass[2]
+                            ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                              <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
+                            : <Chip backgroundColor={red500} style={{marginTop: 30}}>
+                              <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
+                          }
+                        </td>
                        </tr>
-                       <tr>
-                         <td colSpan="2">
-                           <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
-                         </td>
-                       </tr>
+                        <tr>
+                          <td colSpan="2">
+                            <DescText desc='Hash of Passport Data' val={this.state.pass.hash}/>
+                            <DescText desc="Saved Hash in Blockchain" val={this.state.bcpass[2]} />
+                          </td>
+                        </tr>
                      </tbody>
                      </table>
 
@@ -922,6 +923,7 @@ export class App extends React.Component {
                 </tr>
               </tbody>
             </table>
+            <Divider />
 
             <table>
             <tbody>
@@ -947,18 +949,26 @@ export class App extends React.Component {
                     marginTop: 30
                   }}>
                     <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>}
+                {this.state.pass.hash == this.state.bcpass[2]
+                  ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                    <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
+                  : <Chip backgroundColor={red500} style={{marginTop: 30}}>
+                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
+                }
                 </td>
               </tr>
               <tr>
                 <td colSpan="2">
-                  <DescText desc="Hashed Pass" val={this.state.bcpass[2]} />
+                  <DescText desc='Hash of Passport Data' val={this.state.pass.hash}/>
+                  <DescText desc="Saved Hash in Blockchain" val={this.state.bcpass[2]} />
                 </td>
               </tr>
             </tbody>
             </table>
 
+            <Divider />
+            <h3>{this.state.pass.givennames} {this.state.pass.name}'s Visas:</h3>
             <List>
-              <Subheader>Your Visa</Subheader>
               {console.log('So sieht das Visa aus:', this.state.bcvisa)}
               {this.state.bcvisa.length == 0 ?
                 <h3>This user doesnt have any visa yet.</h3>
@@ -1056,15 +1066,6 @@ export class App extends React.Component {
           <Logo />
           </div><img src="pass.png"/></div>);
     }
-    /**if (this.state.pass.hash != this.state.bcpass[1]) {
-      return (
-        <div>
-        <Paper style={paperStyle} zDepth={5}>
-        <ErrorMessage val='Warning! Someone changed your passport. Hashes are not matching anymore. Please contact us!'/>
-        </Paper>
-        </div>
-      );
-    }**/
     // Show own pass
     return (
       <div>
@@ -1137,6 +1138,8 @@ export class App extends React.Component {
               </tr>
             </tbody>
           </table>
+          <Divider />
+
           <table>
           <tbody>
             <tr>
@@ -1166,7 +1169,7 @@ export class App extends React.Component {
                 ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
                   <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
                 : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
+                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
               }
               </td>
             </tr>
@@ -1179,10 +1182,11 @@ export class App extends React.Component {
           </tbody>
           </table>
           <Divider />
+
+          <h3>Your Visas:</h3>
           <List>
-            <Subheader>Your Visa</Subheader>
             {this.state.bcvisa.length == 0 ?
-              <h3>You dont have any visa yet.</h3>
+              <h3>You do not have any visa yet.</h3>
             : this.state.bcvisa.map(visa => <ListItem
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
@@ -1192,10 +1196,11 @@ export class App extends React.Component {
           </List>
           <Divider />
           <DialogExampleModal/>
-
         </Paper>
       </div>
-      ); } }
+      );
+    }
+  }
 
       //Descriptive Text of Pass
        export class DescText extends React.Component {
