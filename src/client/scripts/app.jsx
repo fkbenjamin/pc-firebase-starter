@@ -423,6 +423,11 @@ export class App extends React.Component {
     this.loadVisaOfferings(chosenRequest['country-code']);
   }
 
+  deleteBcVisaOffering(index){
+    this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    console.log('Button was pressed', index);
+  }
+
   clearVisaOfferings() {
     this.setState({bcvisaofferings: []});
   }
@@ -539,7 +544,6 @@ export class App extends React.Component {
     if (this.state.userType == 'embassy' && !this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
-
         <div>
         <div style={backHeadingStyle}>
           Embassy
@@ -549,17 +553,17 @@ export class App extends React.Component {
           </div>
 
           <Paper style={{width: '70%',
-          maxWidth: 1000,
-          margin: 'auto',
-          marginTop: 150,
-          }} zDepth={5}>
+            maxWidth: 1000,
+            margin: 'auto',
+            marginTop: 150,
+            }} zDepth={5}>
             <div>
               <Tabs value={this.state.value}  tabItemContainerStyle={{backgroundColor:"#bd4e4b", width:'100%' }} inkBarStyle={{backgroundColor: 'indigo900'}} onChange={this.handleChange}>
                 <Tab label="Offerings" value="a">
                   <div style={{padding: 35}}>
                   <List>
-                  {
-                    this.state.bcvisaofferings.length == 0
+                  {console.log('Debugging for Embassy', this.state.bcvisaofferings.length)}
+                  {this.state.bcvisaofferings.length == 0
                     ? <h3>Your country has no Visa offerings yet.</h3>
                     : this.state.bcvisaofferings.map((offering, index) =>
                       <ListItem
@@ -571,15 +575,15 @@ export class App extends React.Component {
                                 address='0x008aB18490E729bBea993817E0c2B3c19c877115'
                         />}
                         rightIcon={<RaisedButton
-                                backgroundColor="#a4c639"
-                                label={"Apply"}
+                                backgroundColor="#bd4e4b"
+                                label={"Delete"}
                                 color={fullWhite}
-                                onTouchTap={this.applyForBcVisa.bind(this, index)}
+                                onTouchTap={this.deleteBcVisaOffering.bind(this, index)}
                         />}
                       />)
                   }
                   </List>
-                    <DialogExampleModal2/>
+                  <DialogExampleModal2/>
 
                   </div>
                 </Tab>
@@ -1149,8 +1153,8 @@ export class App extends React.Component {
               primaryText={visa[0]}
               secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
               leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> :<RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/>}
-            />)}
+              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> : <RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/> }
+            /> )}
           </List>
           <Divider />
           <DialogExampleModal/>
@@ -1178,7 +1182,7 @@ export class App extends React.Component {
       }
 }
 
-      export class ErrorMessage extends React.Component {render() {
+export class ErrorMessage extends React.Component {render() {
         return (
           <CardText style={{
             fontWeight: 'bold'
