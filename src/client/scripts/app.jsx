@@ -621,7 +621,7 @@ export class App extends React.Component {
                       />)
                   }
                   </List>
-                  <DialogExampleModal2 loadVisaOfferings={this.loadVisaOfferings} clearVisaOfferings={this.clearVisaOfferings}/>
+                  <DialogExampleModal2 this={this}/>
 
                   </div>
                 </Tab>
@@ -1318,11 +1318,9 @@ renderChip(data) {
 }
 
 addNewVisaOffering(){
-  console.log(this.newvisaoffering);
   this.embassy.embassiesOfCountry(parity.bonds.me).then( s => {
     let tx = this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
-    console.log(tx);
-    tx.done(t => {this.handleClose(); this.props.clearVisaOfferings(); this.props.loadVisaOfferings(s.c[0])});
+    tx.done(t => {this.handleClose(); this.props.this.clearVisaOfferings(); this.props.this.loadVisaOfferings(s.c[0])});
     this.setState({tx: tx});
   });
 
