@@ -481,7 +481,7 @@ export class App extends React.Component {
           </Paper>
           <Snackbar
           open={this.state.snackOpen}
-          message="Your wallet doesn't have access to that view"
+          message="Your PassChain-ID doesn't have access to that view"
           autoHideDuration={3000}
         />
         </div>
@@ -792,7 +792,7 @@ export class App extends React.Component {
                      <tbody>
                        <tr>
                          <td colSpan='3'>
-                         <h3>The blockchain passport:</h3>
+                         <h3>QR-Code and Blockchain Details:</h3>
                          </td>
                        </tr>
                        <tr>
@@ -800,7 +800,7 @@ export class App extends React.Component {
                            <QRCode value={this.state.bcpass[0]} />
                          </td>
                          <td>
-                           <DescText desc="Address" val={this.state.bcpass[0]} />
+                           <DescText desc="PassChain-ID" val={this.state.bcpass[0]} />
                          </td>
                          <td>
                          {this.state.bcpass[3]
@@ -961,7 +961,7 @@ export class App extends React.Component {
             <tbody>
               <tr>
                 <td colSpan='3'>
-                  <h3>The blockchain passport:</h3>
+                  <h3>QR-Code and Blockchain Details:</h3>
                 </td>
               </tr>
               <tr>
@@ -969,7 +969,7 @@ export class App extends React.Component {
                   <QRCode value={this.state.bcpass[0]} />
                 </td>
                 <td>
-                  <DescText desc="Address" val={this.state.bcpass[0]} />
+                  <DescText desc="PassChain-ID" val={this.state.bcpass[0]} />
                 </td>
                 <td>
                 {this.state.bcpass[3]
@@ -1123,7 +1123,7 @@ export class App extends React.Component {
           <Logo />
         </div>
         <Paper style={paperStyle} zDepth={5}>
-        <h1>Your passport and visa</h1>
+        <h1>Your Passport and Visa Administration</h1>
           <table>
             <tbody>
               <tr>
@@ -1182,7 +1182,7 @@ export class App extends React.Component {
           <tbody>
             <tr>
               <td colSpan='3'>
-                <h3>Your blockchain passport:</h3>
+                <h3>Personal QR-Code and Blockchain Details:</h3>
                 <img src={"flags/" + this.alpha + ".png"}/>
               </td>
             </tr>
@@ -1191,7 +1191,7 @@ export class App extends React.Component {
                 <QRCode value={this.state.bcpass[0]} />
               </td>
               <td>
-                <DescText desc="Address" val={this.state.bcpass[0]} />
+                <DescText desc="PassChain-ID" val={this.state.bcpass[0]} />
               </td>
               <td>
               {this.state.bcpass[3]
