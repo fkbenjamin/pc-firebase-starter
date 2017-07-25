@@ -7,8 +7,8 @@ import "./Storage.sol";
 /// Embassies are assigned to a country and can create Visa Offerings
 /// and grant Visa.
 contract Embassy is owned, mortal {
-    string constant public version = "0.4.0";
-    
+    string constant public version = "0.7.0";
+
     address public usedStorage;
     address public nationCtrl;
 
@@ -24,8 +24,9 @@ contract Embassy is owned, mortal {
         _;
     }
 
-    function Embassy(address _usedStorage) {
+    function Embassy(address _usedStorage, address _nationControl) {
         usedStorage = _usedStorage;
+        nationCtrl = _nationControl;
     }
 
     function setStorage(address _store) onlyOwner() returns (bool) {
@@ -44,7 +45,8 @@ contract Embassy is owned, mortal {
 
     //-----------------------
 
-    function createVisaOffering(uint _country, bytes32 _identifier, bytes32 _description, uint _validity, uint _price, bytes32 _conditions) {
+    function createVisaOffering(uint _country, bytes32 _identifier, bytes32 _description,
+                                uint _validity, uint _price, bytes32 _conditions) {
         require(embassiesOfCountry[msg.sender] == _country);
         Storage(usedStorage).createVisaOffering( _country, _identifier, _description, _validity, _price, _conditions);
     }
@@ -54,16 +56,16 @@ contract Embassy is owned, mortal {
         Storage(usedStorage).deleteVisaOffering( _country, _index);
     }
 
-    function verifyPass(address _owner, bytes32 _hashedPassport) {
-        var (,c,h,) = Storage(usedStorage).passByOwner(_owner);
-        uint _country = uint(c);
+    function verifyPass(address _owner) {
+      require(_owner != 0x0);
+      var (,c,h,) = Storage(usedStorage).passByOwner(_owner);
+      uint _country = uint(c);
+      uint _embassyCountry = embassiesOfCountry[msg.sender];
 
-        // An embassy can only verify passports of its own country
-        require(_country == embassiesOfCountry[msg.sender]);
+      // An embassy can only verify passports of its own country
+      require(_country != 0);
+      require(_country == _embassyCountry);
 
-        // Hashes must be right
-        require(bytes32 (h) == _hashedPassport);
-
-        Storage(usedStorage).updatePassport(_owner, _country, _hashedPassport, true);
+      Storage(usedStorage).updatePassport(_owner, _country, bytes32(h), true);
     }
 }
