@@ -288,8 +288,9 @@ export class App extends React.Component {
     str += pass.type || "";
     str += pass.dob || "";
     str += pass.url || "";
-    console.log(str);
-    return parity.api.util.sha3(str);
+    let hash = parity.api.util.sha3(str);
+    console.log(str, str.length, hash);
+    return hash;
   }
 
   uploadPass() {
@@ -828,7 +829,7 @@ export class App extends React.Component {
         </div>
       );
     }
-    // Logged in as immigration has opened a passport
+    // Logged in as immigration and has opened a passport
     if (this.state.userType == 'immigration' && this.state.immigrationAddressOpened) {
       document.body.style.backgroundColor = "#2E6F72";
       console.log('Whats the bcpass?', this.state.bcpass);
@@ -842,12 +843,14 @@ export class App extends React.Component {
             <Logo />
           </div>
           <Paper style={paperStyle} zDepth={5}>
-            <h1>
-              Passport of {this.state.pass.givennames} {this.state.pass.name}
-              <div style={{float:'right'}}>
-                <img src={"flags/" + this.alpha + ".png"}/>
-              </div>
-            </h1>
+            <div style={{float:'right'}}>
+              <h1>
+                Passport of {this.state.pass.givennames} {this.state.pass.name}
+                <div style={{float:'right'}}>
+                  <img src={"flags/" + this.alpha + ".png"}/>
+                </div>
+              </h1>
+            </div>
 
             <table>
               <tbody>
@@ -1046,6 +1049,7 @@ export class App extends React.Component {
         </div>
       );
     }**/
+    // Show own pass
     return (
       <div>
       <div style={backHeadingStyle}>
@@ -1055,7 +1059,14 @@ export class App extends React.Component {
           <Logo />
         </div>
         <Paper style={paperStyle} zDepth={5}>
-        <h1>Your Passport and Visa Administration</h1>
+          <div>
+            <h1 style={{float:'left'}}>
+              Your Passport and Visa
+            </h1>
+            <div style={{float:'right'}}>
+              <img src={"flags/" + this.alpha + ".png"}/>
+            </div>
+          </div>
           <table>
             <tbody>
               <tr>
@@ -1115,7 +1126,6 @@ export class App extends React.Component {
             <tr>
               <td colSpan='3'>
                 <h3>Personal QR-Code and Blockchain Details:</h3>
-                <img src={"flags/" + this.alpha + ".png"}/>
               </td>
             </tr>
             <tr>
