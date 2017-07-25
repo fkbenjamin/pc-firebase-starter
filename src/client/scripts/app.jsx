@@ -391,7 +391,10 @@ export class App extends React.Component {
     let visaId = visa.id;
 
     console.log('stampin', owner, country, visaId);
-    this.setState({tx: this.immigration.stampIn( owner, country, visaId).then(this.stamped)});
+    this.clearBcVisa();
+    let tx = this.immigration.stampIn( owner, country, visaId).then(this.stamped);
+    tx.done(t => {this.checkTransaction(t).bind(this)});
+    this.setState({tx: tx});
   }
   stampOut(visa) {
     let owner = this.state.immigrationAddress;
@@ -399,7 +402,9 @@ export class App extends React.Component {
     let visaId = visa.id;
 
     console.log('stampOut', owner, country, visaId);
-    this.setState({tx: this.immigration.stampOut(owner, country, visaId).then(this.stamped)});
+    let tx = this.immigration.stampOut(owner, country, visaId).then(this.stamped);
+    tx.done(t => {this.checkTransaction(t).bind(this)});
+    this.setState({tx: tx});
   }
   stamped(ele) {
     console.log('stamped this', this);
