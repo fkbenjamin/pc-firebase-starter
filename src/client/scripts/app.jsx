@@ -139,22 +139,37 @@ export class App extends React.Component {
   // loads user's data and populates this.state.address
   loadData() {
     var self = this;
-    console.log('I am ' + this.state.address);
-    parity.bonds.me.then(me => {
-      console.log('I am ' + me);
-      self.setState({address: me});
-
-      firebase.database().ref('pass/' + me).once('value').then(function(snapshot) {
+    this.clearBcVisa();
+    if (this.state.address != null) {
+      console.log('I am ' + this.state.address);
+      firebase.database().ref('pass/' + this.state.address).once('value').then(function(snapshot) {
         self.setState({pass: snapshot.val()});
       });
-
-      this.bcpass = this.contract.passByOwner(me).then(a => {
+      this.bcpass = this.contract.passByOwner(this.state.address).then(a => {
         this.setState({bcpass: a})
       });
+      if (this.state.countryForVisa) {
+        this.loadVisa(this.state.address, this.state.countryForVisa);
+      } else {
+        this.loadAllVisa(this.state.address);
+      }
 
-      this.loadAllVisa(me);
-    });
+    } else {
+      parity.bonds.me.then(me => {
+        console.log('I am ' + me);
+        self.setState({address: me});
 
+        firebase.database().ref('pass/' + me).once('value').then(function(snapshot) {
+          self.setState({pass: snapshot.val()});
+        });
+
+        this.bcpass = this.contract.passByOwner(me).then(a => {
+          this.setState({bcpass: a})
+        });
+
+        this.loadAllVisa(me);
+      });
+    }
   }
 
   loadDataImmigration(_wallet) {
@@ -396,7 +411,6 @@ export class App extends React.Component {
     let visaId = visa.id;
 
     console.log('stampin', owner, country, visaId);
-    this.clearBcVisa();
     let tx = this.immigration.stampIn( owner, country, visaId).then(this.stamped);
     tx.done(t => {this.checkTransaction(t).bind(this)});
     this.setState({tx: tx});
@@ -455,14 +469,11 @@ export class App extends React.Component {
 
   //here you pay for your visa
   payForBCVisa(visa){
-    let dataString = 'payVisa(';
-    dataString += visa.country + ', ' + visa.id + ')';
-    //parity.bonds.post({to:0x90f8092B9f6E596D8D2937c971D64B93f866dD80, value: 0.04 * 1e15});
-    this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
-  }
-
-  hashToReadable(hash) {
-    return hash.slice(0,7) + '...' + hash.slice(-4);
+    let tx = this.citizen.payVisa(visa.country, visa.id, {value:visa[2]-visa[1]});
+    tx.done(t => {
+      console.log('Successfully paid visa.');
+      this.checkTransaction(t).bind(this);
+    });
   }
 
   handleError(err){
@@ -989,10 +1000,13 @@ export class App extends React.Component {
                   leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
                   rightIcon={
                     visa[2] - visa[1] <= 0
-                    ? visa[3] == 0
-                    ? <RaisedButton style={{marginTop: 15, minWidth:100}} label="Stamp in" onTouchTap={this.stampIn.bind(this, visa)}/>
-                    : <RaisedButton style={{marginTop: 15, minWidth:100}} label="Stamp out" onTouchTap={this.stampOut.bind(this, visa)}/>
-                    : <SvgIconWarning/>}
+                    ? visa[4] == 0
+                      ? visa[3] == 0
+                        ? <RaisedButton style={{marginTop: 15, minWidth:120}} label="Stamp in" onTouchTap={this.stampIn.bind(this, visa)}/>
+                        : <RaisedButton style={{marginTop: 15, minWidth:120}} label="Stamp out" onTouchTap={this.stampOut.bind(this, visa)}/>
+                      : <SvgIconCheckCircle />
+                    : <SvgIconWarning />
+                  }
                   />)
               }
             </List>
@@ -1211,7 +1225,7 @@ export class App extends React.Component {
                                           />
                         }
                         />
-              )}}
+              )}
           </List>
           <Divider />
           <DialogExampleModal />
