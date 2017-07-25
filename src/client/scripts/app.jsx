@@ -32,16 +32,7 @@ import FileUploader from 'react-firebase-file-uploader';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import LinearProgress from 'material-ui/LinearProgress';
-import Checkbox from 'material-ui/Checkbox';
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import Visibility from 'material-ui/svg-icons/action/visibility';
-import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import QrReader from 'react-qr-reader';
-
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 
@@ -1216,15 +1207,6 @@ export class App extends React.Component {
   }
 }
 
-export class ErrorMessage extends React.Component {render() {
-        return (
-          <CardText style={{
-            fontWeight: 'bold'
-          }}>Error:{this.props.val}</CardText>
-        );
-      }
-}
-
 export class DialogEmbassyView extends App {
   constructor() {
   super();
@@ -1245,11 +1227,8 @@ addNewVisaOffering(){
     tx.done(t => {this.handleClose(); this.props.this.clearVisaOfferings(); this.props.this.loadVisaOfferings(s.c[0])});
     this.setState({tx: tx});
   });
-
-
-
-
 }
+
 changeOffering(_field, _value) {
   this.newvisaoffering[_field] = _value.target.value;
 }
@@ -1356,6 +1335,7 @@ export class DialogCitizenView extends App {
         );
       }
 }
+
 //Class for Logo in top left of the Screen to reset app
 export class Logo extends React.Component {
   constructor() {
