@@ -767,11 +767,12 @@ export class App extends React.Component {
                      </tbody>
                      </table>
 
-
-                     <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
+                     {this.state.bcpass[3] ? <div></div>
+                       : this.state.bcpass[1] != this.state.countryForVisa ? <h3>You can't verify a pass from another country!</h3>
+                      :  <div> <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
                        marginTop: 15
                      }} label="Verify Passport" onTouchTap={this.verifyPassport.bind(this)}/>
-                       <TransactionProgressBadge value={this.state.tx}/>
+                       <TransactionProgressBadge value={this.state.tx}/></div>}
                        </div>
           </Paper>
         </div>
