@@ -1384,7 +1384,7 @@ render() {
                             backgroundColor="#a4c639"
                             label={"Apply"}
                             color={fullWhite}
-                            onTouchTap={this.applyForBcVisa.bind(this, index)}
+                            onTouchTap={this.applyForBcVisa.bind(this, offering.id)}
                     />}
                   />)
               }
