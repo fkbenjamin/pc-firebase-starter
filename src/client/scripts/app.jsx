@@ -56,7 +56,7 @@ const paperStyle = {
   width: '70%',
   maxWidth: 1000,
   margin: 'auto',
-  marginTop: 150,
+  marginTop: 175,
   padding: 35
 };
 const previewStyle = {
@@ -83,7 +83,7 @@ export class App extends React.Component {
     this.immigration = parity.bonds.makeContract('0x42Da049B7E5c7AAcF5506cE7198b1a7B23070C93', abi.getImmigrationABI()); //v0.8
     this.citizen = parity.bonds.makeContract('0x90f8092B9f6E596D8D2937c971D64B93f866dD80', abi.getCitizenABI()); // v0.4
     this.nation = parity.bonds.makeContract('0x75e0292B68FaADc14B4Ac64E7ED6D6A1b2706654', abi.getNationABI()); // v0.5
-    this.embassy = parity.bonds.makeContract('0x6b96d593126ACa0c135791542d0C10593116bB31', abi.getEmbassyABI()); // v0.4
+    this.embassy = parity.bonds.makeContract('0x143B54dDB50a9943F997A565f64Be427632FF171', abi.getEmbassyABI()); // v0.5
     this.nameresolver = parity.bonds.makeContract('0x53708Ea1EF858086Afcb2E063E5CA7CDF7EC9d76', abi.getNameresolverABI()); // v0.4
 
     this.countryCode = abi.getCountryCode();
@@ -437,6 +437,17 @@ export class App extends React.Component {
     if (!this.state.entered) {
       return (
         <div>
+          <div style={{position:'absolute',
+                       top:0,
+                       right:10,
+                       fontSize:130,
+                       fontWeight:'bold',
+                       textTransform:'uppercase',
+                       zIndex:-1,
+                       opacity:0.3,
+                     }}>
+            Home
+          </div>
           <div onClick={this.resetApp.bind(this)}>
             <Logo />
           </div>
