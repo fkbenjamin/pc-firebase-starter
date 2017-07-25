@@ -505,7 +505,7 @@ export class App extends React.Component {
           </Paper>
           <Snackbar
           open={this.state.snackOpen}
-          message="Your PassChain-ID doesn't have access to that view"
+          message="Your PassChain-ID does not have access to that view"
           autoHideDuration={3000}
         />
         </div>
@@ -1371,7 +1371,7 @@ render() {
               <List>
               {
                 this.state.bcvisaofferings.length == 0
-                ? <h3>This country has no Visa offerings yet or you haven't selected a country</h3>
+                ? <h3>This country has no Visa offerings yet or you have not selected a country</h3>
                 : this.state.bcvisaofferings.map((offering, index) =>
                   <ListItem
                     primaryText={offering[1]}
