@@ -79,7 +79,7 @@ const LinearProgressExampleSimple = () => (
 );
 
 // Constants:
-const COUNTRIES = [288,752,40]; // only these countries will be used for visa
+const COUNTRIES = [288,752,40,524]; // only these countries will be used for visa
 
 // App:
 export class App extends React.Component {
@@ -410,7 +410,7 @@ export class App extends React.Component {
     console.log(this.state.immigrationAddress);
     console.log(this.state.pass.hash);
 
-    this.embassy.verifyPass(this.state.immigrationAddress ,this.state.pass.hash);
+    this.embassy.verifyPass(this.state.immigrationAddress);
   }
 
   addFromNation() {
@@ -1278,8 +1278,9 @@ renderChip(data) {
 }
 addNewVisaOffering(){
   console.log(this.newvisaoffering);
-  console.log(this.state.countryForVisa);
-  this.setState({tx: this.embassy.createVisaOffering(288, this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions)})
+  this.embassy.embassiesOfCountry(parity.bonds.me).then( s =>
+    this.setState({tx: this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions)})
+     );
 }
 changeOffering(_field, _value) {
   this.newvisaoffering[_field] = _value.target.value;
