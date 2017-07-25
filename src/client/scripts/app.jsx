@@ -506,6 +506,17 @@ export class App extends React.Component {
       document.body.style.backgroundColor = "#2E6F72";
       return (
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Immigration
+        </div>
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
           </div>
@@ -531,7 +542,19 @@ export class App extends React.Component {
     if (this.state.userType == 'embassy' && !this.state.enteredValidation) {
       document.body.style.backgroundColor = "#BD804B";
       return (
+
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Embassy
+        </div>
           <div onClick={this.resetApp.bind(this)}>
             <Logo />
           </div>
@@ -626,6 +649,17 @@ export class App extends React.Component {
       return (
 
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Embassy
+        </div>
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
           </div>
@@ -806,6 +840,17 @@ export class App extends React.Component {
 
       return (
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Nation
+        </div>
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
           </div>
@@ -835,6 +880,17 @@ export class App extends React.Component {
       this.getFlagImmigration();
       return (
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Immigration
+        </div>
           <div onClick={this.resetApp.bind(this)}>
             <Logo />
           </div>
@@ -964,6 +1020,17 @@ export class App extends React.Component {
     if (!this.state.pass) {
       return (
         <div>
+        <div style={{position:'absolute',
+                     top:0,
+                     right:10,
+                     fontSize:130,
+                     fontWeight:'bold',
+                     textTransform:'uppercase',
+                     zIndex:-1,
+                     opacity:0.3,
+                   }}>
+          Citizen
+        </div>
           <div onClick={this.resetApp.bind(this)}>
           <Logo />
           </div>
@@ -1041,6 +1108,17 @@ export class App extends React.Component {
     }**/
     return (
       <div>
+      <div style={{position:'absolute',
+                   top:0,
+                   right:10,
+                   fontSize:130,
+                   fontWeight:'bold',
+                   textTransform:'uppercase',
+                   zIndex:-1,
+                   opacity:0.3,
+                 }}>
+        Citizen
+      </div>
         <div onClick={this.resetApp.bind(this)}>
           <Logo />
         </div>
