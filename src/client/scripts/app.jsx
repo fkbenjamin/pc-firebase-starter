@@ -303,16 +303,21 @@ export class App extends React.Component {
 
   uploadPass() {
     console.log('Uploading Pass');
-    this.setState({tx: this.citizen.createPassport(this.state.countryCode, this.state.newPassHash)});
     let tx = this.citizen.createPassport(this.state.countryCode, this.state.newPassHash);
-    console.log('after contract call');
-    fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
-    tx.done(s => this.checkTransaction(s).bind(this));
+    this.setState({tx: tx});
+    tx.done(s => {
+      if (s.confirmed) {
+        console.log('Writing Pass to Firebase');
+        fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
+        this.getFlag();
+        this.checkTransaction(s).bind(this);
+      }
+    });
   }
 
   checkTransaction(s){
     console.log('arrived');
-    if(s.confirmed.blockHash){
+    if(s.confirmed && s.confirmed.blockHash){
       this.loadData();
     }
   }
@@ -877,7 +882,7 @@ export class App extends React.Component {
             <table>
               <tbody>
                 <tr>
-                  <td>
+                  <td style={{minWidth:200}}>
                     <img style={{
                       maxWidth: '100%',
                       height: 'auto'
@@ -1065,6 +1070,7 @@ export class App extends React.Component {
         </div>
       );
     }
+    // Error view
     if (!this.state.bcpass) {
       return (  <div>
           <div onClick={this.resetApp.bind(this)}>
@@ -1074,9 +1080,9 @@ export class App extends React.Component {
     // Show own pass
     return (
       <div>
-      <div style={backHeadingStyle}>
-        Citizen
-      </div>
+        <div style={backHeadingStyle}>
+          Citizen
+        </div>
         <div onClick={this.resetApp.bind(this)}>
           <Logo />
         </div>
@@ -1092,7 +1098,7 @@ export class App extends React.Component {
           <table>
             <tbody>
               <tr>
-                <td>
+                <td style={{minWidth:200}}>
                   <img style={{
                     'maxWidth': '100%',
                     'height': 'auto'
@@ -1144,47 +1150,46 @@ export class App extends React.Component {
             </tbody>
           </table>
           <Divider />
-
           <table>
-          <tbody>
-            <tr>
-              <td colSpan='3'>
-                <h3>Personal QR-Code and Blockchain Details:</h3>
-              </td>
-            </tr>
-            <tr>
-              <td rowSpan='2'>
-                <QRCode value={this.state.bcpass[0]} />
-              </td>
-              <td>
-                <DescText desc="PassChain-ID" val={this.state.bcpass[0]} />
-              </td>
-              <td>
-              {this.state.bcpass[3]
-                ? <Chip backgroundColor={greenA200} style={{
+            <tbody>
+              <tr>
+                <td colSpan='3'>
+                  <h3>Personal QR-Code and Blockchain Details:</h3>
+                </td>
+              </tr>
+              <tr>
+                <td rowSpan='2'>
+                  <QRCode value={this.state.bcpass[0]} />
+                </td>
+                <td>
+                  <DescText desc="PassChain-ID" val={this.state.bcpass[0]} />
+                </td>
+                <td>
+                {this.state.bcpass[3]
+                  ? <Chip backgroundColor={greenA200} style={{
+                      marginTop: 30
+                    }}>
+                      <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
+                  : <Chip backgroundColor={red500} style={{
                     marginTop: 30
                   }}>
-                    <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Passport is verified</Chip>
-                : <Chip backgroundColor={red500} style={{
-                  marginTop: 30
-                }}>
-                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>
+                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Passport is not verified</Chip>
+                  }
+                {this.state.pass.hash == this.state.bcpass[2]
+                  ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
+                    <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
+                  : <Chip backgroundColor={red500} style={{marginTop: 30}}>
+                    <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes don't match</Chip>
                 }
-              {this.state.pass.hash == this.state.bcpass[2]
-                ? <Chip backgroundColor={greenA200} style={{marginTop: 30}}>
-                  <Avatar size={32} color="#444" backgroundColor={greenA200} icon={< SvgIconDone />}></Avatar>Hashes match</Chip>
-                : <Chip backgroundColor={red500} style={{marginTop: 30}}>
-                  <Avatar size={32} color="#444" backgroundColor={red500} icon={< SvgIconWarning />}></Avatar>Hashes do not match</Chip>
-              }
-              </td>
-            </tr>
-            <tr>
-              <td colSpan="2">
-                <DescText desc='Hash of Passport Data' val={this.state.pass.hash}/>
-                <DescText desc="Saved Hash in Blockchain" val={this.state.bcpass[2]} />
-              </td>
-            </tr>
-          </tbody>
+                </td>
+              </tr>
+              <tr>
+                <td colSpan="2">
+                  <DescText desc='Hash of Passport Data' val={this.state.pass.hash}/>
+                  <DescText desc="Saved Hash in Blockchain" val={this.state.bcpass[2]} />
+                </td>
+              </tr>
+            </tbody>
           </table>
           <Divider />
 
@@ -1192,38 +1197,47 @@ export class App extends React.Component {
           <List>
             {this.state.bcvisa.length == 0 ?
               <h3>You do not have any visa yet.</h3>
-            : this.state.bcvisa.map(visa => <ListItem
-              primaryText={visa[0]}
-              secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
-              leftAvatar={<img style={{height:30, width:40}} src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
-              rightIcon={visa[2] - visa [1] <= 0 ? <SvgIconCheckCircle/> : <RaisedButton backgroundColor="#a4c639" label={"Pay"} color={fullWhite} onTouchTap={this.payForBCVisa.bind(this, visa)}/> }
-            /> )}
+            : this.state.bcvisa.map(visa =>
+              <ListItem primaryText={visa[0]}
+                        secondaryText={visa[1]/100000000000000000 + '/' + visa[2]/100000000000000000 + ' ETH'}
+                        leftAvatar={<img style={{height:30, width:40}}
+                        src={"flags/" + this.getAlpha(visa.country) + ".png"}/>}
+                        rightIcon={visa[2] - visa [1] <= 0
+                          ? <SvgIconCheckCircle/>
+                          : <RaisedButton backgroundColor="#a4c639"
+                                          label={"Pay"}
+                                          color={fullWhite}
+                                          onTouchTap={this.payForBCVisa.bind(this, visa)}
+                                          />
+                        }
+                        />
+              )}}
           </List>
           <Divider />
-          <DialogExampleModal/>
+          <DialogExampleModal />
         </Paper>
       </div>
-      );
+    );
     }
   }
 
-      //Descriptive Text of Pass
-       export class DescText extends React.Component {
-         render() {
-        return (
-          <CardText style={{
-            fontWeight: 'bold'
-          }}>
-            <label style={{
-              display: 'block',
-              fontSize: 8,
-              marginBottom: 5,
-              fontWeight: 'normal'
-            }}>{this.props.desc}</label>
-            {this.props.val}
-          </CardText>
-        );
-      }
+  //Descriptive Text of Pass
+   export class DescText extends React.Component {
+     render() {
+    return (
+      <CardText style={{
+        fontWeight: 'bold'
+      }}>
+        <label style={{
+          display: 'block',
+          fontSize: 8,
+          marginBottom: 5,
+          fontWeight: 'normal'
+        }}>{this.props.desc}</label>
+        {this.props.val}
+      </CardText>
+    );
+  }
 }
 
 export class ErrorMessage extends React.Component {render() {
