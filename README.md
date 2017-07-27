@@ -31,7 +31,7 @@ $ npm install -g webpack
 $ npm install
 ```
 
-To build:
+While developing webpack has to be running in a terminal to continously update the compiled code. To build:
 
 ```
 webpack --watch
@@ -80,14 +80,14 @@ $ cd ./contracts/
 ./contracts$ solc -o out/ --bin --abi --optimize --overwrite Embassy.sol Citizen.sol Nation.sol NameRegistry.sol Immigration.sol
 ```
 
-You won't get a feedback but there will be *.abi and *.sol files in the out/ folder. Use these files to deploy each contract to the Blockchain one after another. This order is recommended to meet the dependencies of the contracts:
+You won't get a feedback but there will be *.abi and *.sol files in the out/ folder. Use these files to deploy each contract to the Blockchain one after another. For example, this can be done using Parity and its contract deploy feature. Alternatively `truffle` or `geth` is less userfriendly but feasible choice. This order is recommended to meet the dependencies of the contracts:
 
-1. NameRegistry
-2. Storage
-4. Citizen
-3. Embassy
-4. Immigration
-5. Nation
+1. `NameRegistry`
+2. `Storage`
+4. `Citizen`
+3. `Embassy`
+4. `Immigration`
+5. `Nation`
 
 Contracts will have links to each other to call their functions so you have to make sure all pointers are correctly set before using the infrastructure.
 
@@ -95,7 +95,7 @@ For further explanation of the contracts' functions and the dependencies please 
 
 ### Link contracts to app
 
-Open app.jsx in `src/client/scripts/app.jsx` and change the following lines to your contracts's addresses:
+If you deployed your own contracts, you need to link them to the App. Open `app.jsx` in `src/client/scripts/app.jsx` and change the following lines to your contracts's addresses:
 
 ```javascript
 //all contracts
@@ -112,3 +112,13 @@ The ABI of your contracts have to go into `ABI.jsx`. Please change the respectiv
 ### Setup a firebase instance
 
 Some data is not stored on the Ethereum Blockchain as it is simply too expensive to store large amounts of data. This includes the Passports and the Pass pictures. If you do not want to use the default Firebase project for this, you have to create your own Firebase project and add the URL to it to `fireclass.jsx`.
+
+## Running
+
+To execute the project, please run parity. e.g. on the [Ropsten Testnet](https://github.com/ethereum/ropsten/blob/master/revival.md):
+
+```bash
+$ parity --chain ropsten
+```
+
+Use `Ctrl+C` to kill Parity.

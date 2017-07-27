@@ -1,4 +1,3 @@
-/** TODO Remove dep, that are not needed anymore **/
 import React from 'react';
 import styles from "../style.css";
 import {Bond} from 'oo7';
@@ -132,7 +131,7 @@ export class App extends React.Component {
   loadData() {
     var self = this;
     this.clearBcVisa();
-    if (this.state.address != null) {
+    if (this.state.address != null) { // load data of user state in address
       console.log('I am ' + this.state.address);
       firebase.database().ref('pass/' + this.state.address).once('value').then(function(snapshot) {
         self.setState({pass: snapshot.val()});
@@ -146,7 +145,7 @@ export class App extends React.Component {
         this.loadAllVisa(this.state.address);
       }
 
-    } else {
+    } else { // load data of own parity account
       parity.bonds.me.then(me => {
         console.log('I am ' + me);
         self.setState({address: me});
@@ -288,6 +287,7 @@ export class App extends React.Component {
     });
   }
 
+  // calculate unique Hash over all items in the Passport
   calcHashByPass(pass) {
     let str = "";
     str += pass.code || "";
@@ -488,7 +488,7 @@ export class App extends React.Component {
     });
   }
 
-  //handle any errors and print them to the console for debuf reasons
+  //handle any errors and print them to the console for debug reasons
   handleError(err){
     console.error(err)
   }
@@ -969,7 +969,7 @@ export class App extends React.Component {
       );
 
     }
-    // Enter a new pass
+    // Input a new pass
     if (!this.state.pass) {
       return (
         <div>
@@ -1209,66 +1209,66 @@ export class App extends React.Component {
 
 export class DialogEmbassyView extends App {
   constructor() {
-  super();
-}
+    super();
+  }
 
-handleOpen() {
-  this.setState({open: true});
-};
+  handleOpen() {
+    this.setState({open: true});
+  };
 
-handleClose() {
-  this.setState({open: false});
-};
+  handleClose() {
+    this.setState({open: false});
+  };
 
 
-addNewVisaOffering(){
-  this.embassy.embassiesOfCountry(parity.bonds.me).then( s => {
-    let tx = this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
-    tx.done(t => {this.handleClose(); this.props.this.clearVisaOfferings(); this.props.this.loadVisaOfferings(s.c[0])});
-    this.setState({tx: tx});
-  });
-}
+  addNewVisaOffering(){
+    this.embassy.embassiesOfCountry(parity.bonds.me).then( s => {
+      let tx = this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
+      tx.done(t => {this.handleClose(); this.props.this.clearVisaOfferings(); this.props.this.loadVisaOfferings(s.c[0])});
+      this.setState({tx: tx});
+    });
+  }
 
-changeOffering(_field, _value) {
-  this.newvisaoffering[_field] = _value.target.value;
-}
+  changeOffering(_field, _value) {
+    this.newvisaoffering[_field] = _value.target.value;
+  }
 
-render() {
-  const actions = [ < FlatButton label = "Cancel" primary = {
-      true
-    }
-    onTouchTap = {
-      this.handleClose.bind(this)
-    } />, < FlatButton label = "Submit" primary = {
-      true
-    }
-    onTouchTap = {
-      this.addNewVisaOffering.bind(this)
-    } />
-  ];
+  render() {
+    const actions = [ < FlatButton label = "Cancel" primary = {
+        true
+      }
+      onTouchTap = {
+        this.handleClose.bind(this)
+      } />, < FlatButton label = "Submit" primary = {
+        true
+      }
+      onTouchTap = {
+        this.addNewVisaOffering.bind(this)
+      } />
+    ];
 
-  return (
-    <div>
-    <RaisedButton backgroundColor="#a4c639" label="Add a Visa Offering" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
-      <Dialog title="Add a new Visa Offering" actions={actions} modal={true} open={this.state.open}>
+    return (
+      <div>
+      <RaisedButton backgroundColor="#a4c639" label="Add a Visa Offering" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
+        <Dialog title="Add a new Visa Offering" actions={actions} modal={true} open={this.state.open}>
 
-               <div>
-                <TextField hintText="Name of Visa" fullWidth={true} onChange={e => this.changeOffering('identifier', e)}  underlineShow={false} />
-                <Divider/>
-                <TextField hintText="Short Description" underlineShow={false} onChange={e => this.changeOffering('description', e)} fullWidth={true} />
-                <Divider/>
-                <TextField hintText="Conditions" fullWidth={true} onChange={e => this.changeOffering('conditions', e)} underlineShow={false}/>
-                <Divider/>
-                <TextField hintText="Price in ETH" fullWidth={true} onChange={e => this.changeOffering('price', e)} underlineShow={false} />
-                <Divider/>
-                <TextField hintText="Validity in Seconds" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
-                <Divider/>
-                <TransactionProgressBadge value={this.state.tx} />
-               </div>
-      </Dialog>
-    </div>
-  );
-}
+                 <div>
+                  <TextField hintText="Name of Visa" fullWidth={true} onChange={e => this.changeOffering('identifier', e)}  underlineShow={false} />
+                  <Divider/>
+                  <TextField hintText="Short Description" underlineShow={false} onChange={e => this.changeOffering('description', e)} fullWidth={true} />
+                  <Divider/>
+                  <TextField hintText="Conditions" fullWidth={true} onChange={e => this.changeOffering('conditions', e)} underlineShow={false}/>
+                  <Divider/>
+                  <TextField hintText="Price in ETH" fullWidth={true} onChange={e => this.changeOffering('price', e)} underlineShow={false} />
+                  <Divider/>
+                  <TextField hintText="Validity in Seconds" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
+                  <Divider/>
+                  <TransactionProgressBadge value={this.state.tx} />
+                 </div>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
 export class DialogCitizenView extends App {
