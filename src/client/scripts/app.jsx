@@ -32,16 +32,7 @@ import FileUploader from 'react-firebase-file-uploader';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import AutoComplete from 'material-ui/AutoComplete';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import LinearProgress from 'material-ui/LinearProgress';
-import Checkbox from 'material-ui/Checkbox';
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import Visibility from 'material-ui/svg-icons/action/visibility';
-import VisibilityOff from 'material-ui/svg-icons/action/visibility-off';
 import QrReader from 'react-qr-reader';
-
 import {FireClass} from './fireclass.jsx';
 import {ABI} from './ABI.jsx';
 
@@ -52,6 +43,7 @@ const fc = new FireClass();
 const abi = new ABI();
 const qrcode = new QRCode();
 
+//style for paper, that is wrapping all views
 const paperStyle = {
   width: '70%',
   maxWidth: 1000,
@@ -59,10 +51,13 @@ const paperStyle = {
   marginTop: 175,
   padding: 35
 };
+//style for QR-reader
 const previewStyle = {
   height: 450,
   width: '100%',
 };
+
+//style for Heading in the Background of each view
 const backHeadingStyle = {
   position:'absolute',
   top:0,
@@ -73,10 +68,6 @@ const backHeadingStyle = {
   zIndex:-1,
   opacity:0.3,
 };
-
-const LinearProgressExampleSimple = () => (
-  <LinearProgress mode="indeterminate" />
-);
 
 // Constants:
 const COUNTRIES = [288,752,40,524]; // only these countries will be used for visa
@@ -97,7 +88,10 @@ export class App extends React.Component {
     this.embassy = parity.bonds.makeContract('0x13477Ff61aF4337434ACC1df74c31Dff68E368a5', abi.getEmbassyABI()); // v0.7
     this.nameresolver = parity.bonds.makeContract('0x53708Ea1EF858086Afcb2E063E5CA7CDF7EC9d76', abi.getNameresolverABI()); // v0.4
 
+    //integer & alpha-2 codes for all countries
     this.countryCode = abi.getCountryCode();
+
+    //config for AutoComplete with countries & country codes
     this.dataSourceConfig= {
       text: 'name',
       value: 'country-code'
@@ -115,21 +109,19 @@ export class App extends React.Component {
       pass: null,  // firebase passport
       bcpass: null, // blockchain passport
       bcvisa: [], // blockchain visa
-      bcvisaofferings: [],
+      bcvisaofferings: [], //visa offerings in blockchain
       countryId: null, // own countryId or 0 (if not a country)
-      newPassHash: null,
-      open: false,
-      snackOpen: false,
-      entered: false,
-      immigrationAddress: false,
-      immigrationAddressOpened: false,
-      embassy: false,
-      institution: 1,
-      enteredValidation: false,
-      nationAddress: null,
-      countryForVisa: null,
-      chipData: [],
-      newvisaoffering: []
+      newPassHash: null, //stores the calculated hash of a new pass
+      open: false, //handles opening & closing Dialogs
+      snackOpen: false,  //handles opening & closing Snackbar
+      entered: false, //checks if any of the subviews from welcome page was entered
+      immigrationAddress: false, //stores wallet address for immigration
+      immigrationAddressOpened: false, //checks if in immigration view an address was opened
+      institution: 1, //checks, which type of institution(immigration or embassy) was selected in nation view
+      enteredValidation: false, //checks if PassValidation view was opened in Embassy View
+      nationAddress: null, //Wallet address for nation
+      countryForVisa: null, //Saves int of country in immigration&embassy view
+      newvisaoffering: [] //saves fields for new visa offering in embassy view
     };
 
     // loads user's data
@@ -198,7 +190,7 @@ export class App extends React.Component {
       this.setState({bcpass: a});
     });
   }
-
+  //loads Visa for selected wallet for all countries specified for demonstrator
   loadAllVisa(_wallet) {
     for (let c of COUNTRIES) {
       this.loadVisa(_wallet, c);
@@ -316,6 +308,7 @@ export class App extends React.Component {
     return hash;
   }
 
+  //uploads new pass to bc and if that succeeds to firebase
   uploadPass() {
     console.log('Uploading Pass');
     let tx = this.citizen.createPassport(this.state.countryCode, this.state.newPassHash);
@@ -330,13 +323,14 @@ export class App extends React.Component {
     });
   }
 
+  //checks if a transaction succeeds and if so, reloads data
   checkTransaction(s){
-    console.log('arrived');
     if(s.confirmed && s.confirmed.blockHash){
       this.loadData();
     }
   }
 
+  //enter app as citizen
   enterAppCitizen() {
     console.log('entered as citizen');
     this.clearBcVisa();
@@ -345,6 +339,7 @@ export class App extends React.Component {
     this.setState({entered: true, userType: 'citizen', infoView:  true});
   }
 
+  //enter app as immigration
   enterAppImmigration() {
     console.log('entered as immigration');
     this.immigration.immigrationOfCountry(parity.bonds.me).then(s => {
@@ -356,6 +351,7 @@ export class App extends React.Component {
     });
   }
 
+  //enter app as embassy
   enterAppEmbassy() {
     console.log('entered as embassy');
     this.embassy.embassiesOfCountry(parity.bonds.me).then(s => {
@@ -368,6 +364,7 @@ export class App extends React.Component {
     });
   }
 
+  //enter app as country
   enterAppCountry() {
     console.log('entered as country');
     this.nation.countries(parity.bonds.me).then(s => {
@@ -388,6 +385,7 @@ export class App extends React.Component {
     }
   }
 
+  //gets alpha-2 code for immigration view to load the flag from the country
   getFlagImmigration() {
     console.log('Getting immigration flag');
     for(var i = 0; i < this.countryCode.length; i++){
@@ -397,6 +395,8 @@ export class App extends React.Component {
     }
   }
 
+  //another function to receive the alpha-2 code for a flag(for a specific country)
+  //useful when displaying flags of more than one country e.g. visa
   getAlpha(country) {
     for(var i = 0; i < this.countryCode.length; i++){
       if(this.countryCode[i]["country-code"] == country) {
@@ -405,6 +405,7 @@ export class App extends React.Component {
     }
   }
 
+  //stamp into a country using a visa
   stampIn(visa) {
     let owner = this.state.immigrationAddress;
     let country = visa.country;
@@ -415,6 +416,8 @@ export class App extends React.Component {
     tx.done(t => {this.checkTransaction(t).bind(this)});
     this.setState({tx: tx});
   }
+
+  //stamp out of country using a visa
   stampOut(visa) {
     let owner = this.state.immigrationAddress;
     let country = visa.country;
@@ -425,11 +428,14 @@ export class App extends React.Component {
     tx.done(t => {this.checkTransaction(t).bind(this)});
     this.setState({tx: tx});
   }
+
+  //logs what has been stamped
   stamped(ele) {
     console.log('stamped this', this);
     console.log('stamped ele', ele);
   }
 
+  //Verify a passport in the blockchain (from embassy view)
   verifyPassport() {
     console.log(this.state.immigrationAddress);
     console.log(this.state.pass.hash);
@@ -438,6 +444,7 @@ export class App extends React.Component {
     this.setState({tx: tx});
   }
 
+  //adds an institution from nation view
   addFromNation() {
     switch(this.state.institution) {
       case 1:
@@ -452,17 +459,22 @@ export class App extends React.Component {
     }
   }
 
+  //gets the country code from AutoComplete
   getCountryCode(chosenRequest, index){
     this.setState({countryCode:chosenRequest['country-code']});
     this.clearVisaOfferings();
     this.loadVisaOfferings(chosenRequest['country-code']);
   }
 
+  //deletes a VisaOffering from the Blockchain
   deleteBcVisaOffering(index){
-    this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    let tx = this.embassy.deleteVisaOffering(this.state.countryForVisa, index);
+    tx.done(t => {this.clearVisaOfferings(); this.loadVisaOfferings(this.state.countryForVisa)});
+    this.setState({tx: tx});
     console.log('Button was pressed', index);
   }
 
+  //clears local saved VisaOfferings to avoid overflow
   clearVisaOfferings() {
     this.setState({bcvisaofferings: []});
   }
@@ -476,6 +488,7 @@ export class App extends React.Component {
     });
   }
 
+  //handle any errors and print them to the console for debuf reasons
   handleError(err){
     console.error(err)
   }
@@ -485,6 +498,7 @@ export class App extends React.Component {
     // nothing
   }
 
+  //this renders ALL views of the app
   render() {
     document.body.style.backgroundColor = "#bd4e4b";
     // Welcome Page
@@ -621,7 +635,8 @@ export class App extends React.Component {
                       />)
                   }
                   </List>
-                  <DialogExampleModal2 loadVisaOfferings={this.loadVisaOfferings} clearVisaOfferings={this.clearVisaOfferings}/>
+                  <DialogEmbassyView this={this}/>
+                  <TransactionProgressBadge value={this.state.tx}/>
 
                   </div>
                 </Tab>
@@ -666,66 +681,6 @@ export class App extends React.Component {
         </div>
         <Paper style={paperStyle} zDepth={5}>
         <div>
-          <Tabs value={this.state.value}
-                onChange={this.handleChange}>
-            <Tab label="Offerings" value="a">
-              <div>
-                <Card>
-                  <DialogExampleModal2/>
-                   <LinearProgress mode="indeterminate" />
-                   <CardHeader
-                     title="Visum A1"
-                     subtitle="Transit"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                     Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit
-                     through the United States en route to another country, with few exceptions. Immediate and continuous
-                     transit is defined as a reasonably expeditious departure of the traveler in the normal course of travel
-                     as the elements permit and assumes a prearranged itinerary without any unreasonable layover privileges.
-                   </CardText>
-                 </Card>
-                 <Card>
-                   <CardHeader
-                     title="Visum B1"
-                     subtitle="Social"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Modify" />
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                   Social Cultural Visa is issued to travelers who intend to visit Indonesia for: Lecture, short Internship program,
-                   short Courses, Arts, Meetings, Volunteer Program, Sport Activities, visiting family and other related Social
-                   activities.
-                   Social Cultural Visa (Single or Multiple Entry Visa) will allow you a maximum stay of 60 (sixty) days for each visit. This type of visa can be extended at the Indonesian Immigration Office for 4 (four) times, with each extension for maximum 30 (thirty) days.
-                   </CardText>
-                 </Card>
-                 <Card>
-                   <CardHeader
-                     title="Visum C1"
-                     subtitle="Business Visitor"
-                     actAsExpander={true}
-                     showExpandableButton={true}
-                   />
-                   <CardActions>
-                     <FlatButton label="Modify" />
-                     <FlatButton label="Delete" />
-                   </CardActions>
-                   <CardText expandable={true}>
-                   If the purpose of the planned travel is business related, for example, to consult with business associates, attend a scienti c, educational, professional or business conference, settle an estate, or negotiate a contract, then a business visitor visa (B-1) would be the appropriate type of visa for the travel.            </CardText>
-                 </Card>
-                 </div>
-                 </Tab>
-
-                 <Tab label="Validate Pass" value="b">
-                   <div>
                      <h1>Passport of {this.state.pass.givennames} {this.state.pass.name}</h1>
                      <table>
                        <tbody>
@@ -824,15 +779,13 @@ export class App extends React.Component {
                      </tbody>
                      </table>
 
-
-                     <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
+                     {this.state.bcpass[3] ? <div></div>
+                       : this.state.bcpass[1] != this.state.countryForVisa ? <h3>You can't verify a pass from another country!</h3>
+                      :  <div> <RaisedButton fullWidth={true} backgroundColor="#a4c639" style={{
                        marginTop: 15
                      }} label="Verify Passport" onTouchTap={this.verifyPassport.bind(this)}/>
-                       <TransactionProgressBadge value={this.state.tx}/>
+                       <TransactionProgressBadge value={this.state.tx}/></div>}
                        </div>
-                 </Tab>
-               </Tabs>
-              </div>
           </Paper>
         </div>
       );
@@ -1228,7 +1181,7 @@ export class App extends React.Component {
               )}
           </List>
           <Divider />
-          <DialogExampleModal />
+          <DialogCitizenView this={this} />
         </Paper>
       </div>
     );
@@ -1254,28 +1207,9 @@ export class App extends React.Component {
   }
 }
 
-export class ErrorMessage extends React.Component {render() {
-        return (
-          <CardText style={{
-            fontWeight: 'bold'
-          }}>Error:{this.props.val}</CardText>
-        );
-      }
-}
-
-export class DialogExampleModal2 extends App {
+export class DialogEmbassyView extends App {
   constructor() {
   super();
-  this.arrayEqualizer = 1;
-  this.styles = {
-    chip: {
-      margin: 4,
-    },
-    wrapper: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-  };
 }
 
 handleOpen() {
@@ -1285,51 +1219,16 @@ handleOpen() {
 handleClose() {
   this.setState({open: false});
 };
-handleKeyPress(e) {
-  if(e.key === 'Enter'){
-    this.chipData = this.state.chipData;
-    var newLabel = {key: this.chipData.length + this.arrayEqualizer, label: e.target.value};
-    this.chipData.push(newLabel);
-    this.setState({chipData: this.chipData});
-    console.log(this.state.chipData);
-    this.refs.cond.input.value = '';
-  }
-}
-handleRequestDelete (key) {
 
-  this.chipData = this.state.chipData;
-  const chipToDelete = this.chipData.map((chip) => chip.key).indexOf(key);
-  this.chipData.splice(chipToDelete, 1);
-  this.setState({chipData: this.chipData});
-  this.arrayEqualizer++;
-};
-
-renderChip(data) {
-  console.log(data);
-  return (
-    <Chip
-      key={data.key}
-      onRequestDelete={() => this.handleRequestDelete(data.key)}
-      style={this.styles.chip}
-    >
-      {data.label}
-    </Chip>
-  );
-}
 
 addNewVisaOffering(){
-  console.log(this.newvisaoffering);
   this.embassy.embassiesOfCountry(parity.bonds.me).then( s => {
     let tx = this.embassy.createVisaOffering(s.c[0], this.newvisaoffering.identifier, this.newvisaoffering.description, parseInt(this.newvisaoffering.validity), parseInt(this.newvisaoffering.price), this.newvisaoffering.conditions);
-    console.log(tx);
-    tx.done(t => {this.handleClose(); this.props.clearVisaOfferings(); this.props.loadVisaOfferings(s.c[0])});
+    tx.done(t => {this.handleClose(); this.props.this.clearVisaOfferings(); this.props.this.loadVisaOfferings(s.c[0])});
     this.setState({tx: tx});
   });
-
-
-
-
 }
+
 changeOffering(_field, _value) {
   this.newvisaoffering[_field] = _value.target.value;
 }
@@ -1372,78 +1271,72 @@ render() {
 }
 }
 
+export class DialogCitizenView extends App {
+  constructor() {
+    super();
+  }
 
-      export class DialogExampleModal extends App {constructor() {
-        super();
-      }
+  handleOpen() {
+    this.setState({open: true});
+  }
 
-      handleOpen() {
-        this.setState({open: true});
-      };
+  handleClose() {
+    this.setState({open: false});
+  }
 
-      handleClose() {
-        this.setState({open: false});
-      };
-      applyForBcVisa(index){
-        this.citizen.applyForVisa(this.state.countryCode, index);
-        console.log('Button was pressed', index);
-      }
+  applyForBcVisa(index){
+    let tx = this.citizen.applyForVisa(this.state.countryCode, index);
+    tx.done(t => {this.handleClose(); this.props.this.checkTransaction(t).bind(this)});
+    this.setState({tx: tx});
+  }
 
-      render() {
-        const actions = [ < FlatButton label = "Cancel" primary = {
-            true
-          }
-          onTouchTap = {
-            this.handleClose.bind(this)
-          } />, < FlatButton label = "Submit" primary = {
-            true
-          }
-          disabled = {
-            true
-          }
-          onTouchTap = {
-            this.handleClose.bind(this)
-          } />
+  render() {
+    const actions = [
+      <FlatButton label="Cancel" primary={true}
+          onTouchTap = {this.handleClose.bind(this)} />,
+      <FlatButton label="Submit" primary={true} disabled={true}
+          onTouchTap = {this.handleClose.bind(this)} />
         ];
 
-        return (
-          <div>
-            <RaisedButton backgroundColor="#a4c639" label="Apply for a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
-            <Dialog style={{minHeight: 700, minWidth: 1200}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
-              <AutoComplete
-              floatingLabelText ="Country"
-              dataSource ={this.countryCode}
-              dataSourceConfig={this.dataSourceConfig}
-              onNewRequest = {this.getCountryCode.bind(this)}
-              />
-              <List>
-              {
-                this.state.bcvisaofferings.length == 0
+    return (
+      <div>
+        <RaisedButton backgroundColor="#a4c639" label="Apply for a Visa" icon={< SvgIconAdd />} color={fullWhite} fullWidth={true} onTouchTap={this.handleOpen.bind(this)}/>
+        <Dialog style={{minHeight: 700, minWidth: 1200}} title="Apply for a Visa" actions={actions} modal={true} open={this.state.open}>
+          <AutoComplete
+            floatingLabelText ="Country"
+            dataSource ={this.countryCode}
+            dataSourceConfig={this.dataSourceConfig}
+            onNewRequest = {this.getCountryCode.bind(this)}
+            />
+            <TransactionProgressBadge value={this.state.tx} />
+            <List>
+              {this.state.bcvisaofferings.length == 0
                 ? <h3>This country has no Visa offerings yet or you have not selected a country</h3>
                 : this.state.bcvisaofferings.map((offering, index) =>
-                  <ListItem
-                    primaryText={offering[1]}
-                    secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. - " + offering[2]}
-                    leftAvatar={<AccountIcon
+                    <ListItem
+                      primaryText={offering[1]}
+                      secondaryText={"Price: [" + offering[4]/100000000000000000 + "] ETH. - " + offering[2]}
+                      leftAvatar={<AccountIcon
                             style={{width: '2.5em'}}
                             key='0x008aB18490E729bBea993817E0c2B3c19c877115'
                             address='0x008aB18490E729bBea993817E0c2B3c19c877115'
-                    />}
-                    rightIcon={<RaisedButton
+                            />}
+                      rightIcon={<RaisedButton
                             backgroundColor="#a4c639"
                             label={"Apply"}
                             color={fullWhite}
                             onTouchTap={this.applyForBcVisa.bind(this, offering.id)}
                     />}
                   />)
-              }
-              </List>
-            <TransactionProgressBadge value={this.state.tx} />
-            </Dialog>
-          </div>
+            }
+            </List>
+        </Dialog>
+      </div>
         );
       }
 }
+
+//Class for Logo in top left of the Screen to reset app
 export class Logo extends React.Component {
   constructor() {
     super();
