@@ -69,7 +69,7 @@ const backHeadingStyle = {
 };
 
 // Constants:
-const COUNTRIES = [288,752,40,524]; // only these countries will be used for visa
+const COUNTRIES = [276, 768, 156, 288, 643,752,40,524]; // only these countries will be used for visa
 
 // App:
 export class App extends React.Component {
@@ -317,7 +317,6 @@ export class App extends React.Component {
       if (s.confirmed) {
         console.log('Writing Pass to Firebase');
         fc.writePassData(this.state.address, this.newPass, this.state.newPassHash, this.state.url);
-        this.getFlag();
         this.checkTransaction(s).bind(this);
       }
     });
@@ -579,6 +578,7 @@ export class App extends React.Component {
               style={previewStyle}
               onError={this.handleError.bind(this)}
               onScan={this.handleScan.bind(this)}
+              facingMode="rear"
             />
          <Divider/>
             <TextField hintText="PassChain-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
@@ -648,6 +648,7 @@ export class App extends React.Component {
                       style={previewStyle}
                       onError={this.handleError.bind(this)}
                       onScan={this.handleScan.bind(this)}
+                      facingMode="rear"
                       />
                     <Divider />
                     <TextField hintText="PassChain-ID" underlineShow={false} fullWidth={true} onChange={e => this.checkIfAddress(e)}/>
@@ -1045,6 +1046,7 @@ export class App extends React.Component {
           </div><img src="pass.png"/></div>);
     }
     // Show own pass
+    this.getFlagImmigration();
     return (
       <div>
         <div style={backHeadingStyle}>
@@ -1261,7 +1263,7 @@ export class DialogEmbassyView extends App {
                   <Divider/>
                   <TextField hintText="Price in ETH" fullWidth={true} onChange={e => this.changeOffering('price', e)} underlineShow={false} />
                   <Divider/>
-                  <TextField hintText="Validity in Seconds" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
+                  <TextField hintText="Validity in Days" fullWidth={true} onChange={e => this.changeOffering('validity', e)}  underlineShow={false} />
                   <Divider/>
                   <TransactionProgressBadge value={this.state.tx} />
                  </div>
